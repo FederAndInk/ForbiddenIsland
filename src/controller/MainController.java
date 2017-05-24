@@ -1,7 +1,6 @@
 package controller;
 
 import java.util.Collection;
-
 import model.game.Game;
 import model.player.Player;
 

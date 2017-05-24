@@ -18,22 +18,22 @@ abstract public class Adventurer {
     private int       actionPoints;
     
     
-    public Adventurer(Player player, Inventory inventory) {
+    public Adventurer(Player player) {
         setActionPoints(MAX_ACTION_POINTS);
         setPlayer(player);
-        setInventory(inventory);
+        setInventory(new Inventory());
     }
     
     
     public void move(Tile tile) {
-        if (getReachableTiles().contains(tile)) {
+        if (getActionPoints() >= 1 && getReachableTiles().contains(tile)) {
             setCurrentTile(tile);
             System.out.println("le deplaceemnt a été effectué");
         } else {
-            System.err.println("wallah t'es teubé");
+            System.out.println(getActionPoints() <= 0 ? "not enough action point" : "tile note reachable");
         }
         
-        setActionPoints(actionPoints - 1);
+        setActionPoints(getActionPoints() - 1);
         
     }
     

@@ -6,16 +6,19 @@ import model.adventurers.Adventurer;
 import model.game.Game;
 import util.GameInfo;
 
+
+
 public class Player {
-
-	private Game currentGame;
-	private Collection<GameInfo> gamesStat;
-	private Adventurer currentAdventurer;
-	private String name;
-
-	public Adventurer getAdventurer() {
-		// TODO - implement Player.getAdventurer
-		throw new UnsupportedOperationException();
-	}
-
+    
+    private Game                 currentGame;
+    private Collection<GameInfo> gamesStat;
+    private Adventurer           currentAdventurer;
+    private String               name;
+    
+    
+    public Adventurer getAdventurer() {
+        // TODO - implement Player.getAdventurer
+        throw new UnsupportedOperationException();
+    }
+    
 }

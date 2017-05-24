@@ -1,4 +1,4 @@
-package ProjetIleInterdite;
+package model.game;
 
 public enum SeaLevel {
 }

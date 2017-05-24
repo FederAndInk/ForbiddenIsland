@@ -5,8 +5,6 @@
  */
 package util;
 
-import java.awt.Color;
-
 /**
  *
  * @author Eric

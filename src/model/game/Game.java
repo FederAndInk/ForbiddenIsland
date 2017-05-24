@@ -1,6 +1,8 @@
-package ProjetIleInterdite;
+package model.game;
 
-import java.util.*;
+import java.util.Collection;
+
+import model.player.Player;
 
 public class Game {
 

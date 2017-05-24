@@ -1,4 +1,4 @@
-package ProjetIleInterdite;
+package util;
 
 public class Parameter {
 }

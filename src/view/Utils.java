@@ -7,9 +7,10 @@ package view;
 
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
+
 import javax.swing.JOptionPane;
+
 import model.adventurers.Adventurer;
 import util.Parameters;
 

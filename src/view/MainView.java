@@ -1,4 +1,4 @@
-package ProjetIleInterdite;
+package view;
 
 public class MainView {
 }

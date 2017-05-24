@@ -1,4 +1,8 @@
-package ProjetIleInterdite;
+package model.adventurers;
+
+import model.game.Tile;
+import model.player.Inventory;
+import model.player.Player;
 
 public class Adventurer {
 

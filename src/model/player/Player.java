@@ -1,6 +1,10 @@
-package ProjetIleInterdite;
+package model.player;
 
-import java.util.*;
+import java.util.Collection;
+
+import model.adventurers.Adventurer;
+import model.game.Game;
+import util.GameInfo;
 
 public class Player {
 

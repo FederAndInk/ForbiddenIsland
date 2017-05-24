@@ -1,4 +1,4 @@
-package ProjetIleInterdite;
+package model.player;
 
 public enum Action {
 	MOVE,

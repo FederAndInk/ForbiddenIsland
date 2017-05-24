@@ -1,10 +1,14 @@
-package ProjetIleInterdite;
+package model.adventurers;
+
+import model.game.Tile;
+
+
 
 public class Explorater extends Adventurer {
-
-	public void getReachableTiles() {
-		// TODO - implement Explorater.getReachableTiles
-		throw new UnsupportedOperationException();
-	}
-
+    
+    public Tile getReachableTiles() {
+        // TODO - implement Explorater.getReachableTiles
+        throw new UnsupportedOperationException();
+    }
+    
 }

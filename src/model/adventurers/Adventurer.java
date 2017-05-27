@@ -9,13 +9,13 @@ import model.player.Player;
 
 
 
-abstract public class Adventurer {
+public abstract class Adventurer {
     
-    private Player    player;
-    private Inventory inventory;
-    private Tile      currentTile;
-    private final int MAX_ACTION_POINTS = 3;
-    private int       actionPoints;
+    private Player           player;
+    private Inventory        inventory;
+    private Tile             currentTile;
+    private static final int MAX_ACTION_POINTS = 3;
+    private int              actionPoints;
     
     
     public Adventurer(Player player) {
@@ -28,12 +28,11 @@ abstract public class Adventurer {
     public void move(Tile tile) {
         if (getActionPoints() >= 1 && getReachableTiles().contains(tile)) {
             setCurrentTile(tile);
-            System.out.println("le deplaceemnt a été effectué");
+            setActionPoints(getActionPoints() - 1);
+            System.out.println("le deplacement a été effectué");
         } else {
             System.out.println(getActionPoints() <= 0 ? "not enough action point" : "tile note reachable");
         }
-        
-        setActionPoints(getActionPoints() - 1);
         
     }
     
@@ -45,30 +44,14 @@ abstract public class Adventurer {
         
         Tile[][] grid = getPlayer().getCurrentGame().getIsland().getGrid();
         
-        for (int x = 0; x < grid.length; x++) {
-            for (int y = 0; y < grid.length; y++) {
-                if ((coords.getX() == grid[x][y].getCoords().getX())) {
-                    if (coords.getY() - 1 == grid[x][y].getCoords().getY()) {
-                        if (grid[x][y].getState() != TileState.SINKED) {
-                            reachable.add(grid[x][y]);
-                        }
-                    } else if ((coords.getY() + 1 == grid[x][y].getCoords().getY())) {
-                        if (grid[x][y].getState() != TileState.SINKED) {
-                            reachable.add(grid[x][y]);
-                        }
-                    }
-                    
-                } else if ((coords.getY() == grid[x][y].getCoords().getY())) {
-                    if (coords.getX() - 1 == grid[x][y].getCoords().getX()) {
-                        if (grid[x][y].getState() != TileState.SINKED) {
-                            reachable.add(grid[x][y]);
-                        }
-                    } else if ((coords.getX() + 1 == grid[x][y].getCoords().getX())) {
-                        if (grid[x][y].getState() != TileState.SINKED) {
-                            reachable.add(grid[x][y]);
-                        }
-                    }
-                }
+        for (int i = -1; i <= 1; i += 2) {
+            Tile tileTmp = (grid[currentTile.getCoords().getX()][currentTile.getCoords().getY() + i]);
+            if ((tileTmp != null) && (tileTmp.getState() != TileState.SINKED)) {
+                reachable.add(tileTmp);
+            }
+            tileTmp = (grid[currentTile.getCoords().getX() + i][currentTile.getCoords().getY()]);
+            if ((tileTmp != null) && (tileTmp.getState() != TileState.SINKED)) {
+                reachable.add(tileTmp);
             }
         }
         

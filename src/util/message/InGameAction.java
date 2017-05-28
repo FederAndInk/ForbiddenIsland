@@ -1,6 +1,6 @@
-package model.player;
+package util.message;
 
-public enum Action {
+public enum InGameAction {
     MOVE,
     USE_CARD,
     SHORE_UP_TILE,

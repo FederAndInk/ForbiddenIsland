@@ -2,6 +2,16 @@ package model.game;
 
 public class Treasure {
     
-    private String name;
+    private TreasureType name;
+    
+    
+    public Treasure(TreasureType name) {
+        this.name = name;
+    }
+    
+    
+    public TreasureType getName() {
+        return name;
+    }
     
 }

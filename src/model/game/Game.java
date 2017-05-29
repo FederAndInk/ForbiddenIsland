@@ -18,12 +18,6 @@ public class Game {
     private boolean              started;
     
     
-    public Game getcurrentGame() {
-        // TODO - implement Game.getcurrentGame
-        throw new UnsupportedOperationException();
-    }
-    
-    
     /**
      * @author nihil
      * add a player to the game (4 max)
@@ -39,13 +33,58 @@ public class Game {
     }// end addPlayer
     
     
+    /**
+     * @return the treasures
+     */
+    public Collection<Treasure> getTreasures() {
+        return treasures;
+    }
+    
+    
+    /**
+     * @return the island
+     */
+    public Island getIsland() {
+        return island;
+    }
+    
+    
+    private void setIsland(Island island) {
+        this.island = island;
+    }
+    
+    
+    /**
+     * @return the players
+     */
+    public Collection<Player> getPlayers() {
+        return players;
+    }
+    
+    
     public Player getCurrentPlayer() {
         return this.currentPlayer;
     }
     
     
+    /**
+     * @return the treasureDeck
+     */
+    public Deck getTreasureDeck() {
+        return treasureDeck;
+    }
+    
+    
     public boolean isStarted() {
         return started;
+    }
+    
+    
+    /**
+     * @return the floodDeck
+     */
+    public Deck getFloodDeck() {
+        return floodDeck;
     }
     
     
@@ -58,8 +97,17 @@ public class Game {
      *
      * @return true if the players get all the treasures
      */
-    private boolean isTreasureAllInveked() {
+    private boolean isTreasureAllInvoked() {
         return treasures.isEmpty();
+    }
+    
+    
+    /**
+     * @param currentPlayer
+     * the currentPlayer to set
+     */
+    private void setCurrentPlayer(Player currentPlayer) {
+        this.currentPlayer = currentPlayer;
     }
     
 }

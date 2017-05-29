@@ -12,6 +12,9 @@ import model.game.Tile;
  *
  */
 public class MoveException extends Exception {
+    private ExceptionType type;
+    
+    
     /**
      * @author nihil
      * @param tile
@@ -25,10 +28,31 @@ public class MoveException extends Exception {
     
     
     /**
+     * 
+     * @author nihil
+     * actually this happen when there is no remaining actions
+     *
+     * @param nbAction
+     * (0) the remaining action
+     */
+    public MoveException(int nbAction) {
+        super("Move impossible, " + nbAction + "remaining");
+    }// end name
+    
+    
+    /**
      * @author nihil
      *
      */
     public MoveException() {
         super("Move impossible");
+    }
+    
+    
+    /**
+     * @return the type
+     */
+    public ExceptionType getType() {
+        return type;
     }
 }

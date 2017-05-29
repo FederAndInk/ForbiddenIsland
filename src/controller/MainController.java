@@ -4,7 +4,10 @@ import java.util.*;
 
 import model.game.Game;
 import model.player.Player;
-import util.message.*;
+import util.message.InGameMessage;
+import util.message.MainAction;
+import util.message.MainMessage;
+import util.message.Message;
 
 
 
@@ -13,6 +16,18 @@ public class MainController implements Observer {
     private HashMap<String, Player> players;
     private Game                    currentGame;
     private ArrayList<Game>         savedGames;
+    private GameController          gameController;
+    
+    
+    /**
+     * @author nihil
+     *
+     */
+    public MainController() {
+        players = new HashMap<>();
+        savedGames = new ArrayList<>();
+        gameController = new GameController(this);
+    }
     
     
     public void createGame() {
@@ -35,14 +50,6 @@ public class MainController implements Observer {
     public void removeAllGames() {
         // TODO - implement MainController.removeAllGames
         throw new UnsupportedOperationException();
-    }
-    
-    
-    public void movePawn() {
-        
-        // TODO : do something if the move can't be applied (exception)
-        // TODO : get the tile from the UI
-        getCurrentGame().getCurrentPlayer().getAdventurer().move();
     }
     
     
@@ -86,11 +93,7 @@ public class MainController implements Observer {
                 
             }
         } else if (arg1 instanceof InGameMessage) {
-            InGameMessage m = (InGameMessage) arg1;
-            if (m.getType().equals(InGameAction.MOVE)) {
-                // TODO : is the UI have to send the coord, the tile, the int of coord ?
-                movePawn();
-            } // end if
+            System.out.println("InGame action Message");
         } else {
             throw new IllegalArgumentException("The class " + arg0.getClass().getName() + " was going to send "
                     + arg1.getClass() + " Object, but a " + Message.class.getName() + " is expected");

@@ -5,9 +5,9 @@
  */
 package util;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Stack;
 
 import model.game.Coords;
 import model.game.Site;
@@ -43,15 +43,16 @@ public class BoardGeneration {
     
     
     private static Tile[][] generateDefaultBoard() {
-        Stack<Site> l = (Stack<Site>) Arrays.asList(Site.values());
+        ArrayList<Site> l = new ArrayList<>(Arrays.asList(Site.values()));
         Tile[][] tiles = new Tile[6][6];
         Collections.shuffle(l);
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 6; j++) {
                 if (isBord(i, j)) {
                     tiles[i][j] = null;
+                } else {
+                    tiles[i][j] = new Tile(new Coords(), l.remove(l.size() - 1));
                 } // end if
-                tiles[i][j] = new Tile(new Coords(), l.pop());
             }
         }
         return tiles;

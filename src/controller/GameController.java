@@ -19,7 +19,7 @@ import util.message.Message;
  *
  */
 public class GameController {
-    MainController mainController;
+    private MainController mainController;
     
     
     /**
@@ -47,10 +47,35 @@ public class GameController {
     public void update(Observable arg0, Object arg1) {
         if (arg1 instanceof InGameAction) {
             InGameMessage m = (InGameMessage) arg1;
-            if (m.getType().equals(InGameAction.MOVE)) {
+            switch ((InGameAction) m.getType()) {
+            case MOVE:
                 // TODO : is the UI have to send the coord, the tile, the int of coord ?
                 // movePawn();
-            } // end if
+                
+                break;
+            case GET_TREASURE:
+                
+                break;
+            case GIVE_CARD:
+                
+                break;
+            case SHORE_UP_TILE:
+                
+                break;
+            case USE_CAPACITY:
+                
+                break;
+            case USE_CARD:
+                
+                break;
+            case END_TURN:
+                
+                break;
+            
+            default:
+                break;
+            }// end switch
+            
         } else if (arg1 instanceof MainMessage) {
             System.out.println("Main action Message");
         } else {

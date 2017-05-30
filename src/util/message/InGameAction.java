@@ -7,5 +7,6 @@ public enum InGameAction {
     GIVE_CARD,
     DRAW,
     GET_TREASURE,
+    USE_CAPACITY,
     END_TURN
 }

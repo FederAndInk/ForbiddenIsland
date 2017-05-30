@@ -1,12 +1,17 @@
 package model.game;
 
+import util.BoardGeneration;
+import util.BoardType;
+
+
+
 public class Island {
     
     private Tile grid[][];
     
     
     public Island() {
-        generateIsland();
+        setGrid(BoardGeneration.generateBoard(BoardType.DEFAULT));
     }
     
     

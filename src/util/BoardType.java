@@ -6,9 +6,19 @@
 package util;
 
 /**
- *
+ * a type for the generation of the board
+ * {@link #DEFAULT}
+ * 
  * @author lordofkawaiii
  */
 public enum BoardType {
+    /**
+     * the default board type<br>
+     * **––**</br>
+     * *––––*</br>
+     * ––––––</br>
+     * *––––*</br>
+     * **––**</br>
+     */
     DEFAULT
 }

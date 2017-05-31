@@ -17,14 +17,14 @@ import view.testComponantPerso.CompCard;
 
 
 
-public class BordPanel extends JPanel {
+public class BoardPanel extends JPanel {
     private JFrame parentFrame;
     SpringLayout   layout;
     JPanel         gridPane;
     String         htmlNewLine = "</p><p class=\"second\">";
     
     
-    public BordPanel(JFrame parentFrame) {
+    public BoardPanel(JFrame parentFrame) {
         layout = new SpringLayout();
         setParentFrame(parentFrame);
         

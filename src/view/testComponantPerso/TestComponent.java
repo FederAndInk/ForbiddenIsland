@@ -7,7 +7,6 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Font;
 import java.awt.FontFormatException;
-import java.awt.GraphicsEnvironment;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ComponentEvent;
@@ -50,9 +49,6 @@ public class TestComponent {
         Font font;
         String htmlNewLine = "</p><p class=\"second\">";
         // in order to add the font
-        GraphicsEnvironment genv = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        font = Font.createFont(Font.TRUETYPE_FONT, new File("./resources/Treamd.ttf"));
-        genv.registerFont(font);
         
         frame.getContentPane().add(superPane);
         JButton returnTo = new JButton("Retourner");

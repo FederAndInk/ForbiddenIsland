@@ -29,14 +29,14 @@ public class BoardPanel extends JPanel {
         setParentFrame(parentFrame);
         
         setLayout(layout);
-        centerGrid();
         initGrid();
+        centerGrid();
     }
     
     
     private void initGrid() {
         gridPane = new JPanel(new GridLayout(6, 6));
-        this.add(gridPane);
+        add(gridPane);
         
         // -----------------------to add the tiles
         File file = new File("./resources/tiles");
@@ -57,7 +57,6 @@ public class BoardPanel extends JPanel {
                 } else {
                     try {
                         gridPane.add(new CompCard(files.get(imgNb), "Breakers" + htmlNewLine + "Bridge"));
-                        // panel.add(new CompCard(files.get(imgNb), "Breakers"));
                     } catch (FontFormatException | IOException e1) {
                         e1.printStackTrace();
                     }

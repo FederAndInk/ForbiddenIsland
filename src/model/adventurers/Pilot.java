@@ -36,6 +36,7 @@ public class Pilot extends Adventurer {
             }
         }
         
+        setHeliUsed(true);
         return reachable;
         // **penser a changer l'etat de heliused**//
     }

@@ -1,6 +1,7 @@
 package model.adventurers;
 
 import java.util.ArrayList;
+
 import model.game.Coords;
 import model.game.Tile;
 import model.game.TileState;
@@ -10,11 +11,10 @@ import model.player.Player;
 
 
 public abstract class Adventurer {
-    
+    private static final int MAX_ACTION_POINTS = 3;
     private Player           player;
     private Inventory        inventory;
     private Tile             currentTile;
-    private static final int MAX_ACTION_POINTS = 3;
     private int              actionPoints;
     
     

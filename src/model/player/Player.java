@@ -1,6 +1,7 @@
 package model.player;
 
 import java.util.Collection;
+
 import model.adventurers.Adventurer;
 import model.game.Game;
 import util.GameInfo;
@@ -17,11 +18,6 @@ public class Player {
     
     public Player(String name) {
         setName(name);
-    }
-    
-    
-    public Adventurer getAdventurer() {
-        return currentAdventurer;
     }
     
     
@@ -50,13 +46,9 @@ public class Player {
     }
     
     
-    /**
-     * @param gamesStat
-     * the gamesStat to set
-     */
-    public void setGamesStat(Collection<GameInfo> gamesStat) {
-        this.gamesStat = gamesStat;
-    }
+    public void addGameStat(GameInfo gameStat) {
+        gamesStat.add(gameStat);
+    }// end addGameStat
     
     
     /**
@@ -88,7 +80,7 @@ public class Player {
      * @param name
      * the name to set
      */
-    public void setName(String name) {
+    private void setName(String name) {
         this.name = name;
     }
     

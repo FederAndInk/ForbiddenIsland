@@ -37,14 +37,13 @@ public class Test extends Observable {
         Game game = new Game();
         Player p1 = new Player("p1");
         Player p2 = new Player("p2");
-        game.addPlayer(p1);
-        game.addPlayer(p2);
-        p1.setCurrentAdventurer(new Diver(p1));
-        p2.setCurrentAdventurer(new Diver(p2));
+        game.addPlayer(p1, new Diver(p1));
+        game.addPlayer(p2, new Diver(p2));
         p1.setCurrentGame(game);
         p2.setCurrentGame(game);
         game.initGame();
         Tile t = game.getIsland().getGrid()[2][2];
+        Tile t2 = game.getIsland().getGrid()[3][4];
         game.getIsland().getGrid()[2][1].setState(TileState.SINKED);
         game.getIsland().getGrid()[2][3].setState(TileState.SINKED);
         game.getIsland().getGrid()[1][1].setState(TileState.SINKED);
@@ -61,9 +60,10 @@ public class Test extends Observable {
             } // end for
             System.out.println();
         } // end for
-        p1.getAdventurer().setCurrentTile(t);
-        p2.getAdventurer().setCurrentTile(t);
-        ArrayList<Tile> ts = p1.getAdventurer().getReachableTiles();
+        p1.getCurrentAdventurer().setCurrentTile(t);
+        p2.getCurrentAdventurer().setCurrentTile(t2);
+        System.out.println(game.getCurrentPlayer().getName());
+        ArrayList<Tile> ts = game.getCurrentPlayer().getCurrentAdventurer().getReachableTiles();
         ts.sort((o1, o2) -> o1.getSite().compareTo(o2.getSite()));
         // FIXME : doublon !!
         int i = 1;

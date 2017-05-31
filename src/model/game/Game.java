@@ -10,6 +10,7 @@ import model.player.Player;
 public class Game {
     private final static Integer MAX_PLAYER = 4;
     private ArrayList<Treasure>  treasures;
+    private Collection<Treasure> treasures;
     private Island               island;
     private ArrayList<Player>    players;
     private TreasureDeck         treasureDeck;
@@ -86,5 +87,48 @@ public class Game {
     private boolean isTreasureAllInveked() {
         return treasures.isEmpty();
     }
-    
+  
+  
+
+    /**
+     * @return the treasures
+     */
+    public Collection<Treasure> getTreasures() {
+	return treasures;
+    }
+
+    /**
+     * @return the island
+     */
+    public Island getIsland() {
+	return island;
+    }
+
+    /**
+     * @return the players
+     */
+    public Collection<Player> getPlayers() {
+	return players;
+    }
+
+    /**
+     * @return the treasureDeck
+     */
+    public Deck getTreasureDeck() {
+	return treasureDeck;
+    }
+
+    /**
+     * @return the floodDeck
+     */
+    public Deck getFloodDeck() {
+	return floodDeck;
+    }
+
+    /**
+     * @param currentPlayer the currentPlayer to set
+     */
+    private void setCurrentPlayer(Player currentPlayer) {
+	this.currentPlayer = currentPlayer;
+    }
 }

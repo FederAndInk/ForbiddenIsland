@@ -1,5 +1,6 @@
 package model.adventurers;
 
+import java.util.ArrayList;
 import model.game.Tile;
 
 
@@ -9,7 +10,7 @@ public class Pilot extends Adventurer {
     private Boolean heliUsed;
     
     
-    public Tile getReachableTiles() {
+    public ArrayList<Tile> getReachableTiles() {
         // TODO - implement Pilot.getReachableTiles
         throw new UnsupportedOperationException();
     }

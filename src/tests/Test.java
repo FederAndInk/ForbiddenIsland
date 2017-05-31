@@ -2,11 +2,11 @@ package tests;
 
 import java.util.ArrayList;
 import java.util.Observable;
-
 import model.adventurers.Diver;
 import model.game.Game;
 import model.game.Island;
 import model.game.Tile;
+import model.game.TileState;
 import model.player.Player;
 
 
@@ -29,13 +29,20 @@ public class Test extends Observable {
         game.addPlayer(p2);
         p1.setCurrentAdventurer(new Diver(p1));
         p2.setCurrentAdventurer(new Diver(p2));
+        p1.setCurrentGame(game);
+        p2.setCurrentGame(game);
         game.initGame();
         Tile t = game.getIsland().getGrid()[2][2];
+        game.getIsland().getGrid()[2][1].setState(TileState.SINKED);
+        game.getIsland().getGrid()[2][3].setState(TileState.SINKED);
+        
+        ;
         p1.getAdventurer().setCurrentTile(t);
         p2.getAdventurer().setCurrentTile(t);
         ArrayList<Tile> ts = p1.getAdventurer().getReachableTiles();
         for (Tile tile : ts) {
-            System.out.println(tile.getSite());
+            System.out.println(tile.getSite() + tile.getCoords().toString());
+            
         } // end for
     }
     

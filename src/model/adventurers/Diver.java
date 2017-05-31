@@ -12,7 +12,7 @@ public class Diver extends Adventurer {
     private ArrayList<Tile> getReachableTiles(Tile tile, ArrayList<Tile> tilesAlreadyRead) {
         ArrayList<Tile> tilesAlreadyDone = new ArrayList<>();
         
-        Tile[][] grid = getPlayer().getCurrentGame().getIsland().getGrid();
+        Tile grid[][] = getPlayer().getCurrentGame().getIsland().getGrid();
         
         for (int i = -1; i <= 1; i += 2) {
             Tile tileTmp = (grid[tile.getCoords().getX()][tile.getCoords().getY() + i]);
@@ -21,7 +21,7 @@ public class Diver extends Adventurer {
             } else if ((tileTmp != null) && (tileTmp.getState() == TileState.SINKED)) {
                 if (!tilesAlreadyRead.contains(tileTmp)) {
                     tilesAlreadyRead.add(tileTmp);
-                    tilesAlreadyDone.addAll(getReachableTiles(tileTmp, tilesAlreadyRead));
+                    getReachableTiles(tileTmp, tilesAlreadyRead);
                 }
             }
             tileTmp = (grid[tile.getCoords().getX() + i][tile.getCoords().getY()]);
@@ -30,10 +30,11 @@ public class Diver extends Adventurer {
             } else if ((tileTmp != null) && (tileTmp.getState() == TileState.SINKED)) {
                 if (!tilesAlreadyRead.contains(tileTmp)) {
                     tilesAlreadyRead.add(tileTmp);
-                    tilesAlreadyDone.addAll(getReachableTiles(tileTmp, tilesAlreadyRead));
+                    getReachableTiles(tileTmp, tilesAlreadyRead);
                 }
             }
         }
+        tilesAlreadyDone.addAll(tilesAlreadyRead);
         return tilesAlreadyDone;
     }
     
@@ -47,7 +48,7 @@ public class Diver extends Adventurer {
         tilesAlreadyDone = getReachableTiles(current, tilesAlreadyDone);
         
         for (Tile tile : tilesAlreadyDone) {
-            if (tile.getState() != TileState.SINKED) {
+            if ((tile.getState() != TileState.SINKED) && (getCurrentTile() != tile)) {
                 reachableTiles.add(tile);
             }
         }

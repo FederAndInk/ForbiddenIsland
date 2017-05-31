@@ -1,12 +1,17 @@
 package model.game;
 
+import util.BoardGeneration;
+import util.BoardType;
+
+
+
 public class Island {
     
     private Tile grid[][];
     
     
     public Island() {
-        generateIsland();
+        setGrid(BoardGeneration.generateBoard(BoardType.DEFAULT));
     }
     
     
@@ -15,14 +20,7 @@ public class Island {
      * @param pos
      */
     public Tile getTile(Coords pos) {
-        // TODO - implement Island.getTile
-        throw new UnsupportedOperationException();
-    }
-    
-    
-    public void getTiles() {
-        // TODO - implement Island.getTiles
-        throw new UnsupportedOperationException();
+        return (grid[pos.getX()][pos.getY()]);
     }
     
     
@@ -40,16 +38,6 @@ public class Island {
      */
     public void setGrid(Tile[][] grid) {
         this.grid = grid;
-    }
-    
-    
-    private void generateIsland() {
-        for (int i = 0; i < 6; i++) {
-            for (int j = 0; j < 6; j++) {
-                
-            }
-            
-        }
     }
     
 }

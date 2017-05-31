@@ -21,8 +21,7 @@ public class Player {
     
     
     public Adventurer getAdventurer() {
-        // TODO - implement Player.getAdventurer
-        throw new UnsupportedOperationException();
+        return currentAdventurer;
     }
     
     

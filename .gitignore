@@ -6,7 +6,9 @@ manifest.mf
 .classpath
 .directory
 bin/
+src/Test.java
 src/tests
+
 
 
 

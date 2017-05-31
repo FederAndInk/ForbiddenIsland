@@ -1,9 +1,15 @@
 /**
  * 
  */
-package testComponantPerso;
+package view.testComponantPerso;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Font;
+import java.awt.FontFormatException;
+import java.awt.GraphicsEnvironment;
+import java.awt.GridLayout;
+import java.awt.Toolkit;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
@@ -13,7 +19,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JPanel;
+import javax.swing.SpringLayout;
 
 
 
@@ -194,12 +205,11 @@ public class TestComponent {
      * @return true if i,j is in the corner (where the star is)
      */
     public static boolean isBord(int i, int j) {
-        //@formatter:off
-        return (i == 0) && (j == 0 || j == 1) || (i == 1 && j == 0)
-                || (i == 5) && (j == 0 || j == 1) || (i == 4 && j == 0)
-                || (i == 0) && (j == 4 || j == 5) || (i == 1 && j == 5)
+        // @formatter:off
+        return (i == 0) && (j == 0 || j == 1) || (i == 1 && j == 0) || (i == 5) && (j == 0 || j == 1)
+                || (i == 4 && j == 0) || (i == 0) && (j == 4 || j == 5) || (i == 1 && j == 5)
                 || (i == 5) && (j == 4 || j == 5) || (i == 4 && j == 5);
-        //@formatter:on
+        // @formatter:on
     }// end
      // isbord
 }

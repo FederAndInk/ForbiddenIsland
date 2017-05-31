@@ -79,12 +79,11 @@ public class BoardGeneration {
      * @return true if i,j is in the corner (where the star is)
      */
     public static boolean isBord(int i, int j) {
-        //@formatter:off
-        return (i == 0) && (j == 0 || j == 1) || (i == 1 && j == 0)
-                || (i == 5) && (j == 0 || j == 1) || (i == 4 && j == 0)
-                || (i == 0) && (j == 4 || j == 5) || (i == 1 && j == 5)
+        // @formatter:off
+        return (i == 0) && (j == 0 || j == 1) || (i == 1 && j == 0) || (i == 5) && (j == 0 || j == 1)
+                || (i == 4 && j == 0) || (i == 0) && (j == 4 || j == 5) || (i == 1 && j == 5)
                 || (i == 5) && (j == 4 || j == 5) || (i == 4 && j == 5);
-        //@formatter:on
+        // @formatter:on
     }// end
     
 }

@@ -9,6 +9,7 @@ import model.player.Player;
 
 public class Game {
     private final static Integer MAX_PLAYER = 4;
+    private final static Integer MIN_PLAYER = 2;
     private ArrayList<Treasure>  treasures;
     private Island               island;
     private Collection<Player>   players;
@@ -31,6 +32,7 @@ public class Game {
         } // end if
         return players.size();
     }// end addPlayer
+     // FIXME : add min check
     
     
     /**

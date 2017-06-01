@@ -35,8 +35,7 @@ public abstract class Adventurer {
      * @return true if the move done
      * @throws MoveException
      */
-    public void move(Coords coords) throws MoveException {
-        Tile tile = getPlayer().getCurrentGame().getIsland().getTile(coords);
+    public void move(Tile tile) throws MoveException {
         if (getActionPoints() >= 1 && getReachableTiles().contains(tile)) {
             setCurrentTile(tile);
             setActionPoints(getActionPoints() - 1);
@@ -60,11 +59,11 @@ public abstract class Adventurer {
         Tile[][] grid = getPlayer().getCurrentGame().getIsland().getGrid();
         
         for (int i = -1; i <= 1; i += 2) {
-            Tile tileTmp = (grid[currentTile.getCoords().getX()][currentTile.getCoords().getY() + i]);
+            Tile tileTmp = (grid[coords.getX()][coords.getY() + i]);
             if ((tileTmp != null) && (tileTmp.getState() != TileState.SINKED)) {
                 reachable.add(tileTmp);
             }
-            tileTmp = (grid[currentTile.getCoords().getX() + i][currentTile.getCoords().getY()]);
+            tileTmp = (grid[coords.getX() + i][coords.getY()]);
             if ((tileTmp != null) && (tileTmp.getState() != TileState.SINKED)) {
                 reachable.add(tileTmp);
             }

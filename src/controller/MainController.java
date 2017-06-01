@@ -14,7 +14,6 @@ import util.message.Message;
 public class MainController implements Observer {
     
     private HashMap<String, Player> players;
-    private Game                    currentGame;
     private ArrayList<Game>         savedGames;
     private GameController          gameController;
     
@@ -31,7 +30,8 @@ public class MainController implements Observer {
     
     
     public void createGame() {
-        setCurrentGame(new Game());
+        // TODO : complete with IHM
+        gameController.setCurrentGame(new Game());
     }
     
     
@@ -59,7 +59,7 @@ public class MainController implements Observer {
         // if (!getPlayers().containsKey(pName)) {
         // players.put(players.getName(), new Player(pName));
         // } // end if
-        getCurrentGame().addPlayer(players.get(pName));
+        gameController.getCurrentGame().addPlayer(players.get(pName));
         return true; // FIXME
     }// end addPlayer
     
@@ -104,6 +104,9 @@ public class MainController implements Observer {
             case SCORES:
                 
                 break;
+            case QUIT:
+                
+                break;
             default:
                 if (arg1 instanceof InGameMessage) {
                     System.out.println("InGame action Message");
@@ -117,14 +120,9 @@ public class MainController implements Observer {
     }
     
     
-    public Game getCurrentGame() {
-        return currentGame;
-    }
-    
-    
-    public void setCurrentGame(Game currentGame) {
-        this.currentGame = currentGame;
-    }
+    public Player getPlayer(String name) {
+        return players.get(name);
+    }// end name
     
     
     public Map<String, Player> getPlayers() {

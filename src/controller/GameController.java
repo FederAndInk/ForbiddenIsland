@@ -4,8 +4,13 @@
 package controller;
 
 import java.util.Observable;
+import java.util.Stack;
 
+import model.card.CardType;
 import model.game.Coords;
+import model.game.Game;
+import model.game.Tile;
+import model.player.Player;
 import util.exception.MoveException;
 import util.message.InGameAction;
 import util.message.InGameMessage;
@@ -20,6 +25,9 @@ import util.message.Message;
  */
 public class GameController {
     private MainController mainController;
+    private CardType       cardPlayed;
+    private Stack<Player>  playersChain;
+    private Game           currentGame;
     
     
     /**
@@ -37,11 +45,20 @@ public class GameController {
         // TODO : do something if the move can't be applied (exception)
         // TODO : get the tile from the UI
         try {
-            getMainController().getCurrentGame().getCurrentPlayer().getAdventurer().move(coords);
+            Game g = getCurrentGame();
+            Tile t = g.getIsland().getTile(coords);
+            g.getCurrentPlayer().getAdventurer().move(t);
         } catch (MoveException e) {
             e.printStackTrace();
         }
     }
+    
+    
+    public void endTurn() {
+        playersChain.clear();
+        playersChain.push(getCurrentGame().getCurrentPlayer());
+        getCurrentGame().endTurn();
+    }// end endTurn
     
     
     public void update(Observable arg0, Object arg1) {
@@ -68,6 +85,12 @@ public class GameController {
             case USE_CARD:
                 
                 break;
+            case SWIM:
+                
+                break;
+            case INTERRUPT:
+                
+                break;
             case END_TURN:
                 
                 break;
@@ -90,5 +113,15 @@ public class GameController {
      */
     public MainController getMainController() {
         return mainController;
+    }
+    
+    
+    public Game getCurrentGame() {
+        return currentGame;
+    }
+    
+    
+    public void setCurrentGame(Game currentGame) {
+        this.currentGame = currentGame;
     }
 }

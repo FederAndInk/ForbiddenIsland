@@ -7,6 +7,7 @@ import model.game.Tile;
 import model.game.TileState;
 import model.player.Inventory;
 import model.player.Player;
+import util.exception.InadequateUseOfCapacity;
 
 
 
@@ -70,6 +71,28 @@ public abstract class Adventurer {
         } // end for
         return reachable;
         
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     * @param tile
+     * @throws InadequateUseOfCapacity
+     */
+    public void useCapacity(Object o) throws InadequateUseOfCapacity {
+        throw new InadequateUseOfCapacity();
+    }// end useCapacity
+    
+    
+    /**
+     * @author nihil
+     *
+     * @return the objects where a capacity can be applied
+     * @throws InadequateUseOfCapacity
+     */
+    public ArrayList<Object> getPotentialUse() throws InadequateUseOfCapacity {
+        throw new InadequateUseOfCapacity();
     }
     
     

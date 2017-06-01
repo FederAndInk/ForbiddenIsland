@@ -9,7 +9,6 @@ import util.GameInfo;
 
 
 public class Player {
-    
     private Game                 currentGame;
     private Collection<GameInfo> gamesStat;
     private Adventurer           currentAdventurer;

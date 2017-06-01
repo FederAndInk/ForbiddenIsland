@@ -44,6 +44,7 @@ public class Game {
      * @param p
      * the player to add to the party
      * @param adventurer
+     * the adventurer to set to the player
      * @return the number of players after adding they
      * @throws IndexOutOfBoundsException
      */

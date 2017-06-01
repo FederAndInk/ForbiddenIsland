@@ -15,27 +15,41 @@ public class Pilot extends Adventurer {
     
     public Pilot(Player player) {
         super(player);
+        setHeliUsed(false);
     }
     
     
-    public void useCapacity(Tile tile) {
-        if (helicopterLocations().contains(tile) && getActionPoints() > 0) {
-            setCurrentTile(tile);
+    @Override
+    public void useCapacity(Object o) {
+        if (o instanceof Tile) {
+            Tile tile = (Tile) o;
+            if (getPotentialUse().contains(tile) && getActionPoints() > 0) {
+                setCurrentTile(tile);
+            } else {
+                // TODO :throw exception
+            } // end if
         } else {
-            // TODO :throw exception
+            throw new IllegalArgumentException("not a Tile !");
         } // end if
     }// end useCapacity
     
     
-    public ArrayList<Tile> helicopterLocations() {
+    /**
+     * @author nihil
+     *
+     * @return the tiles where the pilot can go with their helicopter
+     * @see {@link #getReachableTiles()} and use removeAll to get only the tile where the pilot can go exclusively with their helicopter
+     */
+    @Override
+    public ArrayList<Object> getPotentialUse() {
         
-        ArrayList<Tile> reachable = new ArrayList<>();
+        ArrayList<Object> reachable = new ArrayList<>();
         
         Tile[][] grid = getPlayer().getCurrentGame().getIsland().getGrid();
         
         if (getHeliUsed() == false) {
-            for (int x = 0; x < 5; x++) {
-                for (int y = 0; y < 5; y++) {
+            for (int x = 0; x <= 5; x++) {
+                for (int y = 0; y <= 5; y++) {
                     Tile tile = grid[x][y];
                     if (tile != null && !tile.getState().equals(TileState.SINKED) && !tile.equals(getCurrentTile())) {
                         reachable.add(grid[x][y]);
@@ -45,7 +59,7 @@ public class Pilot extends Adventurer {
             }
         }
         return reachable;
-        // TODO :penser a changer l'etat de heliused
+        // TODO :penser a changer l'etat de heliused when the turn end
     }
     
     
@@ -61,7 +75,7 @@ public class Pilot extends Adventurer {
      * @param heliUsed
      * the heliUsed to set
      */
-    public void setHeliUsed(Boolean heliUsed) {
+    private void setHeliUsed(Boolean heliUsed) {
         this.heliUsed = heliUsed;
     }
     

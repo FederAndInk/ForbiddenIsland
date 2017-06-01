@@ -11,6 +11,7 @@ import model.game.Game;
 import model.game.Tile;
 import model.game.TileState;
 import model.player.Player;
+import util.exception.InadequateUseOfCapacity;
 
 
 
@@ -42,8 +43,9 @@ public class TestMove {
      * @author nihil
      *
      * @param args
+     * @throws InadequateUseOfCapacity
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InadequateUseOfCapacity {
         Game game = new Game();
         Player p1 = new Player("p1");
         Player p2 = new Player("p2");
@@ -70,13 +72,16 @@ public class TestMove {
         } // end for
         p1.getCurrentAdventurer().setCurrentTile(t);
         p2.getCurrentAdventurer().setCurrentTile(t2);
-        System.out.println(game.getCurrentPlayer().getName());
-        ArrayList<Tile> ts = game.getCurrentPlayer().getCurrentAdventurer().getReachableTiles();
-        ts.sort((o1, o2) -> o1.getSite().compareTo(o2.getSite()));
+        Player cPlayer = game.getCurrentPlayer();
+        ArrayList<Object> ts = cPlayer.getCurrentAdventurer() instanceof Pilot
+                ? cPlayer.getCurrentAdventurer().getPotentialUse()
+                : new ArrayList<>(cPlayer.getCurrentAdventurer().getReachableTiles());
+        ts.sort((o1, o2) -> ((Tile) o1).getSite().compareTo(((Tile) o2).getSite()));
         
         int i = 1;
         Tile prevTile = null;
-        for (Tile tile : ts) {
+        for (Object o : ts) {
+            Tile tile = (Tile) o;
             System.out.println((tile.equals(prevTile) ? ANSI_RED : "") + tile.toString() + " " + i + ANSI_RESET);
             i++;
             prevTile = tile;
@@ -97,6 +102,6 @@ public class TestMove {
         System.out.println(ANSI_BLACK_BACKGROUND + " " + ANSI_RESET + " : hors map, " + ANSI_BLUE_BACKGROUND + " "
                 + ANSI_RESET + " : tile sinked," + ANSI_RED + " *" + ANSI_RESET + " : joueur courrent, " + ANSI_GREEN
                 + "*" + ANSI_RESET + " : deplacement possible, * : tile non accessible");
-        System.out.println(game.getCurrentPlayer().toString());
+        System.out.println(cPlayer.toString());
     }
 }

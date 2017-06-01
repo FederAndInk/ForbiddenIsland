@@ -1,18 +1,24 @@
+/**
+ * 
+ */
 package tests;
 
 import java.util.ArrayList;
-import java.util.Observable;
 
-import model.adventurers.Diver;
+import model.adventurers.Explorater;
+import model.adventurers.Pilot;
 import model.game.Game;
-import model.game.Island;
 import model.game.Tile;
 import model.game.TileState;
 import model.player.Player;
 
 
 
-public class Test extends Observable {
+/**
+ * @author nihil
+ *
+ */
+public class TestMove {
     public static final String ANSI_RESET             = "\u001B[0m";
     public static final String ANSI_BLACK             = "\u001B[30m";
     public static final String ANSI_RED               = "\u001B[31m";
@@ -32,13 +38,17 @@ public class Test extends Observable {
     public static final String ANSI_WHITE_BACKGROUND  = "\u001B[47m";
     
     
-    public static void main(String[] args) throws InterruptedException {
-        Island island = new Island();
+    /**
+     * @author nihil
+     *
+     * @param args
+     */
+    public static void main(String[] args) {
         Game game = new Game();
         Player p1 = new Player("p1");
         Player p2 = new Player("p2");
-        game.addPlayer(p1, new Diver(p1));
-        game.addPlayer(p2, new Diver(p2));
+        game.addPlayer(p1, new Explorater(p1));
+        game.addPlayer(p2, new Pilot(p2));
         game.initGame();
         Tile t = game.getIsland().getGrid()[2][2];
         Tile t2 = game.getIsland().getGrid()[3][4];
@@ -64,7 +74,6 @@ public class Test extends Observable {
         ArrayList<Tile> ts = game.getCurrentPlayer().getCurrentAdventurer().getReachableTiles();
         ts.sort((o1, o2) -> o1.getSite().compareTo(o2.getSite()));
         
-        // FIXME : doublon !!
         int i = 1;
         Tile prevTile = null;
         for (Tile tile : ts) {
@@ -88,6 +97,6 @@ public class Test extends Observable {
         System.out.println(ANSI_BLACK_BACKGROUND + " " + ANSI_RESET + " : hors map, " + ANSI_BLUE_BACKGROUND + " "
                 + ANSI_RESET + " : tile sinked," + ANSI_RED + " *" + ANSI_RESET + " : joueur courrent, " + ANSI_GREEN
                 + "*" + ANSI_RESET + " : deplacement possible, * : tile non accessible");
+        System.out.println(game.getCurrentPlayer().toString());
     }
-    
 }

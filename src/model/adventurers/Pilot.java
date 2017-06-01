@@ -1,7 +1,7 @@
 package model.adventurers;
 
 import java.util.ArrayList;
-import model.game.Coords;
+
 import model.game.Tile;
 import model.game.TileState;
 import model.player.Player;
@@ -18,27 +18,34 @@ public class Pilot extends Adventurer {
     }
     
     
-    public ArrayList<Tile> utilCap() {
+    public void useCapacity(Tile tile) {
+        if (helicopterLocations().contains(tile) && getActionPoints() > 0) {
+            setCurrentTile(tile);
+        } else {
+            // TODO :throw exception
+        } // end if
+    }// end useCapacity
+    
+    
+    public ArrayList<Tile> helicopterLocations() {
         
         ArrayList<Tile> reachable = new ArrayList<>();
-        Coords coords = getCurrentTile().getCoords();
         
         Tile[][] grid = getPlayer().getCurrentGame().getIsland().getGrid();
         
         if (getHeliUsed() == false) {
             for (int x = 0; x < 5; x++) {
                 for (int y = 0; y < 5; y++) {
-                    if ((grid[x][y] != null) && (grid[x][y].getState() != TileState.SINKED)) {
+                    Tile tile = grid[x][y];
+                    if (tile != null && !tile.getState().equals(TileState.SINKED) && !tile.equals(getCurrentTile())) {
                         reachable.add(grid[x][y]);
                     }
                 }
                 
             }
         }
-        
-        setHeliUsed(true);
         return reachable;
-        // **penser a changer l'etat de heliused**//
+        // TODO :penser a changer l'etat de heliused
     }
     
     

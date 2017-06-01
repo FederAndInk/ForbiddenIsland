@@ -49,6 +49,7 @@ public class Game {
      */
     public Integer addPlayer(Player p, Adventurer adventurer) throws IndexOutOfBoundsException {
         if (players.size() < MAX_PLAYER) {
+            p.setCurrentGame(this);
             p.setCurrentAdventurer(adventurer);
             players.add(p);
         } else {

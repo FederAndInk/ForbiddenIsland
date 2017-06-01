@@ -1,6 +1,7 @@
 package model.adventurers;
 
 import java.util.ArrayList;
+
 import model.game.Coords;
 import model.game.Tile;
 import model.game.TileState;
@@ -21,22 +22,17 @@ public class Explorater extends Adventurer {
         Coords coords = getCurrentTile().getCoords();
         
         Tile[][] grid = getPlayer().getCurrentGame().getIsland().getGrid();
+        Tile tileTmp;
         
-        for (int i = -1; i <= 1; i += 2) {
-            Tile tileTmp = (grid[super.getCurrentTile().getCoords().getX()][super.getCurrentTile().getCoords().getY()
-                    + i]);
-            if ((tileTmp != null) && (tileTmp.getState() != TileState.SINKED)) {
-                reachable.add(tileTmp);
-            }
-            tileTmp = (grid[super.getCurrentTile().getCoords().getX() + i][super.getCurrentTile().getCoords().getY()]);
-            if ((tileTmp != null) && (tileTmp.getState() != TileState.SINKED)) {
-                reachable.add(tileTmp);
-            }
-            tileTmp = (grid[super.getCurrentTile().getCoords().getX() + i][super.getCurrentTile().getCoords().getY()
-                    + i]);
-            if ((tileTmp != null) && (tileTmp.getState() != TileState.SINKED)) {
-                reachable.add(tileTmp);
-            }
+        for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++) {
+                if (i != 0 || j != 0) { // we do not want the current tile
+                    tileTmp = (grid[coords.getX() + i][coords.getY() + j]);
+                    if ((tileTmp != null) && (tileTmp.getState() != TileState.SINKED)) {
+                        reachable.add(tileTmp);
+                    }
+                } // end if
+            } // end for
         }
         
         return reachable;

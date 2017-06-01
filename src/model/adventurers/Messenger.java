@@ -4,9 +4,9 @@ import model.player.Player;
 
 
 
-public class Messager extends Adventurer {
+public class Messenger extends Adventurer {
     
-    public Messager(Player player) {
+    public Messenger(Player player) {
         super(player);
     }
 }

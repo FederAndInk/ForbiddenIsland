@@ -10,6 +10,18 @@ import model.player.Player;
 
 
 
+/**
+ * Can be
+ * a {@link Diver}<br>
+ * an {@link Engineer}<br>
+ * an {@link Explorater}<br>
+ * a {@link Messenger}<br>
+ * a {@link Navigator}<br>
+ * a {@link Pilot}
+ * 
+ * @author nihil
+ *
+ */
 public abstract class Adventurer {
     private static final int MAX_ACTION_POINTS = 3;
     private Player           player;
@@ -43,29 +55,30 @@ public abstract class Adventurer {
         Coords coords = getCurrentTile().getCoords();
         
         Tile[][] grid = getPlayer().getCurrentGame().getIsland().getGrid();
-        
-        for (int i = -1; i <= 1; i += 2) {
-            Tile tileTmp = (grid[currentTile.getCoords().getX()][currentTile.getCoords().getY() + i]);
+        Tile tileTmp;
+        // we will apply a sweet function to get through -1,0,1,0 and meanwhile 0,1,0,-1 (uses of modulo is awesome)
+        int j = 2;
+        for (int i = -1; i <= 2; i += 1) {
+            int effI = i % 2;
+            int effJ = j % 2;
+            System.out.println(effI + "," + effJ);
+            tileTmp = (grid[coords.getX() + effI][coords.getY() + effJ]);
             if ((tileTmp != null) && (tileTmp.getState() != TileState.SINKED)) {
                 reachable.add(tileTmp);
             }
-            tileTmp = (grid[currentTile.getCoords().getX() + i][currentTile.getCoords().getY()]);
-            if ((tileTmp != null) && (tileTmp.getState() != TileState.SINKED)) {
-                reachable.add(tileTmp);
-            }
-        }
-        
+            j--;
+        } // end for
         return reachable;
+        
     }
     
     
     /**
-     * 
-     * @param tile
+     * @see java.lang.Object#toString()
      */
-    public void isAccessible(Tile tile) {
-        // TODO - implement Adventurer.isAccessible
-        throw new UnsupportedOperationException();
+    @Override
+    public String toString() {
+        return getClass().getSimpleName();
     }
     
     

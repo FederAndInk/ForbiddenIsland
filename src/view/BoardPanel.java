@@ -7,69 +7,67 @@ import java.awt.event.ComponentListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SpringLayout;
 
+import model.game.Island;
+import model.game.Site;
 import view.testComponantPerso.CompCard;
 
 
 
+/**
+ * the panel for the board gestion
+ * you have to {@link #initGrid(ArrayList) before #setVisible(boolean)}
+ * 
+ * @author nihil
+ *
+ */
 public class BoardPanel extends JPanel {
     private JFrame parentFrame;
     SpringLayout   layout;
     JPanel         gridPane;
+    /**
+     * the board size : a value between 0 to 1 this is a portion of the GameView
+     */
+    private double boardSize;
     String         htmlNewLine = "</p><p class=\"second\">";
     
     
     public BoardPanel(JFrame parentFrame) {
         layout = new SpringLayout();
         setParentFrame(parentFrame);
-        
+        gridPane = new JPanel(new GridLayout(6, 6));
         setLayout(layout);
-        initGrid();
+        setBoardSize(0.9);
+        
         centerGrid();
     }
     
     
-    private void initGrid() {
-        gridPane = new JPanel(new GridLayout(6, 6));
+    /**
+     * @author nihil
+     *
+     * @param sites
+     * the list of tile' site in order row per row
+     * @see Island#getGrid()
+     */
+    public void initGrid(ArrayList<Site> sites) {
         add(gridPane);
-        
-        // -----------------------to add the tiles
-        File file = new File("./resources/tiles");
-        ArrayList<File> files = new ArrayList<>();
-        for (String f : file.list()) {
-            if (f.contains("png") && !f.contains("flood") && !f.contains("extra")) {
-                files.add(new File("./resources/tiles/" + f));
-                System.out.println(files.get(files.size() - 1));
-            } // end if
+        // loop for set the tiles
+        for (Site f : sites) {
+            try {
+                gridPane.add(f == null ? new JPanel() : new CompCard(new File(f.getFile()), f.getName()));
+            } catch (FontFormatException | IOException e1) {
+                e1.printStackTrace();
+            }
         } // end for
-          // alea
-        Collections.shuffle(files);
-        int imgNb = 0;
-        for (int i = 0; i < 6; i++) {
-            for (int j = 0; j < 6; j++) {
-                if (isBord(i, j)) {
-                    gridPane.add(new JPanel());
-                } else {
-                    try {
-                        gridPane.add(new CompCard(files.get(imgNb), "Breakers" + htmlNewLine + "Bridge"));
-                    } catch (FontFormatException | IOException e1) {
-                        e1.printStackTrace();
-                    }
-                    imgNb++;
-                } // end if
-            } // end for
-        } // end for
-          // --------------------------------
-        
-    }// end
+    }
     
     
-    private JPanel getThis() {
+    protected JPanel getThis() {
         return this;
     }
     
@@ -89,10 +87,12 @@ public class BoardPanel extends JPanel {
             @Override
             public void componentResized(ComponentEvent e) {
                 // for the length of grid side (with multiplier to not take the entire space)
-                int gridBord = (int) (0.90 * Integer.min(getParentFrame().getHeight(), getParentFrame().getWidth()));
+                int gridBord = (int) (getBoardSize()
+                        * Integer.min(getParentFrame().getHeight(), getParentFrame().getWidth()));
                 // to center the grid
-                int x = (getWidth() - gridBord) / 2;
-                int y = (getHeight() - gridBord) / 2;
+                int x = (int) ((getSize().getWidth() - gridBord) / 2);
+                int y = (int) ((getSize().getHeight() - gridBord) / 2);
+                
                 // gridPane.setSize(gridBord, gridBord);
                 layout.putConstraint(SpringLayout.NORTH, gridPane, y, SpringLayout.NORTH, getThis());
                 layout.putConstraint(SpringLayout.WEST, gridPane, x, SpringLayout.WEST, getThis());
@@ -157,4 +157,21 @@ public class BoardPanel extends JPanel {
         // @formatter:on
     }// end
      // isbord
+    
+    
+    /**
+     * @return the boardSize
+     */
+    public double getBoardSize() {
+        return boardSize;
+    }
+    
+    
+    /**
+     * @param boardSize
+     * the boardSize to set
+     */
+    private void setBoardSize(double boardSize) {
+        this.boardSize = boardSize;
+    }
 }

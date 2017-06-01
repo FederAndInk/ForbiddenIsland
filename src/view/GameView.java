@@ -1,27 +1,34 @@
 package view;
 
+import java.awt.BorderLayout;
+import java.util.ArrayList;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+
+import model.game.Site;
 
 
 
 public class GameView extends JFrame {
-    JPanel mainPane;
-    JPanel gamePane;
+    JPanel     mainPane;
+    BoardPanel gamePane;
     
     
     public GameView() {
-        mainPane = new JPanel();
+        mainPane = new JPanel(new BorderLayout());
         gamePane = new BoardPanel(this);
-        
-        mainPane.add(gamePane);
+        getContentPane().add(mainPane);
+        mainPane.add(gamePane, BorderLayout.CENTER);
         
     }
     
     
-    @Override
-    public void setVisible(boolean b) {
-        super.setVisible(b);
-        gamePane.setVisible(true);
+    /**
+     * @author nihil
+     *
+     */
+    public void setBoard(ArrayList<Site> board) {
+        gamePane.initGrid(board);
     }
 }

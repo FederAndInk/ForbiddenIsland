@@ -3,12 +3,7 @@
  */
 package view.testComponantPerso;
 
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Font;
-import java.awt.FontFormatException;
-import java.awt.GridLayout;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
@@ -18,12 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JPanel;
-import javax.swing.SpringLayout;
+import javax.swing.*;
 
 
 
@@ -97,16 +87,16 @@ public class TestComponent {
             }
         });
         
-        JPanel panel_1 = new JPanel();
-        mainPane.add(panel_1, BorderLayout.CENTER);
-        SpringLayout sl_panel_1 = new SpringLayout();
-        panel_1.setLayout(sl_panel_1);
+        JPanel panelSpring = new JPanel();
+        mainPane.add(panelSpring, BorderLayout.CENTER);
+        SpringLayout sl_panelSpring = new SpringLayout();
+        panelSpring.setLayout(sl_panelSpring);
         
         /**
          * in order to resize the grid when the frame is resized
          * 
          */
-        panel_1.addComponentListener(new ComponentListener() {
+        panelSpring.addComponentListener(new ComponentListener() {
             
             @Override
             public void componentShown(ComponentEvent e) {
@@ -118,13 +108,13 @@ public class TestComponent {
                 // for the length of grid side (with multiplier to not take the entire space)
                 int gridBord = (int) (0.90 * Integer.min(frame.getHeight(), frame.getWidth()));
                 // to center the grid
-                int x = (panel_1.getWidth() - gridBord) / 2;
-                int y = (panel_1.getHeight() - gridBord) / 2;
+                int x = (panelSpring.getWidth() - gridBord) / 2;
+                int y = (panelSpring.getHeight() - gridBord) / 2;
                 // panel.setSize(gridBord, gridBord);
-                sl_panel_1.putConstraint(SpringLayout.NORTH, panel, y, SpringLayout.NORTH, panel_1);
-                sl_panel_1.putConstraint(SpringLayout.WEST, panel, x, SpringLayout.WEST, panel_1);
-                sl_panel_1.putConstraint(SpringLayout.SOUTH, panel, -y, SpringLayout.SOUTH, panel_1);
-                sl_panel_1.putConstraint(SpringLayout.EAST, panel, -x, SpringLayout.EAST, panel_1);
+                sl_panelSpring.putConstraint(SpringLayout.NORTH, panel, y, SpringLayout.NORTH, panelSpring);
+                sl_panelSpring.putConstraint(SpringLayout.WEST, panel, x, SpringLayout.WEST, panelSpring);
+                sl_panelSpring.putConstraint(SpringLayout.SOUTH, panel, -y, SpringLayout.SOUTH, panelSpring);
+                sl_panelSpring.putConstraint(SpringLayout.EAST, panel, -x, SpringLayout.EAST, panelSpring);
                 e.getComponent().doLayout();
                 panel.doLayout();
             }
@@ -141,7 +131,7 @@ public class TestComponent {
         });
         
         panel = new JPanel(new GridLayout(6, 6));
-        panel_1.add(panel);
+        panelSpring.add(panel);
         
         // -----------------------to add the tiles
         File file = new File("./resources/tiles");

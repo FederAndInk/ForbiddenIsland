@@ -12,11 +12,11 @@ import util.exception.MoveException;
 
 
 public abstract class Adventurer {
-    
+    private static final int MAX_ACTION_POINTS = 3;
+    private AdventurerType   ADVENTURER_TYPE;
     private Player           player;
     private Inventory        inventory;
     private Tile             currentTile;
-    private static final int MAX_ACTION_POINTS = 3;
     private int              actionPoints;
     
     
@@ -148,4 +148,11 @@ public abstract class Adventurer {
         this.actionPoints = actionPoints;
     }
     
+    
+    /**
+     * @return the adventurerType
+     */
+    public AdventurerType getADVENTURER_TYPE() {
+        return ADVENTURER_TYPE;
+    }
 }

@@ -1,8 +1,11 @@
 package model.game;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
+import model.adventurers.AdventurerType;
 import model.player.Player;
 
 
@@ -17,6 +20,28 @@ public class Game {
     private Deck                 floodDeck;
     private Player               currentPlayer;
     private boolean              started;
+    
+    
+    /**
+     * get a random adventurer if necessary for players
+     * 
+     * @author nihil
+     */
+    private void randomAdventurer() {
+        ArrayList<AdventurerType> restAdv = new ArrayList<>(Arrays.asList(AdventurerType.values()));
+        restAdv.remove(AdventurerType.RANDOM);
+        for (Player player : players) {
+            restAdv.remove(player.getAdventurer().getADVENTURER_TYPE());
+        } // end for
+        Collections.shuffle(restAdv);
+        int i = 0;
+        for (Player player : players) {
+            if (player.getAdventurer().getADVENTURER_TYPE().equals(AdventurerType.RANDOM)) {
+                player.setCurrentAdventurer(restAdv.get(i).getClassFor(player));
+                i++;
+            } // end if
+        } // end for
+    }// end randomGame
     
     
     /**

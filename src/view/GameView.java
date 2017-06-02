@@ -19,7 +19,7 @@ public class GameView extends JFrame {
         mainPane = new JPanel(new BorderLayout());
         gamePane = new BoardPanel(this);
         getContentPane().add(mainPane);
-        mainPane.add(gamePane, BorderLayout.CENTER);
+        mainPane.add(gamePane, BorderLayout.AFTER_LAST_LINE);
         
     }
     

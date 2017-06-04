@@ -1,20 +1,34 @@
 package model.adventurers;
 
 import java.util.ArrayList;
+
 import model.game.Coords;
+import model.game.Island;
 import model.game.Tile;
 import model.game.TileState;
 import model.player.Inventory;
 import model.player.Player;
+import util.exception.InadequateUseOfCapacity;
 
 
 
+/**
+ * Can be
+ * a {@link Diver}<br>
+ * an {@link Engineer}<br>
+ * an {@link Explorater}<br>
+ * a {@link Messenger}<br>
+ * a {@link Navigator}<br>
+ * a {@link Pilot}
+ * 
+ * @author nihil
+ *
+ */
 public abstract class Adventurer {
-    
+    private static final int MAX_ACTION_POINTS = 3;
     private Player           player;
     private Inventory        inventory;
     private Tile             currentTile;
-    private static final int MAX_ACTION_POINTS = 3;
     private int              actionPoints;
     
     
@@ -29,9 +43,9 @@ public abstract class Adventurer {
         if (getActionPoints() >= 1 && getReachableTiles().contains(tile)) {
             setCurrentTile(tile);
             setActionPoints(getActionPoints() - 1);
-            System.out.println("le deplacement a été effectué");
+            System.err.println("le deplacement a été effectué");
         } else {
-            System.out.println(getActionPoints() <= 0 ? "not enough action point" : "tile note reachable");
+            System.err.println(getActionPoints() <= 0 ? "not enough action point" : "tile note reachable");
         }
         
     }
@@ -42,30 +56,55 @@ public abstract class Adventurer {
         ArrayList<Tile> reachable = new ArrayList<>();
         Coords coords = getCurrentTile().getCoords();
         
-        Tile[][] grid = getPlayer().getCurrentGame().getIsland().getGrid();
-        
-        for (int i = -1; i <= 1; i += 2) {
-            Tile tileTmp = (grid[currentTile.getCoords().getX()][currentTile.getCoords().getY() + i]);
+        Island island = getPlayer().getCurrentGame().getIsland();
+        Tile tileTmp;
+        // we will apply a sweet function to get through -1,0,1,0 and meanwhile 0,1,0,-1 (uses of modulo is awesome)
+        int j = 2;
+        int effI;
+        int effJ;
+        for (int i = -1; i <= 2; i += 1) {
+            effI = i % 2;
+            effJ = j % 2;
+            System.out.println(effI + "," + effJ);
+            tileTmp = island.getTile(coords.getX() + effI, coords.getY() + effJ);
             if ((tileTmp != null) && (tileTmp.getState() != TileState.SINKED)) {
                 reachable.add(tileTmp);
             }
-            tileTmp = (grid[currentTile.getCoords().getX() + i][currentTile.getCoords().getY()]);
-            if ((tileTmp != null) && (tileTmp.getState() != TileState.SINKED)) {
-                reachable.add(tileTmp);
-            }
-        }
-        
+            j--;
+        } // end for
         return reachable;
+        
     }
     
     
     /**
-     * 
+     * @author nihil
+     *
      * @param tile
+     * @throws InadequateUseOfCapacity
      */
-    public void isAccessible(Tile tile) {
-        // TODO - implement Adventurer.isAccessible
-        throw new UnsupportedOperationException();
+    public void useCapacity(Object o) throws InadequateUseOfCapacity {
+        throw new InadequateUseOfCapacity();
+    }// end useCapacity
+    
+    
+    /**
+     * @author nihil
+     *
+     * @return the objects where a capacity can be applied
+     * @throws InadequateUseOfCapacity
+     */
+    public ArrayList<Object> getPotentialUse() throws InadequateUseOfCapacity {
+        throw new InadequateUseOfCapacity();
+    }
+    
+    
+    /**
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return getClass().getSimpleName();
     }
     
     

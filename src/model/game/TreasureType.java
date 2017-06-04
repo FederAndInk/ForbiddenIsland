@@ -26,6 +26,6 @@ public enum TreasureType {
     
     
     public static ArrayList<TreasureType> toList() {
-        return (ArrayList<TreasureType>) Arrays.asList(values());
+        return new ArrayList<>(Arrays.asList(values()));
     }// end name
 }

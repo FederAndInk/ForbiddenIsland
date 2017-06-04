@@ -3,5 +3,13 @@ package model.game;
 public enum TileState {
     DRIED,
     FLOODED,
-    SINKED
+    SINKED;
+    
+    /**
+     * @see java.lang.Enum#toString()
+     */
+    @Override
+    public String toString() {
+        return name().toLowerCase();
+    }
 }

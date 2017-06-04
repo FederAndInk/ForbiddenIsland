@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
+import model.adventurers.Adventurer;
 import model.player.Player;
 
 
@@ -42,11 +43,18 @@ public class Game {
      * add a player to the game (4 max)
      * @param p
      * the player to add to the party
+     * @param adventurer
+     * the adventurer to set to the player
      * @return the number of players after adding they
+     * @throws IndexOutOfBoundsException
      */
-    public Integer addPlayer(Player p) {
+    public Integer addPlayer(Player p, Adventurer adventurer) throws IndexOutOfBoundsException {
         if (players.size() < MAX_PLAYER) {
+            p.setCurrentGame(this);
+            p.setCurrentAdventurer(adventurer);
             players.add(p);
+        } else {
+            throw new IndexOutOfBoundsException("Too many players");
         } // end if
         return players.size();
     }// end addPlayer

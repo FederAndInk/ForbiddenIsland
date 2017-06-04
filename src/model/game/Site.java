@@ -29,5 +29,13 @@ public enum Site {
     BREAKERS_BRIDGE,
     CLIFES_OF_ABANDON,
     HOWLING_GARDEN;
-
+    
+    /**
+     * @see java.lang.Enum#toString()
+     */
+    @Override
+    public String toString() {
+        return name().toLowerCase();
+    }
+    
 }

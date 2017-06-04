@@ -1,12 +1,18 @@
 package model.adventurers;
 
 import java.util.ArrayList;
+
 import model.game.Tile;
 import model.game.TileState;
 import model.player.Player;
 
 
 
+/**
+ * the Diver can move through the deep water when they went to move or when they have to swim
+ * 
+ * @author nihil
+ */
 public class Diver extends Adventurer {
     
     private ArrayList<Tile> getReachableTiles(Tile tile, ArrayList<Tile> tilesAlreadyRead) {

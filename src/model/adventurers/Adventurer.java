@@ -3,6 +3,7 @@ package model.adventurers;
 import java.util.ArrayList;
 
 import model.game.Coords;
+import model.game.Island;
 import model.game.Tile;
 import model.game.TileState;
 import model.player.Inventory;
@@ -42,9 +43,9 @@ public abstract class Adventurer {
         if (getActionPoints() >= 1 && getReachableTiles().contains(tile)) {
             setCurrentTile(tile);
             setActionPoints(getActionPoints() - 1);
-            System.out.println("le deplacement a été effectué");
+            System.err.println("le deplacement a été effectué");
         } else {
-            System.out.println(getActionPoints() <= 0 ? "not enough action point" : "tile note reachable");
+            System.err.println(getActionPoints() <= 0 ? "not enough action point" : "tile note reachable");
         }
         
     }
@@ -55,7 +56,7 @@ public abstract class Adventurer {
         ArrayList<Tile> reachable = new ArrayList<>();
         Coords coords = getCurrentTile().getCoords();
         
-        Tile[][] grid = getPlayer().getCurrentGame().getIsland().getGrid();
+        Island island = getPlayer().getCurrentGame().getIsland();
         Tile tileTmp;
         // we will apply a sweet function to get through -1,0,1,0 and meanwhile 0,1,0,-1 (uses of modulo is awesome)
         int j = 2;
@@ -63,7 +64,7 @@ public abstract class Adventurer {
             int effI = i % 2;
             int effJ = j % 2;
             System.out.println(effI + "," + effJ);
-            tileTmp = (grid[coords.getX() + effI][coords.getY() + effJ]);
+            tileTmp = island.getTile(coords.getX() + effI, coords.getY() + effJ);
             if ((tileTmp != null) && (tileTmp.getState() != TileState.SINKED)) {
                 reachable.add(tileTmp);
             }

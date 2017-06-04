@@ -25,10 +25,11 @@ public class Diver extends Adventurer {
         int j = 2;
         int effI;
         int effJ;
+        Tile tileTmp;
         for (int i = -1; i <= 2; i += 1) {
             effI = i % 2;
             effJ = j % 2;
-            Tile tileTmp = island.getTile(coords.getX() + effI, coords.getY() + effJ);
+            tileTmp = island.getTile(coords.getX() + effI, coords.getY() + effJ);
             if (!tilesAlreadyRead.contains(tileTmp)) { // if the tile is not already treated
                 if (tileTmp != null && !tileTmp.getState().equals(TileState.SINKED)) {
                     tilesAlreadyRead.add(tileTmp);
@@ -50,8 +51,9 @@ public class Diver extends Adventurer {
         
         reachableTiles = getReachableTiles(current, reachableTiles);
         
+        Tile tile;
         for (int i = 0; i < reachableTiles.size(); i++) {
-            Tile tile = reachableTiles.get(i);
+            tile = reachableTiles.get(i);
             if (tile.getState().equals(TileState.SINKED) || getCurrentTile().equals(tile)) {
                 reachableTiles.remove(i);
                 i--; // when a tile have been removed i must be decrement to treat all the tiles because of the list offset

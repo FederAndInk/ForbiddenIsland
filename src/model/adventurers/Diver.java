@@ -2,6 +2,8 @@ package model.adventurers;
 
 import java.util.ArrayList;
 
+import model.game.Coords;
+import model.game.Island;
 import model.game.Tile;
 import model.game.TileState;
 import model.player.Player;
@@ -17,31 +19,25 @@ public class Diver extends Adventurer {
     
     private ArrayList<Tile> getReachableTiles(Tile tile, ArrayList<Tile> tilesAlreadyRead) {
         
-        Tile grid[][] = getPlayer().getCurrentGame().getIsland().getGrid();
+        Island island = getPlayer().getCurrentGame().getIsland();
+        Coords coords = tile.getCoords();
         
-        for (int i = -1; i <= 1; i += 2) {
-            Tile tileTmp = (grid[tile.getCoords().getX()][tile.getCoords().getY() + i]);
-            if ((tileTmp != null) && (tileTmp.getState() != TileState.SINKED)) {
-                if (!tilesAlreadyRead.contains(tileTmp)) {
+        int j = 2;
+        int effI;
+        int effJ;
+        for (int i = -1; i <= 2; i += 1) {
+            effI = i % 2;
+            effJ = j % 2;
+            Tile tileTmp = island.getTile(coords.getX() + effI, coords.getY() + effJ);
+            if (!tilesAlreadyRead.contains(tileTmp)) { // if the tile is not already treated
+                if (tileTmp != null && !tileTmp.getState().equals(TileState.SINKED)) {
                     tilesAlreadyRead.add(tileTmp);
-                }
-            } else if ((tileTmp != null) && (tileTmp.getState() == TileState.SINKED)) {
-                if (!tilesAlreadyRead.contains(tileTmp)) {
-                    tilesAlreadyRead.add(tileTmp);
-                    getReachableTiles(tileTmp, tilesAlreadyRead);
-                }
-            }
-            tileTmp = (grid[tile.getCoords().getX() + i][tile.getCoords().getY()]);
-            if ((tileTmp != null) && (tileTmp.getState() != TileState.SINKED)) {
-                if (!tilesAlreadyRead.contains(tileTmp)) {
-                    tilesAlreadyRead.add(tileTmp);
-                }
-            } else if ((tileTmp != null) && (tileTmp.getState() == TileState.SINKED)) {
-                if (!tilesAlreadyRead.contains(tileTmp)) {
+                } else if (tileTmp != null && tileTmp.getState().equals(TileState.SINKED)) {
                     tilesAlreadyRead.add(tileTmp);
                     getReachableTiles(tileTmp, tilesAlreadyRead);
                 }
             }
+            j--;
         }
         return tilesAlreadyRead;
     }
@@ -54,9 +50,11 @@ public class Diver extends Adventurer {
         
         reachableTiles = getReachableTiles(current, reachableTiles);
         
-        for (Tile tile : reachableTiles) {
-            if ((tile.getState() == TileState.SINKED) && (getCurrentTile() == tile)) {
-                reachableTiles.remove(tile);
+        for (int i = 0; i < reachableTiles.size(); i++) {
+            Tile tile = reachableTiles.get(i);
+            if (tile.getState().equals(TileState.SINKED) || getCurrentTile().equals(tile)) {
+                reachableTiles.remove(i);
+                i--; // when a tile have been removed i must be decrement to treat all the tiles because of the list offset
             }
         }
         

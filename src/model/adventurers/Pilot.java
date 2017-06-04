@@ -2,12 +2,19 @@ package model.adventurers;
 
 import java.util.ArrayList;
 
+import model.game.Island;
 import model.game.Tile;
 import model.game.TileState;
 import model.player.Player;
 
 
 
+/**
+ * the pilot can use their helicopter one time per turn for one action
+ * 
+ * @author nihil
+ *
+ */
 public class Pilot extends Adventurer {
     
     private Boolean heliUsed;
@@ -25,6 +32,7 @@ public class Pilot extends Adventurer {
             Tile tile = (Tile) o;
             if (getPotentialUse().contains(tile) && getActionPoints() > 0) {
                 setCurrentTile(tile);
+                setActionPoints(getActionPoints() - 1);
             } else {
                 // TODO :throw exception
             } // end if
@@ -45,14 +53,15 @@ public class Pilot extends Adventurer {
         
         ArrayList<Object> reachable = new ArrayList<>();
         
-        Tile[][] grid = getPlayer().getCurrentGame().getIsland().getGrid();
+        Island island = getPlayer().getCurrentGame().getIsland();
         
-        if (getHeliUsed() == false) {
+        if (isHeliUsed()) {
+            Tile tile;
             for (int x = 0; x <= 5; x++) {
                 for (int y = 0; y <= 5; y++) {
-                    Tile tile = grid[x][y];
+                    tile = island.getTile(x, y);
                     if (tile != null && !tile.getState().equals(TileState.SINKED) && !tile.equals(getCurrentTile())) {
-                        reachable.add(grid[x][y]);
+                        reachable.add(island.getTile(x, y));
                     }
                 }
                 
@@ -66,7 +75,7 @@ public class Pilot extends Adventurer {
     /**
      * @return the heliUsed
      */
-    public Boolean getHeliUsed() {
+    public Boolean isHeliUsed() {
         return heliUsed;
     }
     

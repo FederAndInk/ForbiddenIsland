@@ -60,9 +60,11 @@ public abstract class Adventurer {
         Tile tileTmp;
         // we will apply a sweet function to get through -1,0,1,0 and meanwhile 0,1,0,-1 (uses of modulo is awesome)
         int j = 2;
+        int effI;
+        int effJ;
         for (int i = -1; i <= 2; i += 1) {
-            int effI = i % 2;
-            int effJ = j % 2;
+            effI = i % 2;
+            effJ = j % 2;
             System.out.println(effI + "," + effJ);
             tileTmp = island.getTile(coords.getX() + effI, coords.getY() + effJ);
             if ((tileTmp != null) && (tileTmp.getState() != TileState.SINKED)) {

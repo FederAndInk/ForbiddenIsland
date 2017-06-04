@@ -62,13 +62,14 @@ public class Test extends Observable {
         p2.getCurrentAdventurer().setCurrentTile(t2);
         System.out.println(game.getCurrentPlayer().getName());
         ArrayList<Tile> ts = game.getCurrentPlayer().getCurrentAdventurer().getReachableTiles();
-        ts.sort((o1, o2) -> o1.getSite().compareTo(o2.getSite()));
+        ts.sort((o1, o2) -> o1.getSite().toString().compareTo(o2.getSite().toString()));
         
         // FIXME : doublon !!
         int i = 1;
         Tile prevTile = null;
         for (Tile tile : ts) {
-            System.out.println((tile.equals(prevTile) ? ANSI_RED : "") + tile.toString() + " " + i + ANSI_RESET);
+            System.out.println((tile.equals(prevTile) ? ANSI_RED : tile.getState() == TileState.SINKED ? ANSI_BLUE : "")
+                    + tile.toString() + " " + i + ANSI_RESET);
             i++;
             prevTile = tile;
         } // end for

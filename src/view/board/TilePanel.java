@@ -3,10 +3,11 @@
  */
 package view.board;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontFormatException;
 import java.awt.Graphics;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -18,6 +19,7 @@ import javax.swing.border.Border;
 
 import model.game.Site;
 import model.game.TileState;
+import util.Parameters;
 
 
 
@@ -29,12 +31,11 @@ public class TilePanel extends JPanel {
     private TileState state;
     private Site      site;
     
-    private static final float  TEXT_SIZE           = (float) 0.16;
-    private static final Color  COLOR_BORD          = new Color(24, 214, 28);
-    private static final Border ACTIVE_BORDER_HOVER = BorderFactory.createLineBorder(Color.GREEN, 4, false);
-    private static final Border ACTIVE_BORDER_EXIT  = BorderFactory.createLineBorder(COLOR_BORD, 3, false);
-    private static final Border INACTIVE_BORDER     = BorderFactory.createLineBorder(Color.DARK_GRAY, 2, false);
-    private Font                font;
+    private TextTile text;
+    
+    private static final Border ACTIVE_BORDER_HOVER = BorderFactory.createLineBorder(Color.GREEN, 4, true);
+    private static final Border ACTIVE_BORDER_EXIT  = BorderFactory.createLineBorder(new Color(24, 154, 28), 3, true);
+    private static final Border INACTIVE_BORDER     = BorderFactory.createLineBorder(Color.DARK_GRAY, 2, true);
     
     
     /**
@@ -42,8 +43,11 @@ public class TilePanel extends JPanel {
      *
      */
     public TilePanel(Site site) {
+        super(new BorderLayout());
         this.site = site;
+        
         init();
+        initListeners();
     }
     
     
@@ -52,13 +56,11 @@ public class TilePanel extends JPanel {
      *
      */
     private void init() {
-        setState(TileState.DRIED);
+        text = new TextTile(site.getNameStyle());
         
-        try {
-            font = Font.createFont(Font.TRUETYPE_FONT, new File("./resources/Treamd.ttf"));
-        } catch (FontFormatException | IOException e) {
-            e.printStackTrace();
-        }
+        setEnabled(false);
+        setState(TileState.DRIED);
+        add(text, BorderLayout.SOUTH);
     }
     
     
@@ -67,7 +69,9 @@ public class TilePanel extends JPanel {
      */
     @Override
     protected void paintComponent(Graphics g) {
-        initBackground(g);
+        super.paintComponent(g);
+        Parameters.printLog("paint Tile " + site);
+        paintBackground(g);
     }
     
     
@@ -76,13 +80,58 @@ public class TilePanel extends JPanel {
      * @param g
      *
      */
-    private void initBackground(Graphics g) {
+    private void paintBackground(Graphics g) {
         try {
             BufferedImage bi = ImageIO.read(new File(site.getFile(state)));
-            g.drawImage(bi, 2, 2, (int) getSize().getWidth(), (int) getSize().getHeight(), this);
+            if (site.isDoubleLigned()) {
+                Parameters.printLog("Draw double ligned image");
+                g.drawImage(bi, 2, 2, (int) getSize().getWidth(), (int) (getSize().getHeight() * 0.9), this);
+            } else {
+                g.drawImage(bi, 2, 2, (int) getSize().getWidth(), (int) getSize().getHeight(), this);
+            } // end if
         } catch (IOException e1) {
             e1.printStackTrace();
         }
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     */
+    private void initListeners() {
+        addMouseListener(new MouseListener() {
+            
+            @Override
+            public void mouseReleased(MouseEvent e) {
+            }
+            
+            
+            @Override
+            public void mousePressed(MouseEvent e) {
+            }
+            
+            
+            @Override
+            public void mouseExited(MouseEvent e) {
+                if (isEnabled()) {
+                    setBorder(ACTIVE_BORDER_EXIT);
+                } // end if
+            }
+            
+            
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                if (isEnabled()) {
+                    setBorder(ACTIVE_BORDER_HOVER);
+                } // end if
+            }
+            
+            
+            @Override
+            public void mouseClicked(MouseEvent e) {
+            }
+        });
     }
     
     

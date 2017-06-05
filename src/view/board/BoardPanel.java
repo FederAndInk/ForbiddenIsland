@@ -1,5 +1,6 @@
 package view.board;
 
+import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
@@ -11,6 +12,7 @@ import javax.swing.SpringLayout;
 
 import model.game.Island;
 import model.game.Site;
+import util.Parameters;
 
 
 
@@ -29,17 +31,27 @@ public class BoardPanel extends JPanel {
      * the board size : a value between 0 to 1 this is a portion of the GameView
      */
     private double boardSize;
-    String         htmlNewLine = "</p><p class=\"second\">";
     
     
     public BoardPanel(JFrame parentFrame) {
+        super();
         layout = new SpringLayout();
+        gridPane = new JPanel(new GridLayout(6, 6, 2, 2));
         setParentFrame(parentFrame);
-        gridPane = new JPanel(new GridLayout(6, 6));
         setLayout(layout);
         setBoardSize(0.9);
         
-        centerGrid();
+        initListeners();
+    }
+    
+    
+    /**
+     * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
+     */
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        Parameters.printLog("paint Board");
     }
     
     
@@ -54,6 +66,7 @@ public class BoardPanel extends JPanel {
         add(gridPane);
         // loop for set the tiles
         for (Site f : sites) {
+            Parameters.printLog("add " + (f == null ? "empty tile" : f.getName()) + " to board");
             gridPane.add(f == null ? new JPanel() : new TilePanel(f));
         } // end for
     }
@@ -64,7 +77,7 @@ public class BoardPanel extends JPanel {
     }
     
     
-    private void centerGrid() {
+    private void initListeners() {
         /**
          * in order to resize the grid when the frame is resized
          * 
@@ -78,6 +91,8 @@ public class BoardPanel extends JPanel {
             
             @Override
             public void componentResized(ComponentEvent e) {
+                Parameters.printLog("Componant " + getThis().getClass().getName() + " is resizing");
+                
                 // for the length of grid side (with multiplier to not take the entire space)
                 int gridBord = (int) (getBoardSize()
                         * Integer.min(getParentFrame().getHeight(), getParentFrame().getWidth()));
@@ -91,8 +106,6 @@ public class BoardPanel extends JPanel {
                 layout.putConstraint(SpringLayout.SOUTH, gridPane, -y, SpringLayout.SOUTH, getThis());
                 layout.putConstraint(SpringLayout.EAST, gridPane, -x, SpringLayout.EAST, getThis());
                 e.getComponent().doLayout();
-                gridPane.doLayout();
-                
             }
             
             

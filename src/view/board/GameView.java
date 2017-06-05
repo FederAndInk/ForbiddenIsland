@@ -18,6 +18,7 @@ public class GameView extends JFrame {
     
     
     public GameView() {
+        super();
         mainPane = new JPanel(new BorderLayout());
         gamePane = new BoardPanel(this);
         getContentPane().add(mainPane);
@@ -32,8 +33,10 @@ public class GameView extends JFrame {
      *
      */
     public void setScreen() {
+        setSize(Parameters.appSize);
         if (Parameters.fullscreen) {
             setUndecorated(true);
+            setExtendedState(MAXIMIZED_BOTH);
             GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().setFullScreenWindow(this);
         } else {
             setUndecorated(false);

@@ -31,7 +31,7 @@ public enum Site {
     HOWLING_GARDEN("Howling Garden");
     private String              name;
     private static final String HTML_NEW_LINE = "</p><p class=\"second\">";
-    private static final String HTML_STYLE    = "<style>body{margin: auto;text-align: center;} p.second{margin-top:-6;margin-bottom: -2}</style>";
+    private static final String HTML_STYLE    = "<style>body{margin: auto;text-align: center;} p.second{margin-top:-5,margin-bottom:-2}</style>";
     private static final String HTML_BEG      = "<html><head>" + HTML_STYLE + "</head><body><p>";
     private static final String HTML_END      = "</p></body></html>";
     
@@ -70,6 +70,15 @@ public enum Site {
             return ("./resources/tiles/extra/Tile_Flood_Water@2x.png");
         
         }// end switch
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     */
+    public boolean isDoubleLigned() {
+        return name.contains(getHtmlNewLine());
     }
     
     

@@ -1,11 +1,8 @@
-package view;
+package view.board;
 
-import java.awt.FontFormatException;
 import java.awt.GridLayout;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
@@ -14,7 +11,6 @@ import javax.swing.SpringLayout;
 
 import model.game.Island;
 import model.game.Site;
-import view.testComponantPerso.CompCard;
 
 
 
@@ -58,11 +54,7 @@ public class BoardPanel extends JPanel {
         add(gridPane);
         // loop for set the tiles
         for (Site f : sites) {
-            try {
-                gridPane.add(f == null ? new JPanel() : new CompCard(new File(f.getFile()), f.getName()));
-            } catch (FontFormatException | IOException e1) {
-                e1.printStackTrace();
-            }
+            gridPane.add(f == null ? new JPanel() : new TilePanel(f));
         } // end for
     }
     
@@ -128,35 +120,6 @@ public class BoardPanel extends JPanel {
     void setParentFrame(JFrame parentFrame) {
         this.parentFrame = parentFrame;
     }
-    
-    
-    /**
-     * **––**</br>
-     * *––––*</br>
-     * ––––––</br>
-     * *––––*</br>
-     * **––**</br>
-     * 
-     * @author nihil
-     * 
-     * 
-     * 
-     * @param i
-     * (0-5)
-     * the row
-     * @param j
-     * (0-5)
-     * the column
-     * @return true if i,j is in the corner (where the star is)
-     */
-    public static boolean isBord(int i, int j) {
-        // @formatter:off
-        return (i == 0) && (j == 0 || j == 1) || (i == 1 && j == 0) || (i == 5) && (j == 0 || j == 1)
-                || (i == 4 && j == 0) || (i == 0) && (j == 4 || j == 5) || (i == 1 && j == 5)
-                || (i == 5) && (j == 4 || j == 5) || (i == 4 && j == 5);
-        // @formatter:on
-    }// end
-     // isbord
     
     
     /**

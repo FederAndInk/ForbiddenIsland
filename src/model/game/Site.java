@@ -30,7 +30,10 @@ public enum Site {
     CLIFFS_OF_ABANDON("Cliffs of" + Site.getHtmlNewLine() + "Abandon"),
     HOWLING_GARDEN("Howling Garden");
     private String              name;
-    private static final String htmlNewLine = "</p><p class=\"second\">";
+    private static final String HTML_NEW_LINE = "</p><p class=\"second\">";
+    private static final String HTML_STYLE    = "<style>body{margin: auto;text-align: center;} p.second{margin-top:-6;margin-bottom: -2}</style>";
+    private static final String HTML_BEG      = "<html><head>" + HTML_STYLE + "</head><body><p>";
+    private static final String HTML_END      = "</p></body></html>";
     
     
     Site(String name) {
@@ -43,8 +46,30 @@ public enum Site {
     }// end getName
     
     
-    public String getFile() {
-        return ("./resources/tiles/" + name.replace(htmlNewLine, " ") + "@2x.png");
+    /**
+     * @author nihil
+     *
+     */
+    public String getNameStyle() {
+        return HTML_BEG + name + HTML_END;
+    }
+    
+    
+    public String getFile(TileState state) {
+        switch (state) {
+        case DRIED:
+            return ("./resources/tiles/" + name.replace(HTML_NEW_LINE, " ") + "@2x.png");
+        
+        case FLOODED:
+            return ("./resources/tiles/" + name.replace(HTML_NEW_LINE, " ") + "_flood@2x.png");
+        
+        case SINKED:
+            return ("./resources/tiles/extra/Tile_Flood_Water@2x.png");
+        
+        default:
+            return ("./resources/tiles/extra/Tile_Flood_Water@2x.png");
+        
+        }// end switch
     }
     
     
@@ -52,6 +77,6 @@ public enum Site {
      * @return the htmlNewLine
      */
     public static String getHtmlNewLine() {
-        return htmlNewLine;
+        return HTML_NEW_LINE;
     }
 }

@@ -15,9 +15,9 @@ import model.player.Player;
  * 
  * @author nihil
  */
-public class Explorater extends Adventurer {
+public class Explorer extends Adventurer {
     
-    public Explorater(Player player) {
+    public Explorer(Player player) {
         super(player);
     }
     

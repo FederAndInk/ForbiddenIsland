@@ -64,6 +64,7 @@ public class GameController {
     public void update(Observable arg0, Object arg1) {
         if (arg1 instanceof InGameAction) {
             InGameMessage m = (InGameMessage) arg1;
+            
             switch ((InGameAction) m.getType()) {
             case MOVE:
                 // TODO : is the UI have to send the coord, the tile, the int of coord ?
@@ -83,9 +84,6 @@ public class GameController {
                 
                 break;
             case USE_CARD:
-                
-                break;
-            case SWIM:
                 
                 break;
             case INTERRUPT:

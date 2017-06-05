@@ -7,6 +7,7 @@ import java.util.Collections;
 
 import model.adventurers.AdventurerType;
 import model.player.Player;
+import util.message.InGameAction;
 
 
 
@@ -20,6 +21,8 @@ public class Game {
     private Deck                 floodDeck;
     private Player               currentPlayer;
     private boolean              started;
+    
+    private InGameAction currentAction;
     
     
     /**
@@ -42,6 +45,14 @@ public class Game {
             } // end if
         } // end for
     }// end randomGame
+    
+    
+    /**
+     * @return the possibleActions
+     */
+    public ArrayList<InGameAction> getPossibleActions() {
+        
+    }
     
     
     /**

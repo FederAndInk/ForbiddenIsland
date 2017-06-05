@@ -2,6 +2,7 @@ package util.message;
 
 import model.card.CardType;
 import model.game.Coords;
+import model.player.Pawn;
 import model.player.Player;
 
 
@@ -16,6 +17,14 @@ import model.player.Player;
  *
  */
 public enum InGameAction {
+    /**
+     * @give a {@link Coords}
+     */
+    SELECT_TILE,
+    /**
+     * @give a {@link Pawn}
+     */
+    SELECT_PAWN,
     /**
      * @give nothing to get the reachable tiles(to support the basic IHM)
      * @give a {@link Coords} of where the player want to go (x,y) in 0..5

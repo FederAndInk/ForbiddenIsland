@@ -5,12 +5,15 @@ public class Coords {
     private Integer y;
     
     
+<<<<<<< HEAD
     public Coords(Integer x, Integer y) {
         this.x = x;
         this.y = y;
     }
     
     
+=======
+>>>>>>> feature/controller
     /**
      * @return the x
      */
@@ -19,11 +22,33 @@ public class Coords {
     }
     
     
+<<<<<<< HEAD
+    /**
+     * @param x
+     * the x to set
+     */
+    public void setX(Integer x) {
+        this.x = x;
+    }
+    
+    
+=======
+>>>>>>> feature/controller
     /**
      * @return the y
      */
     public Integer getY() {
         return y;
+    }
+<<<<<<< HEAD
+    
+    
+    /**
+     * @param y
+     * the y to set
+     */
+    public void setY(Integer y) {
+        this.y = y;
     }
     
     
@@ -31,4 +56,7 @@ public class Coords {
     public String toString() {
         return "(" + getX() + "," + getY() + ")";
     }
+=======
+>>>>>>> feature/controller
+    
 }

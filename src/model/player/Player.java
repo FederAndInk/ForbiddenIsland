@@ -1,6 +1,7 @@
 package model.player;
 
 import java.util.Collection;
+
 import model.adventurers.Adventurer;
 import model.game.Game;
 import util.GameInfo;
@@ -8,7 +9,6 @@ import util.GameInfo;
 
 
 public class Player {
-    
     private Game                 currentGame;
     private Collection<GameInfo> gamesStat;
     private Adventurer           currentAdventurer;
@@ -17,12 +17,6 @@ public class Player {
     
     public Player(String name) {
         setName(name);
-    }
-    
-    
-    public Adventurer getAdventurer() {
-        // TODO - implement Player.getAdventurer
-        throw new UnsupportedOperationException();
     }
     
     
@@ -51,13 +45,9 @@ public class Player {
     }
     
     
-    /**
-     * @param gamesStat
-     * the gamesStat to set
-     */
-    public void setGamesStat(Collection<GameInfo> gamesStat) {
-        this.gamesStat = gamesStat;
-    }
+    public void addGameStat(GameInfo gameStat) {
+        gamesStat.add(gameStat);
+    }// end addGameStat
     
     
     /**
@@ -89,8 +79,17 @@ public class Player {
      * @param name
      * the name to set
      */
-    public void setName(String name) {
+    private void setName(String name) {
         this.name = name;
+    }
+    
+    
+    /**
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return name + " play " + getCurrentAdventurer();
     }
     
 }

@@ -54,4 +54,16 @@ public class Island {
         this.grid = grid;
     }
     
+    
+    /**
+     * @author nihil
+     *
+     * @param i
+     * @param j
+     * @return
+     */
+    public Tile getTile(int i, int j) {
+        return grid[i][j];
+    }
+    
 }

@@ -10,6 +10,7 @@ import util.Parameters;
 
 
 
+
 /**
  * @author nihil
  *
@@ -52,8 +53,6 @@ public enum AdventurerType {
     }
     
     
-    /**
-     * @author nihil
      *
      * @param p
      * @return an instance of a type adventurer class

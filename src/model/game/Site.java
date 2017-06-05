@@ -104,4 +104,12 @@ public enum Site {
     public static String getHtmlNewLine() {
         return HTML_NEW_LINE;
     }
+  
+    /**
+     * @see java.lang.Enum#toString()
+     */
+    @Override
+    public String toString() {
+        return name().toLowerCase();
+    }
 }

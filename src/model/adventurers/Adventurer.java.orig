@@ -8,10 +8,11 @@ import model.game.Tile;
 import model.game.TileState;
 import model.player.Inventory;
 import model.player.Player;
-import util.Parameters;
+<<<<<<< HEAD
 import util.exception.InadequateUseOfCapacity;
+=======
 import util.exception.MoveException;
-import util.message.InGameAction;
+>>>>>>> feature/controller
 
 
 
@@ -29,7 +30,10 @@ import util.message.InGameAction;
  */
 public abstract class Adventurer {
     private static final int MAX_ACTION_POINTS = 3;
+<<<<<<< HEAD
+=======
     private AdventurerType   ADVENTURER_TYPE;
+>>>>>>> feature/controller
     private Player           player;
     private Inventory        inventory;
     private Tile             currentTile;
@@ -39,7 +43,6 @@ public abstract class Adventurer {
     public Adventurer(Player player) {
         setActionPoints(MAX_ACTION_POINTS);
         setPlayer(player);
-        player.setCurrentAdventurer(this);
         setInventory(new Inventory());
     }
     
@@ -56,13 +59,17 @@ public abstract class Adventurer {
         if (getActionPoints() >= 1 && getReachableTiles().contains(tile)) {
             setCurrentTile(tile);
             setActionPoints(getActionPoints() - 1);
-            Parameters.printLog("le deplacement a été effectué");
+            System.err.println("le deplacement a été effectué");
         } else {
+<<<<<<< HEAD
+            System.err.println(getActionPoints() <= 0 ? "not enough action point" : "tile note reachable");
+=======
             if (getActionPoints() <= 0) {
                 throw new MoveException(tile);
             } else {
                 throw new MoveException(getActionPoints());
             } // end if
+>>>>>>> feature/controller
         }
         
     }
@@ -73,6 +80,7 @@ public abstract class Adventurer {
         ArrayList<Tile> reachable = new ArrayList<>();
         Coords coords = getCurrentTile().getCoords();
         
+<<<<<<< HEAD
         Island island = getPlayer().getCurrentGame().getIsland();
         Tile tileTmp;
         // we will apply a sweet function to get through -1,0,1,0 and meanwhile 0,1,0,-1 (uses of modulo is awesome)
@@ -89,12 +97,28 @@ public abstract class Adventurer {
             }
             j--;
         } // end for
+=======
+        Tile[][] grid = getPlayer().getCurrentGame().getIsland().getGrid();
+        
+        for (int i = -1; i <= 1; i += 2) {
+            Tile tileTmp = (grid[coords.getX()][coords.getY() + i]);
+            if ((tileTmp != null) && (tileTmp.getState() != TileState.SINKED)) {
+                reachable.add(tileTmp);
+            }
+            tileTmp = (grid[coords.getX() + i][coords.getY()]);
+            if ((tileTmp != null) && (tileTmp.getState() != TileState.SINKED)) {
+                reachable.add(tileTmp);
+            }
+        }
+        
+>>>>>>> feature/controller
         return reachable;
         
     }
     
     
     /**
+<<<<<<< HEAD
      * @author nihil
      *
      * @param tile
@@ -117,15 +141,6 @@ public abstract class Adventurer {
     
     
     /**
-     * @author nihil
-     *
-     */
-    public void endTurn() {
-        setActionPoints(MAX_ACTION_POINTS);
-    }
-    
-    
-    /**
      * @see java.lang.Object#toString()
      */
     @Override
@@ -135,6 +150,8 @@ public abstract class Adventurer {
     
     
     /**
+=======
+>>>>>>> feature/controller
      * @return the player
      */
     public Player getPlayer() {
@@ -215,23 +232,5 @@ public abstract class Adventurer {
      */
     public AdventurerType getADVENTURER_TYPE() {
         return ADVENTURER_TYPE;
-    }
-    
-    
-    /**
-     * @author nihil
-     *
-     * @return
-     */
-    public ArrayList<InGameAction> getPossibleActions() {
-        ArrayList<InGameAction> list = new ArrayList<>();
-        if (getActionPoints() > 0) {
-            list.add(InGameAction.GET_TREASURE);
-            list.add(InGameAction.GIVE_CARD);
-            list.add(InGameAction.MOVE);
-            list.add(InGameAction.SHORE_UP_TILE);
-        } // end if
-        list.add(InGameAction.USE_CARD);
-        return null;
     }
 }

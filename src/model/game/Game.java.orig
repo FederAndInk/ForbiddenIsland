@@ -1,9 +1,18 @@
 package model.game;
 
-import java.util.*;
+import java.util.ArrayList;
+<<<<<<< HEAD
+import java.util.Collection;
+import java.util.Collections;
 
 import model.adventurers.Adventurer;
+=======
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+
 import model.adventurers.AdventurerType;
+>>>>>>> feature/controller
 import model.player.Player;
 import util.message.InGameAction;
 
@@ -11,16 +20,14 @@ import util.message.InGameAction;
 
 public class Game {
     private final static Integer MAX_PLAYER = 4;
-    private final static Integer MIN_PLAYER = 2;
+<<<<<<< HEAD
     private ArrayList<Treasure>  treasures;
     private Island               island;
-    private LinkedList<Player>   players;
-    private Deck                 treasureDeck;
-    private Deck                 floodDeck;
+    private ArrayList<Player>    players;
+    private TreasureDeck         treasureDeck;
+    private FloodDeck            floodDeck;
     private Player               currentPlayer;
     private boolean              started;
-    
-    private InGameAction currentAction;
     
     
     public Game() {
@@ -28,30 +35,20 @@ public class Game {
         island = new Island();
         treasureDeck = new TreasureDeck();
         floodDeck = new FloodDeck();
-        players = new LinkedList<>();
+        players = new ArrayList<>();
         treasures = new ArrayList<>();
     }
     
     
-    /**
-     * to call when you want to start the game
-     * 
-     * @author nihil
-     */
     public void initGame() {
-        if (players.size() < 2) {
-            throw new IndexOutOfBoundsException("Too few players");
-        } // end if
         initTreasure();
         Collections.shuffle(players);
-        setCurrentPlayer(players.get(0));
-        setCurrentAction(InGameAction.MOVE);
+        currentPlayer = players.get(0);
         started = true;
     }// end name
     
     
     /**
-     * 
      * @author nihil
      * add a player to the game (4 max)
      * @param p
@@ -68,31 +65,9 @@ public class Game {
             players.add(p);
         } else {
             throw new IndexOutOfBoundsException("Too many players");
-        }
+        } // end if
         return players.size();
-    }// end
-    
-    
-    /**
-     * get a random adventurer if necessary for players
-     * 
-     * @author nihil
-     */
-    private void randomAdventurer() {
-        ArrayList<AdventurerType> restAdv = new ArrayList<>(Arrays.asList(AdventurerType.values()));
-        restAdv.remove(AdventurerType.RANDOM);
-        for (Player player : players) {
-            restAdv.remove(player.getCurrentAdventurer().getADVENTURER_TYPE());
-        } // end for
-        Collections.shuffle(restAdv);
-        int i = 0;
-        for (Player player : players) {
-            if (player.getCurrentAdventurer().getADVENTURER_TYPE().equals(AdventurerType.RANDOM)) {
-                player.setCurrentAdventurer(restAdv.get(i).getClassFor(player));
-                i++;
-            } // end if
-        } // end for
-    }// end randomGame
+    }// end addPlayer
     
     
     /**
@@ -108,34 +83,73 @@ public class Game {
     }// end initTreasure
     
     
-    /**
-     * @return the possibleActions
-     */
-    public ArrayList<InGameAction> getPossibleActions() {
-        ArrayList<InGameAction> list = new ArrayList<>();
-        list.addAll(currentPlayer.getCurrentAdventurer().getPossibleActions());
-        
-        return list;
-    }
-    
-    
-    /**
-     * @author nihil
-     *
-     */
-    public void endTurn() {
-        getCurrentPlayer().getCurrentAdventurer().endTurn();
-        
-        int indLastP = getPlayers().indexOf(getCurrentPlayer());
-        setCurrentPlayer(getPlayers().get((indLastP + 1) % 4));
-        
-        setCurrentAction(InGameAction.MOVE);
+    public Player getCurrentPlayer() {
+        return this.currentPlayer;
     }
     
     
     public boolean isStarted() {
         return started;
     }
+    
+    
+=======
+    private final static Integer MIN_PLAYER = 2;
+    private ArrayList<Treasure>  treasures;
+    private Island               island;
+    private Collection<Player>   players;
+    private Deck                 treasureDeck;
+    private Deck                 floodDeck;
+    private Player               currentPlayer;
+    private boolean              started;
+    
+    private InGameAction currentAction;
+    
+    
+    /**
+     * get a random adventurer if necessary for players
+     * 
+     * @author nihil
+     */
+    private void randomAdventurer() {
+        ArrayList<AdventurerType> restAdv = new ArrayList<>(Arrays.asList(AdventurerType.values()));
+        restAdv.remove(AdventurerType.RANDOM);
+        for (Player player : players) {
+            restAdv.remove(player.getAdventurer().getADVENTURER_TYPE());
+        } // end for
+        Collections.shuffle(restAdv);
+        int i = 0;
+        for (Player player : players) {
+            if (player.getAdventurer().getADVENTURER_TYPE().equals(AdventurerType.RANDOM)) {
+                player.setCurrentAdventurer(restAdv.get(i).getClassFor(player));
+                i++;
+            } // end if
+        } // end for
+    }// end randomGame
+    
+    
+    /**
+     * @return the possibleActions
+     */
+    public ArrayList<InGameAction> getPossibleActions() {
+        
+    }
+    
+    
+    /**
+     * @author nihil
+     * add a player to the game (4 max)
+     * @param p
+     * the player to add to the party
+     * @return the number of players after adding they
+     */
+    public Integer addPlayer(Player p) {
+        if (players.size() < MAX_PLAYER) {
+            players.add(p);
+        } // end if
+        return players.size();
+    }// end addPlayer
+     // FIXME : add min check
     
     
     /**
@@ -146,9 +160,43 @@ public class Game {
     }
     
     
+>>>>>>> feature/controller
+    /**
+     * <p>
+     * then, there is no more treasures in game
+     * </p>
+     * 
+     * @author nihil
+     *
+     * @return true if the players get all the treasures
+     */
+<<<<<<< HEAD
+    private boolean isTreasureAllInveked() {
+        return treasures.isEmpty();
+    }
+    
+    
+    /**
+     * @return the treasures
+     */
+    public Collection<Treasure> getTreasures() {
+        return treasures;
+=======
+    public Island getIsland() {
+        return island;
+    }
+    
+    
+    private void setIsland(Island island) {
+        this.island = island;
+>>>>>>> feature/controller
+    }
+    
+    
     /**
      * @return the island
      */
+<<<<<<< HEAD
     public Island getIsland() {
         return island;
     }
@@ -157,13 +205,17 @@ public class Game {
     /**
      * @return the players
      */
-    public LinkedList<Player> getPlayers() {
+    public Collection<Player> getPlayers() {
+        return players;
+=======
+    public Collection<Player> getPlayers() {
         return players;
     }
     
     
     public Player getCurrentPlayer() {
         return this.currentPlayer;
+>>>>>>> feature/controller
     }
     
     
@@ -172,6 +224,14 @@ public class Game {
      */
     public Deck getTreasureDeck() {
         return treasureDeck;
+<<<<<<< HEAD
+=======
+    }
+    
+    
+    public boolean isStarted() {
+        return started;
+>>>>>>> feature/controller
     }
     
     
@@ -180,6 +240,8 @@ public class Game {
      */
     public Deck getFloodDeck() {
         return floodDeck;
+<<<<<<< HEAD
+=======
     }
     
     
@@ -194,6 +256,7 @@ public class Game {
      */
     private boolean isTreasureAllInvoked() {
         return treasures.isEmpty();
+>>>>>>> feature/controller
     }
     
     
@@ -203,22 +266,5 @@ public class Game {
      */
     private void setCurrentPlayer(Player currentPlayer) {
         this.currentPlayer = currentPlayer;
-    }
-    
-    
-    /**
-     * @return the currentAction
-     */
-    public InGameAction getCurrentAction() {
-        return currentAction;
-    }
-    
-    
-    /**
-     * @param currentAction
-     * the currentAction to set
-     */
-    private void setCurrentAction(InGameAction currentAction) {
-        this.currentAction = currentAction;
     }
 }

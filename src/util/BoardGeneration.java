@@ -51,7 +51,7 @@ public class BoardGeneration {
                 if (isBord(i, j)) {
                     tiles[i][j] = null;
                 } else {
-                    tiles[i][j] = new Tile(new Coords(), l.remove(l.size() - 1));
+                    tiles[i][j] = new Tile(new Coords(i, j), l.remove(l.size() - 1));
                 } // end if
             }
         }

@@ -16,6 +16,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 
+import model.game.TileState;
 import util.Parameters;
 
 
@@ -25,8 +26,12 @@ import util.Parameters;
  *
  */
 public class TextTile extends JLabel {
-    private static final String LABEL_ICON = Parameters.TILES + "extra/tile_text_bg@2x.png";
-    private static final float  TEXT_SIZE  = (float) 0.15;
+    
+    private static final String LABEL_EXT     = "@2x.png";
+    private static final String LABEL_ICON    = Parameters.TILES + "extra/tile_text_bg";
+    private static final String LABEL_ICON_FL = Parameters.TILES + "extra/tile_text_bg_fools_landing";
+    private static final float  TEXT_SIZE     = (float) 0.15;
+    private TileState           state;
     
     
     /**
@@ -35,6 +40,7 @@ public class TextTile extends JLabel {
      */
     public TextTile(String text) {
         super(text, SwingConstants.CENTER);
+        setState(TileState.DRIED);
         initListeners();
     }
     
@@ -89,10 +95,32 @@ public class TextTile extends JLabel {
      */
     private void paintLabelBg(Graphics g) {
         try {
-            BufferedImage bi = ImageIO.read(new File(LABEL_ICON));
+            BufferedImage bi;
+            String path;
+            if (getText().contains("Fools' Landing")) {
+                path = LABEL_ICON_FL;
+            } else {
+                path = LABEL_ICON;
+            } // end if
+            if (state.equals(TileState.FLOODED)) {
+                path += "_flood";
+            } // end if
+            path += LABEL_EXT;
+            bi = ImageIO.read(new File(path));
             g.drawImage(bi, 0, 0, (int) getSize().getWidth(), (int) getSize().getHeight(), this);
         } catch (IOException e1) {
             e1.printStackTrace();
         }
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     * @param state
+     */
+    public void setState(TileState state) {
+        this.state = state;
+        repaint();
     }
 }

@@ -10,8 +10,10 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SpringLayout;
 
+import model.game.Coords;
 import model.game.Island;
 import model.game.Site;
+import util.LogType;
 import util.Parameters;
 
 
@@ -24,13 +26,13 @@ import util.Parameters;
  *
  */
 public class BoardPanel extends JPanel {
-    private JFrame parentFrame;
-    SpringLayout   layout;
-    JPanel         gridPane;
+    private JFrame       parentFrame;
+    private SpringLayout layout;
+    private JPanel       gridPane;
     /**
      * the board size : a value between 0 to 1 this is a portion of the GameView
      */
-    private double boardSize;
+    private double       boardSize;
     
     
     public BoardPanel(JFrame parentFrame) {
@@ -50,8 +52,8 @@ public class BoardPanel extends JPanel {
      */
     @Override
     protected void paintComponent(Graphics g) {
+        Parameters.printLog("paint Board--------------------------", LogType.GRAPHICS);
         super.paintComponent(g);
-        Parameters.printLog("paint Board");
     }
     
     
@@ -64,10 +66,24 @@ public class BoardPanel extends JPanel {
      */
     public void initGrid(ArrayList<Site> sites) {
         add(gridPane);
+        
         // loop for set the tiles
+        int i = 0;
+        int j = 0;
+        JPanel panel;
         for (Site f : sites) {
-            Parameters.printLog("add " + (f == null ? "empty tile" : f.getName()) + " to board");
-            gridPane.add(f == null ? new JPanel() : new TilePanel(f));
+            Parameters.printLog(
+                    "add " + (f == null ? "empty tile" : f.getName()) + " to board at (" + i + "," + j + ")",
+                    LogType.GRAPHICS);
+            
+            panel = f == null ? new JPanel() : new TilePanel(f, new Coords(i, j));
+            
+            gridPane.add(panel);
+            j++;
+            if (j >= Island.GRID_SIZE.getX()) {
+                j = 0;
+                i++;
+            } // end if
         } // end for
     }
     
@@ -91,7 +107,7 @@ public class BoardPanel extends JPanel {
             
             @Override
             public void componentResized(ComponentEvent e) {
-                Parameters.printLog("Componant " + getThis().getClass().getName() + " is resizing");
+                Parameters.printLog("Componant " + getThis().getClass().getName() + " is resizing", LogType.GRAPHICS);
                 
                 // for the length of grid side (with multiplier to not take the entire space)
                 int gridBord = (int) (getBoardSize()
@@ -140,6 +156,14 @@ public class BoardPanel extends JPanel {
      */
     public double getBoardSize() {
         return boardSize;
+    }
+    
+    
+    /**
+     * @return the gridPane
+     */
+    public JPanel getGridPane() {
+        return gridPane;
     }
     
     

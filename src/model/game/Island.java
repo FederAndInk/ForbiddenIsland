@@ -8,8 +8,8 @@ import util.BoardType;
 
 
 public class Island {
-    
-    private Tile grid[][];
+    public static final Coords GRID_SIZE = new Coords(6, 6);
+    private Tile               grid[][];
     
     
     public Island() {

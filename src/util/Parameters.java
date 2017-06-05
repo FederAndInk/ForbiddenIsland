@@ -21,13 +21,14 @@ public class Parameters {
     
     // ====================================================================================
     // Paramètres NF
-    public static final Boolean LOGS  = true; // Afficher des traces par System.out.println()
-    public static final Boolean ALEAS = true; // Attribuer les aventuriers aléatoirement ou non, mélanger les défausses et les pioches
+    public static final Boolean LOGS  = true;   // Afficher des traces par System.out.println()
+    public static final Boolean ALEAS = true;   // Attribuer les aventuriers aléatoirement ou non, mélanger les défausses et les pioches
+    public static Lang          LANG  = Lang.EN;
     // Fonts
-    public static Font DEFAULT_FONT;
+    public static Font DEFAULT_FONT = initFont();
     // screen
-    public static Dimension appSize;
-    public static Boolean   fullscreen;
+    public static Dimension appSize    = Toolkit.getDefaultToolkit().getScreenSize();
+    public static Boolean   fullscreen = true;
     // path
     public static final String RESOURCES  = "./resources/";
     public static final String CARDS      = RESOURCES + "cards/";
@@ -41,35 +42,18 @@ public class Parameters {
      * @author nihil
      *
      */
-    public Parameters() {
-    }
-    
-    
-    /**
-     * @author nihil
-     *
-     */
-    public static void initialParameters() {
-        initFont();
-        fullscreen = true;
-        appSize = Toolkit.getDefaultToolkit().getScreenSize();
-    }
-    
-    
-    /**
-     * @author nihil
-     *
-     */
-    private static void initFont() {
+    private static Font initFont() {
         GraphicsEnvironment genv = GraphicsEnvironment.getLocalGraphicsEnvironment();
         try {
-            DEFAULT_FONT = Font.createFont(Font.TRUETYPE_FONT, new File("./resources/Treamd.ttf"));
-            printLog(DEFAULT_FONT.getFontName() + "is set for the default font");
-            genv.registerFont(DEFAULT_FONT);
+            Font font = Font.createFont(Font.TRUETYPE_FONT, new File("./resources/Treamd.ttf"));
+            printLog(font.getFontName() + "is set for the default font", LogType.INFO);
+            genv.registerFont(font);
+            return font;
         } catch (FontFormatException | IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        return null;
     }
     
     
@@ -79,12 +63,13 @@ public class Parameters {
      * @author nihil
      *
      */
-    public static void printLog(Object text) {
+    public static void printLog(Object text, LogType type) {
         if (LOGS) {
             Calendar cal = Calendar.getInstance();
             SimpleDateFormat format1 = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
             
-            System.out.println(format1.format(cal.getTime()) + " : " + text.toString());
+            System.out.println(
+                    type.getColor() + format1.format(cal.getTime()) + " : " + text.toString() + type.getReset());
         } // end if
     }
 }

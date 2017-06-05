@@ -31,6 +31,9 @@ public class MainController implements Observer {
     
     public void createGame() {
         // TODO : complete with IHM
+        if (gameController.getCurrentGame() != null) {
+            // FIXME : do something to prevent erasement
+        } // end if
         gameController.setCurrentGame(new Game());
     }
     
@@ -54,12 +57,11 @@ public class MainController implements Observer {
     
     
     public boolean addPlayer(String pName) {
-        // TODO : when the player will have a name
-        // TODO : get data from the UI or the UI send the player directly ?
-        // if (!getPlayers().containsKey(pName)) {
-        // players.put(players.getName(), new Player(pName));
-        // } // end if
-        gameController.getCurrentGame().addPlayer(players.get(pName));
+        // FIXME : get data from the UI or the UI send the player directly ?
+        if (!getPlayers().containsKey(pName)) {
+            players.put(pName, new Player(pName));
+        } // end if
+          // gameController.getCurrentGame().addPlayer(players.get(pName), AdventurerType.PILOT.getClassFor(null));
         return true; // FIXME
     }// end addPlayer
     

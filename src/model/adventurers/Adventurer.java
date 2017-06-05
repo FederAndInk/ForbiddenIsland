@@ -11,6 +11,7 @@ import model.player.Player;
 import util.Parameters;
 import util.exception.InadequateUseOfCapacity;
 import util.exception.MoveException;
+import util.message.InGameAction;
 
 
 
@@ -38,6 +39,7 @@ public abstract class Adventurer {
     public Adventurer(Player player) {
         setActionPoints(MAX_ACTION_POINTS);
         setPlayer(player);
+        player.setCurrentAdventurer(this);
         setInventory(new Inventory());
     }
     
@@ -111,6 +113,15 @@ public abstract class Adventurer {
      */
     public ArrayList<Object> getPotentialUse() throws InadequateUseOfCapacity {
         throw new InadequateUseOfCapacity();
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     */
+    public void endTurn() {
+        setActionPoints(MAX_ACTION_POINTS);
     }
     
     
@@ -204,5 +215,23 @@ public abstract class Adventurer {
      */
     public AdventurerType getADVENTURER_TYPE() {
         return ADVENTURER_TYPE;
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     * @return
+     */
+    public ArrayList<InGameAction> getPossibleActions() {
+        ArrayList<InGameAction> list = new ArrayList<>();
+        if (getActionPoints() > 0) {
+            list.add(InGameAction.GET_TREASURE);
+            list.add(InGameAction.GIVE_CARD);
+            list.add(InGameAction.MOVE);
+            list.add(InGameAction.SHORE_UP_TILE);
+        } // end if
+        list.add(InGameAction.USE_CARD);
+        return null;
     }
 }

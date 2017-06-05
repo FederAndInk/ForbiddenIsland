@@ -6,6 +6,7 @@ import model.game.Island;
 import model.game.Tile;
 import model.game.TileState;
 import model.player.Player;
+import util.message.InGameAction;
 
 
 
@@ -69,6 +70,17 @@ public class Pilot extends Adventurer {
         }
         return reachable;
         // TODO :penser a changer l'etat de heliused when the turn end
+    }
+    
+    
+    /**
+     * @see model.adventurers.Adventurer#getPossibleActions()
+     */
+    @Override
+    public ArrayList<InGameAction> getPossibleActions() {
+        ArrayList<InGameAction> list = super.getPossibleActions();
+        list.add(InGameAction.USE_CAPACITY);
+        return list;
     }
     
     

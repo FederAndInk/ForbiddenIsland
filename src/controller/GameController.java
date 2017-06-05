@@ -47,10 +47,41 @@ public class GameController {
         try {
             Game g = getCurrentGame();
             Tile t = g.getIsland().getTile(coords);
-            g.getCurrentPlayer().getAdventurer().move(t);
+            g.getCurrentPlayer().getCurrentAdventurer().move(t);
         } catch (MoveException e) {
             e.printStackTrace();
         }
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     */
+    private void setMoveAction() {
+        
+    }
+    
+    
+    /**
+     * @author nihil
+     * @param object
+     *
+     */
+    private void doAction(Object object) {
+        if (object instanceof Coords) {
+            Coords coords = (Coords) object;
+            
+            switch (getCurrentGame().getCurrentAction()) {
+            case MOVE:
+                movePawn(coords);
+                break;
+            
+            default:
+                break;
+            }// end switch
+        } // end if
+        
     }
     
     
@@ -66,9 +97,11 @@ public class GameController {
             InGameMessage m = (InGameMessage) arg1;
             
             switch ((InGameAction) m.getType()) {
+            case SELECT_TILE:
+                doAction(m.getContent());
+                break;
             case MOVE:
-                // TODO : is the UI have to send the coord, the tile, the int of coord ?
-                // movePawn();
+                setMoveAction();
                 
                 break;
             case GET_TREASURE:
@@ -87,6 +120,9 @@ public class GameController {
                 
                 break;
             case INTERRUPT:
+                
+                break;
+            case SELECT_PAWN:
                 
                 break;
             case END_TURN:

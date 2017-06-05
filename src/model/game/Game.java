@@ -1,9 +1,6 @@
 package model.game;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 
 import model.adventurers.Adventurer;
 import model.adventurers.AdventurerType;
@@ -17,7 +14,7 @@ public class Game {
     private final static Integer MIN_PLAYER = 2;
     private ArrayList<Treasure>  treasures;
     private Island               island;
-    private ArrayList<Player>    players;
+    private LinkedList<Player>   players;
     private Deck                 treasureDeck;
     private Deck                 floodDeck;
     private Player               currentPlayer;
@@ -31,16 +28,24 @@ public class Game {
         island = new Island();
         treasureDeck = new TreasureDeck();
         floodDeck = new FloodDeck();
-        players = new ArrayList<>();
+        players = new LinkedList<>();
         treasures = new ArrayList<>();
     }
     
     
+    /**
+     * to call when you want to start the game
+     * 
+     * @author nihil
+     */
     public void initGame() {
+        if (players.size() < 2) {
+            throw new IndexOutOfBoundsException("Too few players");
+        } // end if
         initTreasure();
         Collections.shuffle(players);
-        currentPlayer = players.get(0);
-        currentAction = InGameAction.MOVE;
+        setCurrentPlayer(players.get(0));
+        setCurrentAction(InGameAction.MOVE);
         started = true;
     }// end name
     
@@ -107,45 +112,30 @@ public class Game {
      * @return the possibleActions
      */
     public ArrayList<InGameAction> getPossibleActions() {
+        ArrayList<InGameAction> list = new ArrayList<>();
+        list.addAll(currentPlayer.getCurrentAdventurer().getPossibleActions());
         
+        return list;
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     */
+    public void endTurn() {
+        getCurrentPlayer().getCurrentAdventurer().endTurn();
+        
+        int indLastP = getPlayers().indexOf(getCurrentPlayer());
+        setCurrentPlayer(getPlayers().get((indLastP + 1) % 4));
+        
+        setCurrentAction(InGameAction.MOVE);
     }
     
     
     public boolean isStarted() {
         return started;
     }
-    
-    
-    /**
-     * <p>
-     * then, there is no more treasures in game
-     * </p>
-     * 
-     * @author nihil
-     *
-     * @return true if the players get all the treasures
-     * the player to add to the party
-     * @return the number of players after adding they
-     */
-    private boolean isTreasureAllInveked() {
-        return treasures.isEmpty();
-    }
-    
-    
-    /**
-     * @author nihil
-     * add a player to the game (4 max)
-     * @param p
-     * the player to add to the party
-     * @return the number of players after adding they
-     */
-    public Integer addPlayer(Player p) {
-        if (players.size() < MAX_PLAYER) {
-            players.add(p);
-        } // end if
-        return players.size();
-    }// end addPlayer
-     // FIXME : add min check
     
     
     /**
@@ -167,7 +157,7 @@ public class Game {
     /**
      * @return the players
      */
-    public Collection<Player> getPlayers() {
+    public LinkedList<Player> getPlayers() {
         return players;
     }
     
@@ -213,5 +203,22 @@ public class Game {
      */
     private void setCurrentPlayer(Player currentPlayer) {
         this.currentPlayer = currentPlayer;
+    }
+    
+    
+    /**
+     * @return the currentAction
+     */
+    public InGameAction getCurrentAction() {
+        return currentAction;
+    }
+    
+    
+    /**
+     * @param currentAction
+     * the currentAction to set
+     */
+    private void setCurrentAction(InGameAction currentAction) {
+        this.currentAction = currentAction;
     }
 }

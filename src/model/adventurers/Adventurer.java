@@ -47,6 +47,33 @@ public abstract class Adventurer {
     }
     
     
+    protected ArrayList<Tile> getShoreUpTiles(ArrayList<Tile> reachableTiles) {
+        ArrayList<Tile> shoreUpTiles = reachableTiles;
+        shoreUpTiles.add(getCurrentTile());
+        for (Tile shoreUpTile : shoreUpTiles) {
+            if (!shoreUpTile.getState().equals(TileState.FLOODED)) {
+                shoreUpTiles.remove(shoreUpTile);
+            }
+        }
+        return shoreUpTiles;
+    }
+    
+    
+    public ArrayList<Tile> getShoreUpTiles() {
+        return getShoreUpTiles(getReachableTiles());
+    }
+    
+    
+    public void shoreUp(Tile tile) {
+        if (getActionPoints() >= 1 && getShoreUpTiles().contains(tile)) {
+            tile.setState(TileState.DRIED);
+            setActionPoints(getActionPoints() - 1);
+        } else {
+            // FIXME : add throws
+        }
+    }
+    
+    
     /**
      * 
      * 

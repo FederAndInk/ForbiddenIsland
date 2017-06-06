@@ -47,6 +47,7 @@ public class GameController implements Observer {
     public GameController(MainController mainController) {
         this.mainController = mainController;
         gameView = new GameView();
+        playersChain = new Stack<>();
     }
     
     
@@ -179,8 +180,8 @@ public class GameController implements Observer {
     
     private void endTurn() {
         playersChain.clear();
-        playersChain.push(getCurrentGame().getCurrentPlayer());
         getCurrentGame().endTurn();
+        playersChain.push(getCurrentGame().getCurrentPlayer());
         setMoveAction();
     }// end endTurn
     

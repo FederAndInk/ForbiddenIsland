@@ -56,7 +56,7 @@ public class Pilot extends Adventurer {
         
         Island island = getPlayer().getCurrentGame().getIsland();
         
-        if (isHeliUsed()) {
+        if (!isHeliUsed()) {
             Tile tile;
             for (int x = 0; x <= 5; x++) {
                 for (int y = 0; y <= 5; y++) {
@@ -70,6 +70,17 @@ public class Pilot extends Adventurer {
         }
         return reachable;
         // TODO :penser a changer l'etat de heliused when the turn end
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     */
+    @Override
+    public void endTurn() {
+        super.endTurn();
+        setHeliUsed(false);
     }
     
     

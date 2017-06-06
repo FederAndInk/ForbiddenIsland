@@ -1,6 +1,5 @@
 package model.adventurers;
 
-import java.util.ArrayList;
 import model.game.Tile;
 import model.game.TileState;
 import model.player.Player;
@@ -55,7 +54,7 @@ public class Engineer extends Adventurer {
     @Override
     public void move(Tile tile) throws MoveException {
         setContinueShoreUp(false);
-        super.move(tile); // To change body of generated methods, choose Tools | Templates.
+        super.move(tile);
         
     }
     
@@ -63,7 +62,7 @@ public class Engineer extends Adventurer {
     @Override
     public void endTurn() {
         setContinueShoreUp(false);
-        super.endTurn(); // To change body of generated methods, choose Tools | Templates.
+        super.endTurn();
     }
     
     

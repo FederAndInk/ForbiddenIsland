@@ -1,13 +1,15 @@
 package model.game;
 
+import java.util.ArrayList;
+
 import util.BoardGeneration;
 import util.BoardType;
 
 
 
 public class Island {
-    
-    private Tile grid[][];
+    public static final Coords GRID_SIZE = new Coords(6, 6);
+    private Tile               grid[][];
     
     
     public Island() {
@@ -30,6 +32,18 @@ public class Island {
     public Tile[][] getGrid() {
         return grid;
     }
+    
+    
+    public ArrayList<Site> getSites() {
+        ArrayList<Site> board = new ArrayList<>();
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[i].length; j++) {
+                Tile tile = grid[i][j];
+                board.add(tile == null ? null : tile.getSite());
+            } // end for
+        } // end for
+        return board;
+    }// end getSites
     
     
     /**

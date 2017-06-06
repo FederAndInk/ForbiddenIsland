@@ -6,6 +6,8 @@ package model.adventurers;
 import java.lang.reflect.InvocationTargetException;
 
 import model.player.Player;
+import util.Parameters;
+
 
 
 
@@ -35,7 +37,22 @@ public enum AdventurerType {
     
     
     /**
+     * @return the className
+     */
+    public String getClassName() {
+        return className;
+    }
+    
+    
+    /**
      * @author nihil
+     *
+     */
+    public String getPath() {
+        return Parameters.LOGO + getClassName() + "_Adventurer_Icon@2x.png";
+    }
+    
+    
      *
      * @param p
      * @return an instance of a type adventurer class

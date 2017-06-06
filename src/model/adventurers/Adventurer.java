@@ -1,37 +1,71 @@
 package model.adventurers;
 
 import java.util.ArrayList;
+
 import model.game.Coords;
+import model.game.Island;
 import model.game.Tile;
 import model.game.TileState;
 import model.player.Inventory;
 import model.player.Player;
+import util.LogType;
+import util.Parameters;
+import util.exception.InadequateUseOfCapacity;
+import util.exception.MoveException;
+import util.message.InGameAction;
 
 
 
+/**
+ * Can be
+ * a {@link Diver}<br>
+ * an {@link Engineer}<br>
+ * an {@link Explorer}<br>
+ * a {@link Messenger}<br>
+ * a {@link Navigator}<br>
+ * a {@link Pilot}
+ * 
+ * @author nihil
+ *
+ */
 public abstract class Adventurer {
+    private static final int     MAX_ACTION_POINTS = 3;
+    private final AdventurerType ADVENTURER_TYPE;
+    private Player               player;
+    private Inventory            inventory;
+    private Tile                 currentTile;
+    private int                  actionPoints;
     
-    private Player           player;
-    private Inventory        inventory;
-    private Tile             currentTile;
-    private static final int MAX_ACTION_POINTS = 3;
-    private int              actionPoints;
     
-    
-    public Adventurer(Player player) {
+    protected Adventurer(Player player, AdventurerType adventurerType) {
+        this.ADVENTURER_TYPE = adventurerType;
+        
         setActionPoints(MAX_ACTION_POINTS);
         setPlayer(player);
+        player.setCurrentAdventurer(this);
         setInventory(new Inventory());
     }
     
     
-    public void move(Tile tile) {
+    /**
+     * 
+     * 
+     *
+     * @param tile
+     * @return true if the move done
+     * @throws MoveException
+     */
+    public void move(Tile tile) throws MoveException {
         if (getActionPoints() >= 1 && getReachableTiles().contains(tile)) {
             setCurrentTile(tile);
             setActionPoints(getActionPoints() - 1);
-            System.out.println("le deplacement a été effectué");
+            Parameters.printLog("le deplacement a été effectué", LogType.INFO);
         } else {
-            System.out.println(getActionPoints() <= 0 ? "not enough action point" : "tile note reachable");
+            if (getActionPoints() <= 0) {
+                throw new MoveException(tile);
+            } else {
+                throw new MoveException(getActionPoints());
+            } // end if
         }
         
     }
@@ -42,30 +76,80 @@ public abstract class Adventurer {
         ArrayList<Tile> reachable = new ArrayList<>();
         Coords coords = getCurrentTile().getCoords();
         
-        Tile[][] grid = getPlayer().getCurrentGame().getIsland().getGrid();
-        
-        for (int i = -1; i <= 1; i += 2) {
-            Tile tileTmp = (grid[currentTile.getCoords().getX()][currentTile.getCoords().getY() + i]);
+        Island island = getPlayer().getCurrentGame().getIsland();
+        Tile tileTmp;
+        // we will apply a sweet function to get through -1,0,1,0 and meanwhile 0,1,0,-1 (uses of modulo is awesome)
+        int j = 2;
+        int effI;
+        int effJ;
+        for (int i = -1; i <= 2; i += 1) {
+            effI = i % 2;
+            effJ = j % 2;
+            System.out.println(effI + "," + effJ);
+            tileTmp = island.getTile(coords.getCol() + effI, coords.getRow() + effJ);
             if ((tileTmp != null) && (tileTmp.getState() != TileState.SINKED)) {
                 reachable.add(tileTmp);
             }
-            tileTmp = (grid[currentTile.getCoords().getX() + i][currentTile.getCoords().getY()]);
-            if ((tileTmp != null) && (tileTmp.getState() != TileState.SINKED)) {
-                reachable.add(tileTmp);
-            }
-        }
-        
+            j--;
+        } // end for
         return reachable;
+        
     }
     
     
     /**
-     * 
+     * @author nihil
+     *
      * @param tile
+     * @throws InadequateUseOfCapacity
      */
-    public void isAccessible(Tile tile) {
-        // TODO - implement Adventurer.isAccessible
-        throw new UnsupportedOperationException();
+    public void useCapacity(Object o) throws InadequateUseOfCapacity {
+        throw new InadequateUseOfCapacity();
+    }// end useCapacity
+    
+    
+    /**
+     * @author nihil
+     *
+     * @return the objects where a capacity can be applied
+     * @throws InadequateUseOfCapacity
+     */
+    public ArrayList<Object> getPotentialUse() throws InadequateUseOfCapacity {
+        throw new InadequateUseOfCapacity();
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     */
+    public void endTurn() {
+        setActionPoints(MAX_ACTION_POINTS);
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     * @param tile
+     * the spawn to set
+     */
+    public void setSpawn(Tile tile) {
+        if (getCurrentTile() == null) {
+            setCurrentTile(tile);
+            Parameters.printLog("set Spawn for " + getADVENTURER_TYPE(), LogType.INFO);
+        } else {
+            Parameters.printLog("Spawn already set for " + getADVENTURER_TYPE(), LogType.ERROR);
+        } // end if
+    }
+    
+    
+    /**
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return getClass().getSimpleName();
     }
     
     
@@ -81,7 +165,7 @@ public abstract class Adventurer {
      * @param player
      * the player to set
      */
-    public void setPlayer(Player player) {
+    private void setPlayer(Player player) {
         this.player = player;
     }
     
@@ -98,7 +182,7 @@ public abstract class Adventurer {
      * @param inventory
      * the inventory to set
      */
-    public void setInventory(Inventory inventory) {
+    private void setInventory(Inventory inventory) {
         this.inventory = inventory;
     }
     
@@ -115,7 +199,7 @@ public abstract class Adventurer {
      * @param currentTile
      * the currentTile to set
      */
-    public void setCurrentTile(Tile currentTile) {
+    protected void setCurrentTile(Tile currentTile) {
         this.currentTile = currentTile;
     }
     
@@ -140,8 +224,33 @@ public abstract class Adventurer {
      * @param actionPoints
      * the actionPoints to set
      */
-    public void setActionPoints(int actionPoints) {
+    protected void setActionPoints(int actionPoints) {
         this.actionPoints = actionPoints;
     }
     
+    
+    /**
+     * @return the adventurerType
+     */
+    public AdventurerType getADVENTURER_TYPE() {
+        return ADVENTURER_TYPE;
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     * @return
+     */
+    public ArrayList<InGameAction> getPossibleActions() {
+        ArrayList<InGameAction> list = new ArrayList<>();
+        if (getActionPoints() > 0) {
+            list.add(InGameAction.GET_TREASURE);
+            list.add(InGameAction.GIVE_CARD);
+            list.add(InGameAction.MOVE);
+            list.add(InGameAction.SHORE_UP_TILE);
+        } // end if
+        list.add(InGameAction.USE_CARD);
+        return null;
+    }
 }

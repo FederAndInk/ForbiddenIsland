@@ -8,21 +8,15 @@ import util.message.InGameAction;
 
 
 /**
- * the Navigator can move an {@link Adventurer} on the board for one action to one or two tiles
+ * the Messenger can give a card to anyone on the board (wherever they are)
  * 
  * @author nihil
  *
  */
-public class Navigator extends Adventurer {
+public class Messenger extends Adventurer {
     
-    public Navigator(Player player) {
-        super(player, AdventurerType.NAVIGATOR);
-    }
-    
-    
-    public void movePlayer() {
-        // TODO - implement Navigater.movePlayer
-        throw new UnsupportedOperationException();
+    public Messenger(Player player) {
+        super(player, AdventurerType.MESSENGER);
     }
     
     

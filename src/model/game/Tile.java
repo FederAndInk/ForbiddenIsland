@@ -76,4 +76,13 @@ public class Tile {
         this.state = state;
     }
     
+    
+    /**
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return getCoords().toString() + " : " + getState() + " : " + getSite();
+    }
+    
 }

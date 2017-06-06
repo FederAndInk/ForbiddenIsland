@@ -104,6 +104,7 @@ public class CompCard extends JButton {
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
         initBackgroundImage(g2);
+        // TODO : make a componant for label
         initName();
         // super.paintComponent(g);
     }
@@ -112,7 +113,7 @@ public class CompCard extends JButton {
     private void initName() {
         // name2Label.setFont(font.deriveFont((float) (getSize().getHeight() * TEXT_SIZE)));
         add(nameLabel);
-        htmlStyle = "<style>body{margin: auto;text-align: center;} p.second{margin-top:-8;margin-bottom: -2}</style>";
+        htmlStyle = "<style>body{margin: auto;text-align: center;} p.second{margin-top:-6;margin-bottom: -2}</style>";
         htmlB = "<html><head>" + htmlStyle + "</head><body><p>";
         // nameLabel.setMaximumSize(
         // new Dimension((int) (getSize().getWidth() * 0.8), (int) (getSize().getHeight() * 0.25)));
@@ -120,7 +121,7 @@ public class CompCard extends JButton {
         nameLabel.setText(htmlB + getName() + htmlE);
         nameLabel.setAlignmentX(CENTER_ALIGNMENT);
         nameLabel.setAlignmentY(BOTTOM_ALIGNMENT);
-        System.out.println(getSize().getWidth() + " : " + nameLabel.getSize().getWidth());
+        // System.out.println(getSize().getWidth() + " : " + nameLabel.getSize().getWidth());
         // FIXME:to remove !!
         nameLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         // nameLabel.setVerticalAlignment(ABORT);

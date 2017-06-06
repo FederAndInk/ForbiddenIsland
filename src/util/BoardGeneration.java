@@ -49,9 +49,9 @@ public class BoardGeneration {
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 6; j++) {
                 if (isBord(i, j)) {
-                    tiles[i][j] = null;
+                    tiles[j][i] = null;
                 } else {
-                    tiles[i][j] = new Tile(new Coords(), l.remove(l.size() - 1));
+                    tiles[j][i] = new Tile(new Coords(j, i), l.remove(l.size() - 1));
                 } // end if
             }
         }
@@ -79,12 +79,11 @@ public class BoardGeneration {
      * @return true if i,j is in the corner (where the star is)
      */
     public static boolean isBord(int i, int j) {
-        //@formatter:off
-        return (i == 0) && (j == 0 || j == 1) || (i == 1 && j == 0)
-                || (i == 5) && (j == 0 || j == 1) || (i == 4 && j == 0)
-                || (i == 0) && (j == 4 || j == 5) || (i == 1 && j == 5)
+        // @formatter:off
+        return (i == 0) && (j == 0 || j == 1) || (i == 1 && j == 0) || (i == 5) && (j == 0 || j == 1)
+                || (i == 4 && j == 0) || (i == 0) && (j == 4 || j == 5) || (i == 1 && j == 5)
                 || (i == 5) && (j == 4 || j == 5) || (i == 4 && j == 5);
-        //@formatter:on
+        // @formatter:on
     }// end
     
 }

@@ -3,8 +3,10 @@ package view.board;
 import java.awt.BorderLayout;
 import java.awt.GraphicsEnvironment;
 import java.util.ArrayList;
+import java.util.Observer;
 
 import javax.swing.JFrame;
+import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 
 import model.adventurers.AdventurerType;
@@ -49,8 +51,9 @@ public class GameView extends JFrame {
     }
     
     
-    public JPanel getTileG(Coords c) {
-        JPanel tilePanel = (JPanel) gamePane.getGridPane().getComponent(c.getRow() * Island.GRID_SIZE.getCol() + c.getCol());
+    public JLayeredPane getTileG(Coords c) {
+        JLayeredPane tilePanel = (JLayeredPane) gamePane.getGridPane()
+                .getComponent(c.getRow() * Island.GRID_SIZE.getCol() + c.getCol());
         if (!(tilePanel instanceof TilePanel)) {
             Parameters.printLog("get a JPanel", LogType.ACCESS);
         } else {
@@ -67,15 +70,20 @@ public class GameView extends JFrame {
     
     
     public void movePawn(AdventurerType p, Coords current, Coords next) {
-        
+        ((TilePanel) getTileG(next)).addPawn(p);
+        ((TilePanel) getTileG(current)).removePawn(p);
+        repaint();
+        doLayout();
     }// end movePawn
     
     
     /**
      * @author nihil
+     * @param observer
      *
      */
-    public void setBoard(ArrayList<Site> board) {
-        gamePane.initGrid(board);
+    public void setBoard(ArrayList<Site> board, Observer observer) {
+        gamePane.initGrid(board, observer);
     }
+    
 }

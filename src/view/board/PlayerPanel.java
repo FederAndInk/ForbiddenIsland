@@ -11,6 +11,8 @@ import javax.swing.JPanel;
 
 import model.adventurers.AdventurerType;
 import model.game.Coords;
+import util.LogType;
+import util.Parameters;
 
 
 
@@ -20,7 +22,6 @@ import model.game.Coords;
  */
 public class PlayerPanel extends JPanel {
     private ArrayList<AdventurerType> pawns;
-    private Coords                    lastPawnPos;
     private GridBagConstraints        constraints;
     private GridBagLayout             layout;
     
@@ -35,7 +36,6 @@ public class PlayerPanel extends JPanel {
         setOpaque(false);
         pawns = new ArrayList<>();
         init();
-        lastPawnPos = null;
     }
     
     
@@ -77,24 +77,36 @@ public class PlayerPanel extends JPanel {
     
     /**
      * @author nihil
+     * @param size
      *
      */
     protected void addPawn(AdventurerType pawn) {
+        Parameters.printLog("Add " + pawn + " to " + ((TilePanel) getParent()).getPos(), LogType.INFO);
         constraints.gridx = getNextCoords().getCol();
         constraints.gridy = getNextCoords().getRow();
-        add(new PawnComponant(pawn), constraints);
+        
         pawns.add(pawn);
+        PawnComponant pComponant = new PawnComponant(pawn);
+        add(pComponant, constraints);
+        doLayout();
     }
     
     
     /**
      * @author nihil
      * @param pawn
+     * to remove if {@link AdventurerType#RANDOM} remove all
      *
      */
     protected void removePawn(AdventurerType pawn) {
-        pawns.remove(pawn);
-        remove(pawns.size());
+        if (pawn.equals(AdventurerType.RANDOM)) {
+            removeAll();
+            pawns.clear();
+        } else {
+            Parameters.printLog("Remove " + pawn + " from " + ((TilePanel) getParent()).getPos(), LogType.INFO);
+            pawns.remove(pawn);
+            remove(pawns.size());
+        }
     }
     
 }

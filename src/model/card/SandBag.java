@@ -3,6 +3,16 @@ package model.card;
 public class SandBag extends Card {
     
     /**
+     * @author nihil
+     *
+     * @param type
+     */
+    protected SandBag() {
+        super(CardType.SANDBAG_CARD);
+    }
+    
+    
+    /**
      * 
      * @param applied
      */

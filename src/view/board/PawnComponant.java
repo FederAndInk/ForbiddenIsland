@@ -27,8 +27,8 @@ import util.Parameters;
  *
  */
 public class PawnComponant extends JComponent {
-    private static final float pawnSize = (float) 0.25;
-    private AdventurerType     pawn;
+    private float          pawnSize = (float) 0.25;
+    private AdventurerType pawn;
     
     
     /**
@@ -41,7 +41,7 @@ public class PawnComponant extends JComponent {
     }
     
     
-    private void initSize() {
+    protected void initSize() {
         BufferedImage bImage;
         try {
             bImage = ImageIO.read(new File(pawn.getPath()));
@@ -51,7 +51,7 @@ public class PawnComponant extends JComponent {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }// end init
+    }// end
     
     
     /**
@@ -68,7 +68,8 @@ public class PawnComponant extends JComponent {
             
             @Override
             public void componentResized(ComponentEvent e) {
-                Parameters.printLog("Resizing players", LogType.GRAPHICS);
+                Parameters.printLog("Resizing players : " + e.getComponent().getClass().getSimpleName(),
+                        LogType.GRAPHICS);
                 initSize();
                 e.getComponent().doLayout();
             }
@@ -102,5 +103,15 @@ public class PawnComponant extends JComponent {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     * @param size
+     */
+    protected void setPawnSize(float size) {
+        this.pawnSize = size;
     }
 }

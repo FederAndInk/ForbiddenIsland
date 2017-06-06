@@ -5,6 +5,8 @@ import java.util.*;
 import model.adventurers.Adventurer;
 import model.adventurers.AdventurerType;
 import model.player.Player;
+import util.LogType;
+import util.Parameters;
 import util.message.InGameAction;
 
 
@@ -224,7 +226,8 @@ public class Game {
      * @param currentAction
      * the currentAction to set
      */
-    private void setCurrentAction(InGameAction currentAction) {
+    public void setCurrentAction(InGameAction currentAction) {
         this.currentAction = currentAction;
+        Parameters.printLog("Set action to : " + currentAction, LogType.INFO);
     }
 }

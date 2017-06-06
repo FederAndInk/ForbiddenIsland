@@ -5,8 +5,10 @@ import java.awt.GridLayout;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.util.ArrayList;
+import java.util.Observer;
 
 import javax.swing.JFrame;
+import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.SpringLayout;
 
@@ -62,22 +64,25 @@ public class BoardPanel extends JPanel {
      *
      * @param sites
      * the list of tile' site in order row per row
+     * @param observer
      * @see Island#getGrid()
      */
-    public void initGrid(ArrayList<Site> sites) {
+    public void initGrid(ArrayList<Site> sites, Observer observer) {
         add(gridPane);
         
         // loop for set the tiles
         int i = 0;
         int j = 0;
-        JPanel panel;
+        JLayeredPane panel;
         for (Site f : sites) {
             Parameters.printLog(
                     "add " + (f == null ? "empty tile" : f.getName()) + " to board at (" + i + "," + j + ")",
                     LogType.GRAPHICS);
             
-            panel = f == null ? new JPanel() : new TilePanel(f, new Coords(j, i));
-            
+            panel = f == null ? new JLayeredPane() : new TilePanel(f, new Coords(j, i));
+            if (panel instanceof TilePanel) {
+                ((TilePanel) panel).getListenerObs().addObserver(observer);
+            } // end if
             gridPane.add(panel);
             j++;
             if (j >= Island.GRID_SIZE.getCol()) {

@@ -7,7 +7,6 @@ import model.player.Player;
 import util.message.InGameMessage;
 import util.message.MainAction;
 import util.message.MainMessage;
-import util.message.Message;
 
 
 
@@ -115,7 +114,7 @@ public class MainController implements Observer {
                     System.out.println("InGame action Message");
                 } else {
                     throw new IllegalArgumentException("The class " + arg0.getClass().getName() + " was going to send "
-                            + arg1.getClass() + " Object, but a " + Message.class.getName() + " is expected");
+                            + arg1.getClass() + " Object, but a " + MainMessage.class.getName() + " is expected");
                 } // end if
                 break;
             }// end switch

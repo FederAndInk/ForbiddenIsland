@@ -15,7 +15,7 @@ import java.util.Observable;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
-import javax.swing.JPanel;
+import javax.swing.JLayeredPane;
 import javax.swing.border.Border;
 
 import model.adventurers.AdventurerType;
@@ -24,6 +24,8 @@ import model.game.Site;
 import model.game.TileState;
 import util.LogType;
 import util.Parameters;
+import util.message.InGameAction;
+import util.message.InGameMessage;
 
 
 
@@ -31,13 +33,15 @@ import util.Parameters;
  * @author nihil
  *
  */
-public class TilePanel extends JPanel {
+public class TilePanel extends JLayeredPane {
     private TileState    state;
     private final Site   site;
     private final Coords pos;
     
     private PlayerPanel playerPanel;
     private TextTile    text;
+    
+    private mlTile listenerObs;
     
     private static final Border ACTIVE_BORDER_HOVER = BorderFactory.createLineBorder(Color.GREEN, 5, true);
     private static final Border ACTIVE_BORDER_EXIT  = BorderFactory.createLineBorder(new Color(10, 194, 10), 4, true);
@@ -49,7 +53,8 @@ public class TilePanel extends JPanel {
      *
      */
     public TilePanel(Site site, Coords c) {
-        super(new BorderLayout());
+        super();
+        setLayout(new BorderLayout());
         this.site = site;
         this.pos = c;
         setOpaque(false);
@@ -84,6 +89,10 @@ public class TilePanel extends JPanel {
     
     
     /**
+     * remove a pawn from the tile
+     * 
+     * if random, remove all
+     * 
      * @author nihil
      *
      */
@@ -128,7 +137,8 @@ public class TilePanel extends JPanel {
      *
      */
     private void initListeners() {
-        addMouseListener(new mlTile());
+        listenerObs = new mlTile();
+        addMouseListener(listenerObs);
     }
     
     
@@ -143,10 +153,8 @@ public class TilePanel extends JPanel {
         super.setEnabled(b);
         if (b) {
             setBorder(ACTIVE_BORDER_EXIT);
-            setBackground(null);
         } else {
             setBorder(INACTIVE_BORDER);
-            setBackground(Color.GRAY);
         } // end if
     }
     
@@ -173,7 +181,7 @@ public class TilePanel extends JPanel {
     }
     
     // the inner class for an event listener
-    private class mlTile extends Observable implements MouseListener {
+    protected class mlTile extends Observable implements MouseListener {
         
         /**
          * @author nihil
@@ -212,6 +220,28 @@ public class TilePanel extends JPanel {
         
         @Override
         public void mouseClicked(MouseEvent e) {
+            if (isEnabled()) {
+                setChanged();
+                notifyObservers(new InGameMessage(InGameAction.SELECT_TILE, getPos()));
+                clearChanged();
+            } // end if
         }
+    }
+    
+    
+    /**
+     * @return the listenerObs
+     * in order to add observers
+     */
+    protected mlTile getListenerObs() {
+        return listenerObs;
+    }
+    
+    
+    /**
+     * @return the pos
+     */
+    public Coords getPos() {
+        return pos;
     }
 }

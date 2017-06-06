@@ -71,6 +71,16 @@ public abstract class Adventurer {
     }
     
     
+    /**
+     * get the adjacent tiles<br>
+     * .*.<br>
+     * *.*<br>
+     * .*.
+     * 
+     * @author nihil
+     *
+     * @return
+     */
     public ArrayList<Tile> getReachableTiles() {
         
         ArrayList<Tile> reachable = new ArrayList<>();
@@ -250,7 +260,9 @@ public abstract class Adventurer {
             list.add(InGameAction.MOVE);
             list.add(InGameAction.SHORE_UP_TILE);
         } // end if
-        list.add(InGameAction.USE_CARD);
+        if (inventory.hasCardUsable()) {
+            list.add(InGameAction.USE_CARD);
+        } // end if
         return null;
     }
 }

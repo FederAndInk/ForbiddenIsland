@@ -4,21 +4,24 @@
 package controller;
 
 import java.util.Observable;
+import java.util.Observer;
 import java.util.Stack;
 
-import javax.swing.JPanel;
+import javax.swing.JLayeredPane;
 
+import model.adventurers.Adventurer;
 import model.card.CardType;
 import model.game.Coords;
 import model.game.Game;
 import model.game.Island;
 import model.game.Tile;
 import model.player.Player;
+import util.LogType;
+import util.Parameters;
 import util.exception.MoveException;
 import util.message.InGameAction;
 import util.message.InGameMessage;
 import util.message.MainMessage;
-import util.message.Message;
 import view.board.GameView;
 import view.board.TilePanel;
 
@@ -28,7 +31,7 @@ import view.board.TilePanel;
  * @author nihil
  *
  */
-public class GameController {
+public class GameController implements Observer {
     private MainController mainController;
     private CardType       cardPlayed;
     private Stack<Player>  playersChain;
@@ -54,24 +57,66 @@ public class GameController {
     public void StartGame() {
         getCurrentGame().initGame();
         
-        gameView.setBoard(getCurrentGame().getIsland().getSites());
+        gameView.setBoard(getCurrentGame().getIsland().getSites(), this);
+        
+        setSpawns();
         
         setMoveAction();
         gameView.setVisible(true);
     }
     
     
+    /**
+     * @author nihil
+     *
+     */
+    private void setSpawns() {
+        for (Player player : getCurrentGame().getPlayers()) {
+            JLayeredPane panel = gameView.getTileG(player.getCurrentAdventurer().getCurrentTile().getCoords());
+            if (panel instanceof TilePanel) {
+                ((TilePanel) panel).addPawn(player.getCurrentAdventurer().getADVENTURER_TYPE());
+            } // end if
+        } // end for
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     * @param coords
+     */
     private void movePawn(Coords coords) {
         
         // TODO : do something if the move can't be applied (exception)
         // TODO : get the tile from the UI
         try {
             Game g = getCurrentGame();
+            Adventurer adv = g.getCurrentPlayer().getCurrentAdventurer();
+            Tile cTile = adv.getCurrentTile();
+            
             Tile t = g.getIsland().getTile(coords);
-            g.getCurrentPlayer().getCurrentAdventurer().move(t);
+            adv.move(t);
+            Parameters.printLog("Move to " + t, LogType.INFO);
+            
+            // to update the view
+            gameView.movePawn(adv.getADVENTURER_TYPE(), cTile.getCoords(), coords);
+            if (adv.getActionPoints() > 0) {
+                setMoveAction();
+            } else {
+                reInitBoard();
+            } // end if
         } catch (MoveException e) {
             e.printStackTrace();
         }
+        
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     */
+    private void refreshBoard() {
     }
     
     
@@ -82,7 +127,7 @@ public class GameController {
     private void reInitBoard() {
         for (int i = 0; i < Island.GRID_SIZE.getRow(); i++) {
             for (int j = 0; j < Island.GRID_SIZE.getCol(); j++) {
-                JPanel tile = gameView.getTileG(new Coords(j, i));
+                JLayeredPane tile = gameView.getTileG(new Coords(j, i));
                 if (tile instanceof TilePanel) {
                     ((TilePanel) tile).setEnabled(false);
                 } // end if
@@ -92,13 +137,16 @@ public class GameController {
     
     
     /**
+     * to update the view for move action of the current player
+     * 
      * @author nihil
      *
      */
     private void setMoveAction() {
+        getCurrentGame().setCurrentAction(InGameAction.MOVE);
+        Parameters.printLog("get Move", LogType.INFO);
         reInitBoard();
         for (Tile tile : getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getReachableTiles()) {
-            System.out.println(tile);
             gameView.setEnabled(true, tile.getCoords());
         } // end forsetEnabled
     }
@@ -116,6 +164,7 @@ public class GameController {
             switch (getCurrentGame().getCurrentAction()) {
             case MOVE:
                 movePawn(coords);
+                
                 break;
             
             default:
@@ -133,8 +182,12 @@ public class GameController {
     }// end endTurn
     
     
+    /**
+     * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
+     */
+    @Override
     public void update(Observable arg0, Object arg1) {
-        if (arg1 instanceof InGameAction) {
+        if (arg1 instanceof InGameMessage) {
             InGameMessage m = (InGameMessage) arg1;
             
             switch ((InGameAction) m.getType()) {
@@ -178,7 +231,7 @@ public class GameController {
             System.out.println("Main action Message");
         } else {
             throw new IllegalArgumentException("The class " + arg0.getClass().getName() + " was going to send "
-                    + arg1.getClass() + " Object, but a " + Message.class.getName() + " is expected");
+                    + arg1.getClass() + " Object, but a " + InGameMessage.class.getName() + " is expected");
         } // end if
     }
     

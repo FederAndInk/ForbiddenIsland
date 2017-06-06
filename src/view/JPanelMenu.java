@@ -27,6 +27,12 @@ public class JPanelMenu extends JPanel {
     private JPanelOptionJeu jeu;
     private JLabel          titreLabel;
     
+    public static final String JEU    = "jeu";
+    public static final String MAIN   = "main";
+    public static final String TUTO   = "tuto";
+    public static final String OPTION = "option";
+    public static final String SCORES = "scores";
+    
     
     public JPanelMenu() {
         setLayout(new BorderLayout());
@@ -59,13 +65,16 @@ public class JPanelMenu extends JPanel {
         tuto = new JButton("tutoriel");
         grid.add(tuto);
         
+        // les options
         optionPanel = new JPanel();
         card.add(optionPanel, "option");
         
+        // les scores
         scorePanel = new JPanel();
         card.add(scorePanel, "scores");
         
-        jeu = new JPanelOptionJeu();
+        // les options du jeu
+        jeu = new JPanelOptionJeu(this);
         card.add(jeu, "jeu");
         
         // le tuto
@@ -88,15 +97,15 @@ public class JPanelMenu extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 if (e.getSource().equals(jouer)) {
                     
-                    ((CardLayout) (card.getLayout())).show(card, "jeu");
+                    ((CardLayout) (card.getLayout())).show(card, JEU);
                     
                 } else if (e.getSource().equals(option)) {
                     
-                    ((CardLayout) (card.getLayout())).show(card, "options");
+                    ((CardLayout) (card.getLayout())).show(card, OPTION);
                     
                 } else if (e.getSource().equals(score)) {
                     
-                    ((CardLayout) (card.getLayout())).show(card, "scores");
+                    ((CardLayout) (card.getLayout())).show(card, SCORES);
                     
                 } else if (e.getSource().equals(tuto)) {
                     
@@ -120,6 +129,11 @@ public class JPanelMenu extends JPanel {
     
     public void quitter() {
         System.exit(0);
+    }
+    
+    
+    public JPanel getCard() {
+        return card;
     }
     
 }

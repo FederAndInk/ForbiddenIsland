@@ -19,7 +19,7 @@ public class Random extends Adventurer {
      * @param player
      */
     public Random(Player player) {
-        super(player);
+        super(player, AdventurerType.RANDOM);
     }
     
 }

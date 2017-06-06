@@ -17,6 +17,11 @@ import model.player.Player;
  */
 public class Diver extends Adventurer {
     
+    public Diver(Player player) {
+        super(player, AdventurerType.DIVER);
+    }
+    
+    
     private ArrayList<Tile> getReachableTiles(Tile tile, ArrayList<Tile> tilesAlreadyRead) {
         
         Island island = getPlayer().getCurrentGame().getIsland();
@@ -29,7 +34,7 @@ public class Diver extends Adventurer {
         for (int i = -1; i <= 2; i += 1) {
             effI = i % 2;
             effJ = j % 2;
-            tileTmp = island.getTile(coords.getX() + effI, coords.getY() + effJ);
+            tileTmp = island.getTile(coords.getCol() + effI, coords.getRow() + effJ);
             if (!tilesAlreadyRead.contains(tileTmp)) { // if the tile is not already treated
                 if (tileTmp != null && !tileTmp.getState().equals(TileState.SINKED)) {
                     tilesAlreadyRead.add(tileTmp);
@@ -62,10 +67,4 @@ public class Diver extends Adventurer {
         
         return reachableTiles;
     }
-    
-    
-    public Diver(Player player) {
-        super(player);
-    }
-    
 }

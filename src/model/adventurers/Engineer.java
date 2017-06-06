@@ -13,6 +13,6 @@ import model.player.Player;
 public class Engineer extends Adventurer {
     
     public Engineer(Player player) {
-        super(player);
+        super(player, AdventurerType.ENGINEER);
     }
 }

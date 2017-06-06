@@ -62,7 +62,7 @@ public class MainController implements Observer {
             players.put(pName, new Player(pName));
         } // end if
           // gameController.getCurrentGame().addPlayer(players.get(pName), AdventurerType.PILOT.getClassFor(null));
-        return true; // FIXME
+        return true;
     }// end addPlayer
     
     
@@ -86,6 +86,7 @@ public class MainController implements Observer {
                 createGame();
                 break;
             case BEGIN_GAME:
+                gameController.StartGame();
                 
                 break;
             case LOAD_GAME:

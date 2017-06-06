@@ -18,7 +18,7 @@ import model.player.Player;
 public class Explorer extends Adventurer {
     
     public Explorer(Player player) {
-        super(player);
+        super(player, AdventurerType.EXPLORER);
     }
     
     
@@ -33,7 +33,7 @@ public class Explorer extends Adventurer {
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
                 if (i != 0 || j != 0) { // we do not want the current tile
-                    tileTmp = (island.getTile(coords.getX() + i, coords.getY() + j));
+                    tileTmp = (island.getTile(coords.getCol() + i, coords.getRow() + j));
                     if ((tileTmp != null) && (tileTmp.getState() != TileState.SINKED)) {
                         reachable.add(tileTmp);
                     }

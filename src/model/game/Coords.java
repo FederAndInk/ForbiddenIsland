@@ -1,34 +1,42 @@
 package model.game;
 
+/**
+ * a class to define a position
+ * x : col
+ * y : row
+ * 
+ * @author nihil
+ *
+ */
 public class Coords {
-    private Integer x;
-    private Integer y;
+    private Integer col;
+    private Integer row;
     
     
-    public Coords(Integer x, Integer y) {
-        this.x = x;
-        this.y = y;
+    public Coords(Integer col, Integer row) {
+        this.col = col;
+        this.row = row;
     }
     
     
     /**
      * @return the x
      */
-    public Integer getX() {
-        return x;
+    public Integer getCol() {
+        return col;
     }
     
     
     /**
      * @return the y
      */
-    public Integer getY() {
-        return y;
+    public Integer getRow() {
+        return row;
     }
     
     
     @Override
     public String toString() {
-        return "(" + getX() + "," + getY() + ")";
+        return "(" + getCol() + "," + getRow() + ")";
     }
 }

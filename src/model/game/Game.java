@@ -42,7 +42,13 @@ public class Game {
         if (players.size() < 2) {
             throw new IndexOutOfBoundsException("Too few players");
         } // end if
+        randomAdventurer();
         initTreasure();
+        for (Player player : players) {
+            Site spawn = player.getCurrentAdventurer().getADVENTURER_TYPE().getSpawn();
+            player.getCurrentAdventurer().setSpawn(getIsland().getTile(spawn));
+        } // end for
+        
         Collections.shuffle(players);
         setCurrentPlayer(players.get(0));
         setCurrentAction(InGameAction.MOVE);
@@ -80,7 +86,7 @@ public class Game {
      */
     private void randomAdventurer() {
         ArrayList<AdventurerType> restAdv = new ArrayList<>(Arrays.asList(AdventurerType.values()));
-        restAdv.remove(AdventurerType.RANDOM);
+        restAdv.remove(AdventurerType.RANDOM); // normally done just later :
         for (Player player : players) {
             restAdv.remove(player.getCurrentAdventurer().getADVENTURER_TYPE());
         } // end for

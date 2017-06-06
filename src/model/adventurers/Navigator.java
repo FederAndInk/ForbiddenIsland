@@ -16,7 +16,7 @@ import util.message.InGameAction;
 public class Navigator extends Adventurer {
     
     public Navigator(Player player) {
-        super(player);
+        super(player, AdventurerType.NAVIGATOR);
     }
     
     

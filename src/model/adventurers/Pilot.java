@@ -22,7 +22,7 @@ public class Pilot extends Adventurer {
     
     
     public Pilot(Player player) {
-        super(player);
+        super(player, AdventurerType.PILOT);
         setHeliUsed(false);
     }
     

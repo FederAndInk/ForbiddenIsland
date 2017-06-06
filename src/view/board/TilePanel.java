@@ -40,8 +40,8 @@ public class TilePanel extends JPanel {
     private TextTile    text;
     
     private static final Border ACTIVE_BORDER_HOVER = BorderFactory.createLineBorder(Color.GREEN, 5, true);
-    private static final Border ACTIVE_BORDER_EXIT  = BorderFactory.createLineBorder(new Color(24, 184, 28), 4, true);
-    private static final Border INACTIVE_BORDER     = BorderFactory.createLineBorder(Color.DARK_GRAY, 2, true);
+    private static final Border ACTIVE_BORDER_EXIT  = BorderFactory.createLineBorder(new Color(10, 194, 10), 4, true);
+    private static final Border INACTIVE_BORDER     = BorderFactory.createLineBorder(Color.GRAY, 3, true);
     
     
     /**
@@ -52,6 +52,7 @@ public class TilePanel extends JPanel {
         super(new BorderLayout());
         this.site = site;
         this.pos = c;
+        setOpaque(false);
         
         init();
         initListeners();

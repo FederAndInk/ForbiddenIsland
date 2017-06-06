@@ -5,9 +5,10 @@ package model.adventurers;
 
 import java.lang.reflect.InvocationTargetException;
 
+import model.game.Site;
 import model.player.Player;
+import util.LogType;
 import util.Parameters;
-
 
 
 
@@ -16,23 +17,26 @@ import util.Parameters;
  *
  */
 public enum AdventurerType {
-    DIVER("Diver"),
-    ENGINEER("Engineer"),
-    EXPLORER("Explorer"),
-    MESSAGER("Messenger"),
-    NAVIGATOR("Navigator"),
-    PILOT("Pilot"),
-    RANDOM(null);
+    DIVER("Diver", Site.IRON_GATE),
+    ENGINEER("Engineer", Site.BRONZE_GATE),
+    EXPLORER("Explorer", Site.COPPER_GATE),
+    MESSENGER("Messenger", Site.SILVER_GATE),
+    NAVIGATOR("Navigator", Site.GOLD_GATE),
+    PILOT("Pilot", Site.FOOLS_LANDING),
+    RANDOM(null, null);
     
     private String className;
+    private Site   spawn;
     
     
     /**
      * @author nihil
      *
      */
-    private AdventurerType(String className) {
+    private AdventurerType(String className, Site spawn) {
         this.className = className;
+        this.spawn = spawn;
+        Parameters.printLog("instancate " + className + " type with " + spawn, LogType.INFO);
     }
     
     
@@ -45,6 +49,14 @@ public enum AdventurerType {
     
     
     /**
+     * @return the spawn
+     */
+    public Site getSpawn() {
+        return spawn;
+    }
+    
+    
+    /**
      * @author nihil
      *
      */
@@ -53,7 +65,7 @@ public enum AdventurerType {
     }
     
     
-     *
+    /**
      * @param p
      * @return an instance of a type adventurer class
      */
@@ -74,4 +86,13 @@ public enum AdventurerType {
         }
         return null;
     }// end getClassFor
+    
+    
+    /**
+     * @see java.lang.Enum#toString()
+     */
+    @Override
+    public String toString() {
+        return getClassName();
+    }
 }

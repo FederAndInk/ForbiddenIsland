@@ -1,5 +1,6 @@
 package model.player;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import model.adventurers.Adventurer;
@@ -9,14 +10,15 @@ import util.GameInfo;
 
 
 public class Player {
-    private Game                 currentGame;
-    private Collection<GameInfo> gamesStat;
-    private Adventurer           currentAdventurer;
-    private String               name;
+    private Game                currentGame;
+    private ArrayList<GameInfo> gamesStat;
+    private Adventurer          currentAdventurer;
+    private String              name;
     
     
     public Player(String name) {
         setName(name);
+        gamesStat = new ArrayList<>();
     }
     
     

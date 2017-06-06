@@ -49,10 +49,13 @@ public class GameView extends JFrame {
     }
     
     
-    public TilePanel getTileG(Coords c) {
-        TilePanel tilePanel = (TilePanel) gamePane.getGridPane()
-                .getComponent(c.getY() * Island.GRID_SIZE.getX() + c.getX());
-        Parameters.printLog("get " + tilePanel.getSite().getName() + " at " + c, LogType.ACCESS);
+    public JPanel getTileG(Coords c) {
+        JPanel tilePanel = (JPanel) gamePane.getGridPane().getComponent(c.getRow() * Island.GRID_SIZE.getCol() + c.getCol());
+        if (!(tilePanel instanceof TilePanel)) {
+            Parameters.printLog("get a JPanel", LogType.ACCESS);
+        } else {
+            Parameters.printLog("get " + ((TilePanel) tilePanel).getSite().getName() + " at " + c, LogType.ACCESS);
+        } // end if
         return tilePanel;
     }// end
      // getTileG

@@ -1,8 +1,8 @@
 package util.message;
 
+import model.adventurers.AdventurerType;
 import model.card.CardType;
 import model.game.Coords;
-import model.player.Pawn;
 import model.player.Player;
 
 
@@ -22,7 +22,7 @@ public enum InGameAction {
      */
     SELECT_TILE,
     /**
-     * @give a {@link Pawn}
+     * @give a {@link AdventurerType}
      */
     SELECT_PAWN,
     /**

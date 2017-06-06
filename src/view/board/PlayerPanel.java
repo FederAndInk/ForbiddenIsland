@@ -80,8 +80,8 @@ public class PlayerPanel extends JPanel {
      *
      */
     protected void addPawn(AdventurerType pawn) {
-        constraints.gridx = getNextCoords().getX();
-        constraints.gridy = getNextCoords().getY();
+        constraints.gridx = getNextCoords().getCol();
+        constraints.gridy = getNextCoords().getRow();
         add(new PawnComponant(pawn), constraints);
         pawns.add(pawn);
     }

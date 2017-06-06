@@ -38,7 +38,7 @@ public class BoardPanel extends JPanel {
     public BoardPanel(JFrame parentFrame) {
         super();
         layout = new SpringLayout();
-        gridPane = new JPanel(new GridLayout(6, 6, 2, 2));
+        gridPane = new JPanel(new GridLayout(6, 6, 3, 3));
         setParentFrame(parentFrame);
         setLayout(layout);
         setBoardSize(0.9);
@@ -76,11 +76,11 @@ public class BoardPanel extends JPanel {
                     "add " + (f == null ? "empty tile" : f.getName()) + " to board at (" + i + "," + j + ")",
                     LogType.GRAPHICS);
             
-            panel = f == null ? new JPanel() : new TilePanel(f, new Coords(i, j));
+            panel = f == null ? new JPanel() : new TilePanel(f, new Coords(j, i));
             
             gridPane.add(panel);
             j++;
-            if (j >= Island.GRID_SIZE.getX()) {
+            if (j >= Island.GRID_SIZE.getCol()) {
                 j = 0;
                 i++;
             } // end if

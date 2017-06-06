@@ -8,6 +8,7 @@ import model.game.Tile;
 import model.game.TileState;
 import model.player.Inventory;
 import model.player.Player;
+import util.LogType;
 import util.Parameters;
 import util.exception.InadequateUseOfCapacity;
 import util.exception.MoveException;
@@ -19,7 +20,7 @@ import util.message.InGameAction;
  * Can be
  * a {@link Diver}<br>
  * an {@link Engineer}<br>
- * an {@link Explorater}<br>
+ * an {@link Explorer}<br>
  * a {@link Messenger}<br>
  * a {@link Navigator}<br>
  * a {@link Pilot}
@@ -28,15 +29,17 @@ import util.message.InGameAction;
  *
  */
 public abstract class Adventurer {
-    private static final int MAX_ACTION_POINTS = 3;
-    private AdventurerType   ADVENTURER_TYPE;
-    private Player           player;
-    private Inventory        inventory;
-    private Tile             currentTile;
-    private int              actionPoints;
+    private static final int     MAX_ACTION_POINTS = 3;
+    private final AdventurerType ADVENTURER_TYPE;
+    private Player               player;
+    private Inventory            inventory;
+    private Tile                 currentTile;
+    private int                  actionPoints;
     
     
-    public Adventurer(Player player) {
+    protected Adventurer(Player player, AdventurerType adventurerType) {
+        this.ADVENTURER_TYPE = adventurerType;
+        
         setActionPoints(MAX_ACTION_POINTS);
         setPlayer(player);
         player.setCurrentAdventurer(this);
@@ -56,7 +59,7 @@ public abstract class Adventurer {
         if (getActionPoints() >= 1 && getReachableTiles().contains(tile)) {
             setCurrentTile(tile);
             setActionPoints(getActionPoints() - 1);
-            Parameters.printLog("le deplacement a été effectué");
+            Parameters.printLog("le deplacement a été effectué", LogType.INFO);
         } else {
             if (getActionPoints() <= 0) {
                 throw new MoveException(tile);
@@ -83,7 +86,7 @@ public abstract class Adventurer {
             effI = i % 2;
             effJ = j % 2;
             System.out.println(effI + "," + effJ);
-            tileTmp = island.getTile(coords.getX() + effI, coords.getY() + effJ);
+            tileTmp = island.getTile(coords.getCol() + effI, coords.getRow() + effJ);
             if ((tileTmp != null) && (tileTmp.getState() != TileState.SINKED)) {
                 reachable.add(tileTmp);
             }
@@ -122,6 +125,22 @@ public abstract class Adventurer {
      */
     public void endTurn() {
         setActionPoints(MAX_ACTION_POINTS);
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     * @param tile
+     * the spawn to set
+     */
+    public void setSpawn(Tile tile) {
+        if (getCurrentTile() == null) {
+            setCurrentTile(tile);
+            Parameters.printLog("set Spawn for " + getADVENTURER_TYPE(), LogType.INFO);
+        } else {
+            Parameters.printLog("Spawn already set for " + getADVENTURER_TYPE(), LogType.ERROR);
+        } // end if
     }
     
     

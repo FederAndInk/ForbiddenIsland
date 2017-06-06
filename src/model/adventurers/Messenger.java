@@ -16,7 +16,7 @@ import util.message.InGameAction;
 public class Messenger extends Adventurer {
     
     public Messenger(Player player) {
-        super(player);
+        super(player, AdventurerType.MESSENGER);
     }
     
     

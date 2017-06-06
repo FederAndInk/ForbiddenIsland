@@ -6,9 +6,12 @@ package controller;
 import java.util.Observable;
 import java.util.Stack;
 
+import javax.swing.JPanel;
+
 import model.card.CardType;
 import model.game.Coords;
 import model.game.Game;
+import model.game.Island;
 import model.game.Tile;
 import model.player.Player;
 import util.exception.MoveException;
@@ -16,6 +19,8 @@ import util.message.InGameAction;
 import util.message.InGameMessage;
 import util.message.MainMessage;
 import util.message.Message;
+import view.board.GameView;
+import view.board.TilePanel;
 
 
 
@@ -28,6 +33,7 @@ public class GameController {
     private CardType       cardPlayed;
     private Stack<Player>  playersChain;
     private Game           currentGame;
+    private GameView       gameView;
     
     
     /**
@@ -37,10 +43,25 @@ public class GameController {
      */
     public GameController(MainController mainController) {
         this.mainController = mainController;
+        gameView = new GameView();
     }
     
     
-    public void movePawn(Coords coords) {
+    /**
+     * @author nihil
+     *
+     */
+    public void StartGame() {
+        getCurrentGame().initGame();
+        
+        gameView.setBoard(getCurrentGame().getIsland().getSites());
+        
+        setMoveAction();
+        gameView.setVisible(true);
+    }
+    
+    
+    private void movePawn(Coords coords) {
         
         // TODO : do something if the move can't be applied (exception)
         // TODO : get the tile from the UI
@@ -58,8 +79,28 @@ public class GameController {
      * @author nihil
      *
      */
+    private void reInitBoard() {
+        for (int i = 0; i < Island.GRID_SIZE.getRow(); i++) {
+            for (int j = 0; j < Island.GRID_SIZE.getCol(); j++) {
+                JPanel tile = gameView.getTileG(new Coords(j, i));
+                if (tile instanceof TilePanel) {
+                    ((TilePanel) tile).setEnabled(false);
+                } // end if
+            } // end for
+        } // end for
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     */
     private void setMoveAction() {
-        
+        reInitBoard();
+        for (Tile tile : getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getReachableTiles()) {
+            System.out.println(tile);
+            gameView.setEnabled(true, tile.getCoords());
+        } // end forsetEnabled
     }
     
     
@@ -85,7 +126,7 @@ public class GameController {
     }
     
     
-    public void endTurn() {
+    private void endTurn() {
         playersChain.clear();
         playersChain.push(getCurrentGame().getCurrentPlayer());
         getCurrentGame().endTurn();

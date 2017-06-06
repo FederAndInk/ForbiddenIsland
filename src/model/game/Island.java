@@ -1,6 +1,9 @@
 package model.game;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
 
 import util.BoardGeneration;
 import util.BoardType;
@@ -22,7 +25,31 @@ public class Island {
      * @param pos
      */
     public Tile getTile(Coords pos) {
-        return (grid[pos.getX()][pos.getY()]);
+        return getTile(pos.getCol(), pos.getRow());
+    }
+    
+    
+    /**
+     * 
+     * @param pos
+     */
+    public Tile getTile(Site site) {
+        ArrayList<Tile> tiles = new ArrayList<>();
+        for (Tile[] tilesG : grid) {
+            tiles.addAll(Arrays.asList(tilesG));
+        } // end for
+        
+        tiles.removeAll(Collections.singleton(null));
+        
+        Iterator iterator = tiles.iterator();
+        if (iterator.hasNext()) {
+            Tile tile = (Tile) iterator.next();
+            while (iterator.hasNext() && (tile == null || !tile.getSite().equals(site))) {
+                tile = (Tile) iterator.next();
+            } // end while
+            return tile;
+        } // end if
+        return null;
     }
     
     
@@ -38,7 +65,7 @@ public class Island {
         ArrayList<Site> board = new ArrayList<>();
         for (int i = 0; i < grid.length; i++) {
             for (int j = 0; j < grid[i].length; j++) {
-                Tile tile = grid[i][j];
+                Tile tile = grid[j][i];
                 board.add(tile == null ? null : tile.getSite());
             } // end for
         } // end for
@@ -58,12 +85,16 @@ public class Island {
     /**
      * @author nihil
      *
-     * @param i
-     * @param j
+     * @param col
+     * @param row
      * @return
      */
-    public Tile getTile(int i, int j) {
-        return grid[i][j];
+    public Tile getTile(int col, int row) {
+        try {
+            return grid[col][row];
+        } catch (Exception e) {
+            return null;
+        } // end try
     }
     
 }

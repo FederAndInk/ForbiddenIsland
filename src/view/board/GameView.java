@@ -78,6 +78,8 @@ public class GameView extends JFrame {
     
     
     /**
+     * to set the board of the view (create components ...)
+     * 
      * @author nihil
      * @param observer
      *

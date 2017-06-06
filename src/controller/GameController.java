@@ -56,6 +56,8 @@ public class GameController implements Observer {
      */
     public void StartGame() {
         getCurrentGame().initGame();
+        playersChain.clear();
+        playersChain.push(getCurrentGame().getCurrentPlayer());
         
         gameView.setBoard(getCurrentGame().getIsland().getSites(), this);
         
@@ -77,7 +79,7 @@ public class GameController implements Observer {
                 ((TilePanel) panel).addPawn(player.getCurrentAdventurer().getADVENTURER_TYPE());
             } // end if
         } // end for
-    }
+    }// end setSpawns
     
     
     /**
@@ -148,7 +150,7 @@ public class GameController implements Observer {
         reInitBoard();
         for (Tile tile : getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getReachableTiles()) {
             gameView.setEnabled(true, tile.getCoords());
-        } // end forsetEnabled
+        } // end for
     }
     
     
@@ -179,6 +181,7 @@ public class GameController implements Observer {
         playersChain.clear();
         playersChain.push(getCurrentGame().getCurrentPlayer());
         getCurrentGame().endTurn();
+        setMoveAction();
     }// end endTurn
     
     
@@ -220,7 +223,7 @@ public class GameController implements Observer {
                 
                 break;
             case END_TURN:
-                
+                endTurn();
                 break;
             
             default:

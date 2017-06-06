@@ -48,8 +48,9 @@ public class PlayerPanel extends JPanel {
         setLayout(layout);
         
         constraints = new GridBagConstraints();
-        constraints.weighty = 1;
-        constraints.weightx = 1;
+        constraints.weighty = GridBagConstraints.RELATIVE;
+        constraints.weightx = GridBagConstraints.RELATIVE;
+        constraints.anchor = GridBagConstraints.CENTER;
     }
     
     
@@ -107,6 +108,7 @@ public class PlayerPanel extends JPanel {
             pawns.remove(pawn);
             remove(pawns.size());
         }
+        doLayout();
     }
     
 }

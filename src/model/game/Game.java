@@ -69,11 +69,11 @@ public class Game {
      * @return the number of players after adding they
      * @throws IndexOutOfBoundsException
      */
-    public Integer addPlayer(Player p, Adventurer adventurer) throws IndexOutOfBoundsException {
+    public Integer addPlayer(Adventurer adventurer) throws IndexOutOfBoundsException {
         if (players.size() < MAX_PLAYER) {
-            p.setCurrentGame(this);
-            p.setCurrentAdventurer(adventurer);
-            players.add(p);
+            adventurer.getPlayer().setCurrentGame(this);
+            adventurer.getPlayer().setCurrentAdventurer(adventurer);
+            players.add(adventurer.getPlayer());
         } else {
             throw new IndexOutOfBoundsException("Too many players");
         }

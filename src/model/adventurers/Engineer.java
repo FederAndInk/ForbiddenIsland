@@ -82,9 +82,10 @@ public class Engineer extends Adventurer {
     @Override
     public ArrayList<InGameAction> getPossibleActions() {
         ArrayList<InGameAction> arrayList = new ArrayList<>();
-        if (getActionPoints() > 0) {
+        if (getActionPoints() > 1 || (getActionPoints() == 1 && !continueShoreUp)) {
             return super.getPossibleActions();
-        } else if (continueShoreUp) {
+        }
+        if (continueShoreUp && getActionPoints() == 1) {
             arrayList.add(InGameAction.SHORE_UP_TILE);
         }
         return arrayList;

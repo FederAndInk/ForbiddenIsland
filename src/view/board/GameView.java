@@ -220,9 +220,10 @@ public class GameView extends JFrame {
      * enable a specific tile
      * @param b
      * @param c
+     * @param action
      */
-    public void setEnabled(boolean b, Coords c) {
-        getTileG(c).setEnabled(b);
+    public void setEnabled(boolean b, Coords c, InGameAction action) {
+        ((TilePanel) getTileG(c)).setEnabled(b, action);
     }
     
     

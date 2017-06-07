@@ -20,6 +20,6 @@ public class ActionException extends Exception {
      * (0) the remaining action
      */
     public ActionException(int nbAction) {
-        super("Move impossible, " + nbAction + "remaining");
+        super("Action impossible, " + nbAction + " actions remaining");
     }// end name
 }

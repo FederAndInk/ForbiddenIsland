@@ -35,6 +35,7 @@ import util.message.InGameMessage;
  */
 public class TilePanel extends JLayeredPane {
     private TileState    state;
+    private InGameAction action;
     private final Site   site;
     private final Coords pos;
     
@@ -43,9 +44,14 @@ public class TilePanel extends JLayeredPane {
     
     private mlTile listenerObs;
     
-    private static final Border ACTIVE_BORDER_HOVER = BorderFactory.createLineBorder(Color.GREEN, 5, true);
-    private static final Border ACTIVE_BORDER_EXIT  = BorderFactory.createLineBorder(new Color(10, 194, 10), 4, true);
-    private static final Border INACTIVE_BORDER     = BorderFactory.createLineBorder(Color.GRAY, 3, true);
+    private static final Border ACTIVE_BORDER_HOVER       = BorderFactory.createLineBorder(Color.GREEN, 5, true);
+    private static final Border ACTIVE_BORDER_SHORE_HOVER = BorderFactory.createLineBorder(new Color(255, 212, 2), 5,
+            true);
+    private static final Border ACTIVE_BORDER_EXIT        = BorderFactory.createLineBorder(new Color(10, 194, 10), 4,
+            true);
+    private static final Border ACTIVE_BORDER_SHORE_EXIT  = BorderFactory.createLineBorder(new Color(249, 170, 0), 4,
+            true);
+    private static final Border INACTIVE_BORDER           = BorderFactory.createLineBorder(Color.GRAY, 3, true);
     
     
     /**
@@ -149,12 +155,47 @@ public class TilePanel extends JLayeredPane {
      * enable or not the tile (if the player can go there) </br>
      * and set the correct border color (gray or green)
      * 
+     * @param b
+     * 
+     * @param action
+     * the action that causes the button's activation
+     * 
+     * @see javax.swing.AbstractButton#setEnabled(boolean)
+     */
+    public void setEnabled(boolean b, InGameAction action) {
+        setAction(action);
+        if (b) {
+            switch (action) {
+            case SHORE_UP_TILE:
+                setBorder(ACTIVE_BORDER_SHORE_EXIT);
+                
+                break;
+            
+            default:
+                setBorder(ACTIVE_BORDER_EXIT);
+                break;
+            }// end
+        } else {
+            setBorder(INACTIVE_BORDER);
+        } // end if
+        super.setEnabled(b);
+    }
+    
+    
+    /**
+     * enable or not the tile (if the player can go there) </br>
+     * and set the correct border color (gray or green)
+     * 
+     * @param b
+     * 
+     * 
      * @see javax.swing.AbstractButton#setEnabled(boolean)
      */
     @Override
     public void setEnabled(boolean b) {
         super.setEnabled(b);
         if (b) {
+            setAction(InGameAction.MOVE);
             setBorder(ACTIVE_BORDER_EXIT);
         } else {
             setBorder(INACTIVE_BORDER);
@@ -208,7 +249,16 @@ public class TilePanel extends JLayeredPane {
         @Override
         public void mouseExited(MouseEvent e) {
             if (isEnabled()) {
-                setBorder(ACTIVE_BORDER_EXIT);
+                switch (getAction()) {
+                case SHORE_UP_TILE:
+                    setBorder(ACTIVE_BORDER_SHORE_EXIT);
+                    
+                    break;
+                
+                default:
+                    setBorder(ACTIVE_BORDER_EXIT);
+                    break;
+                }// end switch
             } // end if
         }
         
@@ -216,7 +266,15 @@ public class TilePanel extends JLayeredPane {
         @Override
         public void mouseEntered(MouseEvent e) {
             if (isEnabled()) {
-                setBorder(ACTIVE_BORDER_HOVER);
+                switch (getAction()) {
+                case SHORE_UP_TILE:
+                    setBorder(ACTIVE_BORDER_SHORE_HOVER);
+                    break;
+                
+                default:
+                    setBorder(ACTIVE_BORDER_HOVER);
+                    break;
+                }// end switch
             } // end if
         }
         
@@ -246,5 +304,22 @@ public class TilePanel extends JLayeredPane {
      */
     public Coords getPos() {
         return pos;
+    }
+    
+    
+    /**
+     * @return the action
+     */
+    public InGameAction getAction() {
+        return action;
+    }
+    
+    
+    /**
+     * @param action
+     * the action to set
+     */
+    public void setAction(InGameAction action) {
+        this.action = action;
     }
 }

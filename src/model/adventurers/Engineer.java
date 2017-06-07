@@ -7,6 +7,7 @@ import model.game.TileState;
 import model.player.Player;
 import util.exception.ActionException;
 import util.exception.MoveException;
+import util.exception.TileException;
 import util.message.InGameAction;
 
 
@@ -60,19 +61,24 @@ public class Engineer extends Adventurer {
     
     
     @Override
-    public void shoreUp(Tile tile) throws ActionException, MoveException {
+    public void shoreUp(Tile tile) throws ActionException, TileException {
         if (getShoreUpTiles().contains(tile)) {
             if (isContinueShoreUp()) {
                 tile.setState(TileState.DRIED);
                 finishAction();
             } else if (getActionPoints() > 0) {
-                setContinueShoreUp(true);
                 tile.setState(TileState.DRIED);
+                // test for remain tiles to shore
+                if (!getShoreUpTiles().isEmpty()) {
+                    setContinueShoreUp(true);
+                } else {
+                    finishAction();
+                } // end if
             } else {
                 throw new ActionException(getActionPoints());
             }
         } else {
-            throw new MoveException(tile);
+            throw new TileException(tile, tile.getState());
         }
     }
     

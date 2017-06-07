@@ -13,6 +13,7 @@ import util.Parameters;
 import util.exception.ActionException;
 import util.exception.InadequateUseOfCapacity;
 import util.exception.MoveException;
+import util.exception.TileException;
 import util.message.InGameAction;
 
 
@@ -68,7 +69,7 @@ public abstract class Adventurer {
     }
     
     
-    public void shoreUp(Tile tile) throws MoveException, ActionException {
+    public void shoreUp(Tile tile) throws ActionException, TileException {
         if (getActionPoints() >= 1 && getShoreUpTiles().contains(tile)) {
             tile.setState(TileState.DRIED);
             finishAction();
@@ -76,7 +77,7 @@ public abstract class Adventurer {
             if (getActionPoints() < 1) {
                 throw new ActionException(getActionPoints());
             } else {
-                throw new MoveException(tile);
+                throw new TileException(tile, tile.getState());
             } // end if
         }
     }
@@ -156,12 +157,39 @@ public abstract class Adventurer {
     
     
     /**
+     * return the list of possible actions dynamically
+     * 
+     * @author nihil
+     *
+     * @return
+     */
+    public ArrayList<InGameAction> getPossibleActions() {
+        ArrayList<InGameAction> list = new ArrayList<>();
+        // action required
+        if (getActionPoints() > 0) {
+            list.add(InGameAction.GIVE_CARD);
+            list.add(InGameAction.MOVE);
+            if (!getShoreUpTiles().isEmpty()) {
+                list.add(InGameAction.SHORE_UP_TILE);
+            } // end if
+        } // end if
+          // no action required
+        if (inventory.hasCardUsable()) {
+            list.add(InGameAction.USE_CARD);
+        } // end if
+        return list;
+    }
+    
+    
+    /**
      * @author nihil
      *
      * @param tile
      * @throws InadequateUseOfCapacity
+     * @throws MoveException
+     * @throws ActionException
      */
-    public void useCapacity(Object o) throws InadequateUseOfCapacity {
+    public void useCapacity(Object o) throws InadequateUseOfCapacity, MoveException, ActionException {
         throw new InadequateUseOfCapacity();
     }// end useCapacity
     
@@ -294,23 +322,4 @@ public abstract class Adventurer {
         return ADVENTURER_TYPE;
     }
     
-    
-    /**
-     * @author nihil
-     *
-     * @return
-     */
-    public ArrayList<InGameAction> getPossibleActions() {
-        ArrayList<InGameAction> list = new ArrayList<>();
-        if (getActionPoints() > 0) {
-            list.add(InGameAction.GET_TREASURE);
-            list.add(InGameAction.GIVE_CARD);
-            list.add(InGameAction.MOVE);
-            list.add(InGameAction.SHORE_UP_TILE);
-        } // end if
-        if (inventory.hasCardUsable()) {
-            list.add(InGameAction.USE_CARD);
-        } // end if
-        return list;
-    }
 }

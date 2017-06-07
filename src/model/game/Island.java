@@ -16,7 +16,12 @@ public class Island {
     
     
     public Island() {
-        setGrid(BoardGeneration.generateBoard(BoardType.DEFAULT));
+        this(BoardType.DEFAULT);
+    }
+    
+    
+    public Island(BoardType bType) {
+        setGrid(BoardGeneration.generateBoard(bType));
     }
     
     

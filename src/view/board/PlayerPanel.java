@@ -3,14 +3,13 @@
  */
 package view.board;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import java.awt.Component;
+import java.awt.Point;
 import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
 import model.adventurers.AdventurerType;
-import model.game.Coords;
 import util.LogType;
 import util.Parameters;
 
@@ -22,8 +21,6 @@ import util.Parameters;
  */
 public class PlayerPanel extends JPanel {
     private ArrayList<AdventurerType> pawns;
-    private GridBagConstraints        constraints;
-    private GridBagLayout             layout;
     
     
     /**
@@ -44,12 +41,7 @@ public class PlayerPanel extends JPanel {
      *
      */
     private void init() {
-        layout = new GridBagLayout();
-        setLayout(layout);
         
-        constraints = new GridBagConstraints();
-        constraints.weighty = 1;
-        constraints.weightx = 1;
     }
     
     
@@ -58,19 +50,19 @@ public class PlayerPanel extends JPanel {
      *
      * @return the next position to place the pawn
      */
-    private Coords getNextCoords() {
+    private Point getNextCoords() {
         switch (pawns.size()) {
         case 0:
-            return new Coords(0, 0);
+            return new Point((int) (getSize().getWidth() * 0.05), (int) (getSize().getHeight() * 0.05));
         
         case 1:
-            return new Coords(2, 1);
+            return new Point((int) (getSize().getWidth() * 0.15), (int) (getSize().getHeight() * 0.15));
         
         case 2:
-            return new Coords(1, 1);
+            return new Point((int) (getSize().getWidth() * 0.25), (int) (getSize().getHeight() * 0.25));
         
         default:
-            return new Coords(3, 0);
+            return new Point((int) (getSize().getWidth() * 0.45), (int) (getSize().getHeight() * 0.05));
         }// end switch
     }// end getNextCoords
     
@@ -81,13 +73,11 @@ public class PlayerPanel extends JPanel {
      *
      */
     protected void addPawn(AdventurerType pawn) {
-        Parameters.printLog("Add " + pawn + " to " + ((TilePanel) getParent()).getPos(), LogType.INFO);
-        constraints.gridx = getNextCoords().getCol();
-        constraints.gridy = getNextCoords().getRow();
-        
-        pawns.add(pawn);
+        Parameters.printLog("Add " + pawn + " n°" + pawns.size() + " to " + ((TilePanel) getParent()).getPos(),
+                LogType.INFO);
         PawnComponant pComponant = new PawnComponant(pawn);
-        add(pComponant, constraints);
+        add(pComponant);
+        pawns.add(pawn);
         doLayout();
     }
     
@@ -105,8 +95,14 @@ public class PlayerPanel extends JPanel {
         } else {
             Parameters.printLog("Remove " + pawn + " from " + ((TilePanel) getParent()).getPos(), LogType.INFO);
             pawns.remove(pawn);
-            remove(pawns.size());
+            for (Component comp : getComponents()) {
+                PawnComponant paw = (PawnComponant) comp;
+                if (paw.getPawn().equals(pawn)) {
+                    remove(paw);
+                } // end if
+            } // end for
         }
+        doLayout();
     }
     
 }

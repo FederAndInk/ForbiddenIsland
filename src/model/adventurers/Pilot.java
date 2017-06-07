@@ -56,7 +56,7 @@ public class Pilot extends Adventurer {
         
         Island island = getPlayer().getCurrentGame().getIsland();
         
-        if (isHeliUsed()) {
+        if (!isHeliUsed()) {
             Tile tile;
             for (int x = 0; x <= 5; x++) {
                 for (int y = 0; y <= 5; y++) {
@@ -74,12 +74,25 @@ public class Pilot extends Adventurer {
     
     
     /**
+     * @author nihil
+     *
+     */
+    @Override
+    public void endTurn() {
+        super.endTurn();
+        setHeliUsed(false);
+    }
+    
+    
+    /**
      * @see model.adventurers.Adventurer#getPossibleActions()
      */
     @Override
     public ArrayList<InGameAction> getPossibleActions() {
         ArrayList<InGameAction> list = super.getPossibleActions();
-        list.add(InGameAction.USE_CAPACITY);
+        if (getActionPoints() > 0) {
+            list.add(InGameAction.USE_CAPACITY);
+        } // end if
         return list;
     }
     

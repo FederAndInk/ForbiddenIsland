@@ -1,10 +1,12 @@
 package model.adventurers;
 
 import java.util.ArrayList;
+
 import model.game.Tile;
 import model.game.TileState;
 import model.player.Player;
 import util.exception.MoveException;
+import util.message.InGameAction;
 
 
 
@@ -21,6 +23,7 @@ public class Engineer extends Adventurer {
     
     public Engineer(Player player) {
         super(player, AdventurerType.ENGINEER);
+        setContinueShoreUp(false);
     }
     
     
@@ -33,16 +36,37 @@ public class Engineer extends Adventurer {
     }
     
     
+    public boolean actionsRemains() {
+        return continueShoreUp || getActionPoints() > 0;
+    }// end actionsRemains
+    
+    
+    /**
+     * @author nihil
+     *
+     */
+    @Override
+    protected void finishAction() {
+        if (continueShoreUp) {
+            setActionPoints(getActionPoints() - 1);
+            setContinueShoreUp(false);
+        } else if (getActionPoints() > 0) {
+            setActionPoints(getActionPoints() - 1);
+        } else {
+            // TODO : throw new
+        } // end if
+    }// end finishAction
+    
+    
     @Override
     public void shoreUp(Tile tile) {
         if (getShoreUpTiles().contains(tile)) {
             if (isContinueShoreUp()) {
                 tile.setState(TileState.DRIED);
-                setContinueShoreUp(false);
-            } else if (getActionPoints() >= 1) {
-                setContinueShoreUp(isContinueShoreUp());
+                finishAction();
+            } else if (getActionPoints() > 0) {
+                setContinueShoreUp(true);
                 tile.setState(TileState.DRIED);
-                setActionPoints(getActionPoints() - 1);
             } else {
                 // FIXME : add throws
             }
@@ -52,18 +76,35 @@ public class Engineer extends Adventurer {
     }
     
     
+    /**
+     * @see model.adventurers.Adventurer#getPossibleActions()
+     */
+    @Override
+    public ArrayList<InGameAction> getPossibleActions() {
+        ArrayList<InGameAction> arrayList = new ArrayList<>();
+        if (getActionPoints() > 1 || (getActionPoints() == 1 && !continueShoreUp)) {
+            return super.getPossibleActions();
+        }
+        if (continueShoreUp && getActionPoints() == 1) {
+            arrayList.add(InGameAction.SHORE_UP_TILE);
+        }
+        return arrayList;
+    }
+    
+    
     @Override
     public void move(Tile tile) throws MoveException {
-        setContinueShoreUp(false);
-        super.move(tile); // To change body of generated methods, choose Tools | Templates.
-        
+        if (continueShoreUp) {
+            finishAction();
+        } // end if
+        super.move(tile);
     }
     
     
     @Override
     public void endTurn() {
         setContinueShoreUp(false);
-        super.endTurn(); // To change body of generated methods, choose Tools | Templates.
+        super.endTurn();
     }
     
     

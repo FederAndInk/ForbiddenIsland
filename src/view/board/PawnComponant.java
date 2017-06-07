@@ -33,7 +33,9 @@ public class PawnComponant extends JComponent {
     
     /**
      * @author nihil
-     *
+     * @param pawn
+     * give the {@link AdventurerType} and the maagic trick will do effect
+     * 
      */
     public PawnComponant(AdventurerType pawn) {
         this.pawn = pawn;
@@ -103,6 +105,11 @@ public class PawnComponant extends JComponent {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    
+    
+    public AdventurerType getPawn() {
+        return pawn;
     }
     
     

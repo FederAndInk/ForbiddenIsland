@@ -32,7 +32,9 @@ public class Navigator extends Adventurer {
     @Override
     public ArrayList<InGameAction> getPossibleActions() {
         ArrayList<InGameAction> list = super.getPossibleActions();
-        list.add(InGameAction.USE_CAPACITY);
+        if (getActionPoints() > 0) {
+            list.add(InGameAction.USE_CAPACITY);
+        } // end if
         return list;
     }
 }

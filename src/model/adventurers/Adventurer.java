@@ -48,14 +48,17 @@ public abstract class Adventurer {
     
     
     protected ArrayList<Tile> getShoreUpTiles(ArrayList<Tile> reachableTiles) {
-        ArrayList<Tile> shoreUpTiles = reachableTiles;
-        shoreUpTiles.add(getCurrentTile());
-        for (Tile shoreUpTile : shoreUpTiles) {
-            if (!shoreUpTile.getState().equals(TileState.FLOODED)) {
-                shoreUpTiles.remove(shoreUpTile);
+        ArrayList<Tile> sUTiles = reachableTiles;
+        sUTiles.add(getCurrentTile());
+        
+        for (int i = 0; i < sUTiles.size(); i++) {
+            if (!sUTiles.get(i).getState().equals(TileState.FLOODED)) {
+                sUTiles.remove(sUTiles.get(i));
+                i--;
             }
-        }
-        return shoreUpTiles;
+        } // end for
+        return sUTiles;
+        
     }
     
     
@@ -67,10 +70,23 @@ public abstract class Adventurer {
     public void shoreUp(Tile tile) {
         if (getActionPoints() >= 1 && getShoreUpTiles().contains(tile)) {
             tile.setState(TileState.DRIED);
-            setActionPoints(getActionPoints() - 1);
+            finishAction();
         } else {
             // FIXME : add throws
         }
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     */
+    protected void finishAction() {
+        if (getActionPoints() > 0) {
+            setActionPoints(getActionPoints() - 1);
+        } else {
+            // TODO : throw new
+        } // end if
     }
     
     
@@ -85,8 +101,8 @@ public abstract class Adventurer {
     public void move(Tile tile) throws MoveException {
         if (getActionPoints() >= 1 && getReachableTiles().contains(tile)) {
             setCurrentTile(tile);
-            setActionPoints(getActionPoints() - 1);
             Parameters.printLog("le deplacement a été effectué", LogType.INFO);
+            finishAction();
         } else {
             if (getActionPoints() <= 0) {
                 throw new MoveException(tile);
@@ -122,7 +138,6 @@ public abstract class Adventurer {
         for (int i = -1; i <= 2; i += 1) {
             effI = i % 2;
             effJ = j % 2;
-            System.out.println(effI + "," + effJ);
             tileTmp = island.getTile(coords.getCol() + effI, coords.getRow() + effJ);
             if ((tileTmp != null) && (tileTmp.getState() != TileState.SINKED)) {
                 reachable.add(tileTmp);
@@ -290,6 +305,6 @@ public abstract class Adventurer {
         if (inventory.hasCardUsable()) {
             list.add(InGameAction.USE_CARD);
         } // end if
-        return null;
+        return list;
     }
 }

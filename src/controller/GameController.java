@@ -19,6 +19,7 @@ import model.game.Tile;
 import model.player.Player;
 import util.LogType;
 import util.Parameters;
+import util.exception.InadequateUseOfCapacity;
 import util.exception.MoveException;
 import util.message.InGameAction;
 import util.message.InGameMessage;
@@ -69,6 +70,9 @@ public class GameController implements Observer {
         refreshBoard();
         setMoveAction();
         gameView.setCurrentP(getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getADVENTURER_TYPE());
+        gameView.setActions(getCurrentGame().getPossibleActions());
+        gameView.setCPlayer(getCurrentGame().getCurrentPlayer().getName(),
+                getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getActionPoints());
         gameView.setVisible(true);
         
     }
@@ -130,6 +134,25 @@ public class GameController implements Observer {
         
         // to update the view
         gameView.shoreUp(tile.getCoords());
+        setMoveAction();
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     * @param tile
+     */
+    private void useCapacity(Tile tile) {
+        Adventurer adv = getCurrentGame().getCurrentPlayer().getCurrentAdventurer();
+        Tile cTile = adv.getCurrentTile();
+        
+        try {
+            adv.useCapacity(tile);
+        } catch (InadequateUseOfCapacity e) {
+            e.printStackTrace();
+        }
+        gameView.movePawn(adv.getADVENTURER_TYPE(), cTile.getCoords(), tile.getCoords());
         setMoveAction();
     }
     
@@ -199,12 +222,42 @@ public class GameController implements Observer {
     }
     
     
+    /**
+     * to update the view for using capacity action of the current player
+     * 
+     * @author nihil
+     *
+     */
+    private void setCapacityActionT() {
+        if (getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getActionPoints() > 0) {
+            gameView.notifyPlayers("Cliquer sur une partie de l'ile en vert pour vous y rendre");
+            getCurrentGame().setCurrentAction(InGameAction.USE_CAPACITY);
+            Parameters.printLog("get Capacity", LogType.INFO);
+            
+            ArrayList<Object> objs;
+            ArrayList<Tile> tiles = new ArrayList<>();
+            try {
+                objs = getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getPotentialUse();
+                for (int i = 0; i < objs.size(); i++) {
+                    tiles.add(i, (Tile) objs.get(i));
+                } // end for
+                refreshBoard(tiles);
+            } catch (InadequateUseOfCapacity e) {
+                e.printStackTrace();
+            }
+        } else {
+            verifyEndTurn();
+        } // end if
+    }
+    
+    
     private void endTurn() {
         playersChain.clear();
         getCurrentGame().endTurn();
         playersChain.push(getCurrentGame().getCurrentPlayer());
         setMoveAction();
-        gameView.setCPlayer("Tour de " + getCurrentGame().getCurrentPlayer().getName());
+        gameView.setCPlayer(getCurrentGame().getCurrentPlayer().getName(),
+                getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getActionPoints());
         gameView.setCurrentP(getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getADVENTURER_TYPE());
     }// end endTurn
     
@@ -245,6 +298,9 @@ public class GameController implements Observer {
             case SHORE_UP_TILE:
                 shoreUp(getCurrentGame().getIsland().getTile(coords));
                 break;
+            case USE_CAPACITY:
+                useCapacity(getCurrentGame().getIsland().getTile(coords));
+                break;
             default:
                 break;
             }// end switch
@@ -279,7 +335,7 @@ public class GameController implements Observer {
                 setShoreUpAction();
                 break;
             case USE_CAPACITY:
-                
+                setCapacityActionT();
                 break;
             case USE_CARD:
                 
@@ -304,7 +360,14 @@ public class GameController implements Observer {
             throw new IllegalArgumentException("The class " + arg0.getClass().getName() + " was going to send "
                     + arg1.getClass() + " Object, but a " + InGameMessage.class.getName() + " is expected");
         } // end if
-        verifyEndTurn();
+        gameView.setCPlayer(getCurrentGame().getCurrentPlayer().getName(),
+                getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getActionPoints());
+        if (verifyEndTurn()) {
+            
+        } else {
+            gameView.setActions(getCurrentGame().getPossibleActions());
+        } // end if
+        
     }
     
     
@@ -312,16 +375,19 @@ public class GameController implements Observer {
      * verify if the turn can be end
      * 
      * @author nihil
+     * @return true if this is the end of turn (no actions remaining)
      *
      */
-    private void verifyEndTurn() {
+    private boolean verifyEndTurn() {
         if (getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getPossibleActions().isEmpty()) {
             gameView.setEndTurn(true);
             gameView.notifyPlayers("C'est la fin du tour pour " + getCurrentGame().getCurrentPlayer().getName());
             reInitBoard();
             Parameters.printLog("SetEndTurn", LogType.INFO);
+            return true;
         } else {
             gameView.setEndTurn(false);
+            return false;
         } // end if
     }
     

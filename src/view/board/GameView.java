@@ -106,8 +106,8 @@ public class GameView extends JFrame {
      * @author nihil
      *
      */
-    public void setCPlayer(String str) {
-        infoPlayerC.setText(str);
+    public void setCPlayer(String str, int act) {
+        infoPlayerC.setText("Joueur " + str + " Reste " + act + " actions");
     }
     
     
@@ -168,6 +168,19 @@ public class GameView extends JFrame {
         moveBtn.setEnabled(!b);
         shoreUpBtn.setEnabled(!b);
         useCapacityBtn.setEnabled(!b);
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     */
+    public void setActions(ArrayList<InGameAction> act) {
+        if (act.contains(InGameAction.USE_CAPACITY)) {
+            useCapacityBtn.setEnabled(true);
+        } else {
+            useCapacityBtn.setEnabled(false);
+        } // end if
     }
     
     

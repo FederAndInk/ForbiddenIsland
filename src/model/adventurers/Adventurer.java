@@ -70,10 +70,23 @@ public abstract class Adventurer {
     public void shoreUp(Tile tile) {
         if (getActionPoints() >= 1 && getShoreUpTiles().contains(tile)) {
             tile.setState(TileState.DRIED);
-            setActionPoints(getActionPoints() - 1);
+            finishAction();
         } else {
             // FIXME : add throws
         }
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     */
+    protected void finishAction() {
+        if (getActionPoints() > 0) {
+            setActionPoints(getActionPoints() - 1);
+        } else {
+            // TODO : throw new
+        } // end if
     }
     
     
@@ -88,8 +101,8 @@ public abstract class Adventurer {
     public void move(Tile tile) throws MoveException {
         if (getActionPoints() >= 1 && getReachableTiles().contains(tile)) {
             setCurrentTile(tile);
-            setActionPoints(getActionPoints() - 1);
             Parameters.printLog("le deplacement a été effectué", LogType.INFO);
+            finishAction();
         } else {
             if (getActionPoints() <= 0) {
                 throw new MoveException(tile);

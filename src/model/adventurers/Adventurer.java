@@ -48,14 +48,17 @@ public abstract class Adventurer {
     
     
     protected ArrayList<Tile> getShoreUpTiles(ArrayList<Tile> reachableTiles) {
-        ArrayList<Tile> shoreUpTiles = reachableTiles;
-        shoreUpTiles.add(getCurrentTile());
-        for (Tile shoreUpTile : shoreUpTiles) {
-            if (!shoreUpTile.getState().equals(TileState.FLOODED)) {
-                shoreUpTiles.remove(shoreUpTile);
+        ArrayList<Tile> sUTiles = reachableTiles;
+        sUTiles.add(getCurrentTile());
+        
+        for (int i = 0; i < sUTiles.size(); i++) {
+            if (!sUTiles.get(i).getState().equals(TileState.FLOODED)) {
+                sUTiles.remove(sUTiles.get(i));
+                i--;
             }
-        }
-        return shoreUpTiles;
+        } // end for
+        return sUTiles;
+        
     }
     
     
@@ -122,7 +125,6 @@ public abstract class Adventurer {
         for (int i = -1; i <= 2; i += 1) {
             effI = i % 2;
             effJ = j % 2;
-            System.out.println(effI + "," + effJ);
             tileTmp = island.getTile(coords.getCol() + effI, coords.getRow() + effJ);
             if ((tileTmp != null) && (tileTmp.getState() != TileState.SINKED)) {
                 reachable.add(tileTmp);
@@ -290,6 +292,6 @@ public abstract class Adventurer {
         if (inventory.hasCardUsable()) {
             list.add(InGameAction.USE_CARD);
         } // end if
-        return null;
+        return list;
     }
 }

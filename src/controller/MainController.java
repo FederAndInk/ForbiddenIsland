@@ -4,6 +4,8 @@ import java.util.*;
 
 import model.game.Game;
 import model.player.Player;
+import util.LogType;
+import util.Parameters;
 import util.message.InGameMessage;
 import util.message.MainAction;
 import util.message.MainMessage;
@@ -111,7 +113,7 @@ public class MainController implements Observer {
                 break;
             default:
                 if (arg1 instanceof InGameMessage) {
-                    System.out.println("InGame action Message");
+                    Parameters.printLog("InGame action Message", LogType.INFO);
                 } else {
                     throw new IllegalArgumentException("The class " + arg0.getClass().getName() + " was going to send "
                             + arg1.getClass() + " Object, but a " + MainMessage.class.getName() + " is expected");

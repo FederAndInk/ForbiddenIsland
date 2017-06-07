@@ -1,6 +1,6 @@
 package model.player;
 
-import java.util.Collection;
+import java.util.ArrayList;
 
 import model.card.Card;
 import model.game.Treasure;
@@ -9,9 +9,19 @@ import model.game.Treasure;
 
 public class Inventory {
     
-    private Collection<Card>     cards;
-    private Collection<Treasure> tresures;
-    private static final int     MAX_CARD = 5;
+    private ArrayList<Card>     cards;
+    private ArrayList<Treasure> tresures;
+    private static final int    MAX_CARD = 5;
+    
+    
+    /**
+     * @author nihil
+     *
+     */
+    public Inventory() {
+        cards = new ArrayList<>();
+        tresures = new ArrayList<>();
+    }
     
     
     /**

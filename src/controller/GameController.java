@@ -3,6 +3,7 @@
  */
 package controller;
 
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Stack;
@@ -47,6 +48,7 @@ public class GameController implements Observer {
     public GameController(MainController mainController) {
         this.mainController = mainController;
         gameView = new GameView();
+        gameView.getListObs().addObserver(this);
         playersChain = new Stack<>();
     }
     
@@ -64,8 +66,11 @@ public class GameController implements Observer {
         
         setSpawns();
         
+        refreshBoard();
         setMoveAction();
+        gameView.setCurrentP(getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getADVENTURER_TYPE());
         gameView.setVisible(true);
+        
     }
     
     
@@ -103,11 +108,7 @@ public class GameController implements Observer {
             
             // to update the view
             gameView.movePawn(adv.getADVENTURER_TYPE(), cTile.getCoords(), coords);
-            if (adv.getActionPoints() > 0) {
-                setMoveAction();
-            } else {
-                reInitBoard();
-            } // end if
+            setMoveAction();
         } catch (MoveException e) {
             e.printStackTrace();
         }
@@ -118,8 +119,48 @@ public class GameController implements Observer {
     /**
      * @author nihil
      *
+     * @param tile
+     */
+    private void shoreUp(Tile tile) {
+        Game g = getCurrentGame();
+        Adventurer adv = g.getCurrentPlayer().getCurrentAdventurer();
+        
+        adv.shoreUp(tile);
+        Parameters.printLog("Shore Up " + tile, LogType.INFO);
+        
+        // to update the view
+        gameView.shoreUp(tile.getCoords());
+        setMoveAction();
+    }
+    
+    
+    /**
+     * @author nihil
+     *
      */
     private void refreshBoard() {
+        reInitBoard();
+        Tile[][] grid = getCurrentGame().getIsland().getGrid();
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[i].length; j++) {
+                if (gameView.getTileG(new Coords(j, i)) instanceof TilePanel) {
+                    TilePanel tileG = (TilePanel) gameView.getTileG(new Coords(j, i));
+                    tileG.setState(grid[j][i].getState());
+                } // end if
+            } // end for
+        } // end
+    } // end for
+    
+    
+    /**
+     * @author nihil
+     *
+     */
+    private void refreshBoard(ArrayList<Tile> selectedTiles) {
+        reInitBoard();
+        for (Tile tile : selectedTiles) {
+            gameView.setEnabled(true, tile.getCoords());
+        } // end for
     }
     
     
@@ -136,6 +177,7 @@ public class GameController implements Observer {
                 } // end if
             } // end for
         } // end for
+        gameView.doLayout();
     }
     
     
@@ -146,12 +188,41 @@ public class GameController implements Observer {
      *
      */
     private void setMoveAction() {
-        getCurrentGame().setCurrentAction(InGameAction.MOVE);
-        Parameters.printLog("get Move", LogType.INFO);
-        reInitBoard();
-        for (Tile tile : getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getReachableTiles()) {
-            gameView.setEnabled(true, tile.getCoords());
-        } // end for
+        if (getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getActionPoints() > 0) {
+            gameView.notifyPlayers("Cliquer sur une partie de l'ile en vert pour vous y rendre");
+            getCurrentGame().setCurrentAction(InGameAction.MOVE);
+            Parameters.printLog("get Move", LogType.INFO);
+            refreshBoard(getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getReachableTiles());
+        } else {
+            verifyEndTurn();
+        } // end if
+    }
+    
+    
+    private void endTurn() {
+        playersChain.clear();
+        getCurrentGame().endTurn();
+        playersChain.push(getCurrentGame().getCurrentPlayer());
+        setMoveAction();
+        gameView.setCPlayer("Tour de " + getCurrentGame().getCurrentPlayer().getName());
+        gameView.setCurrentP(getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getADVENTURER_TYPE());
+    }// end endTurn
+    
+    
+    /**
+     * @author nihil
+     *
+     */
+    private void setShoreUpAction() {
+        ArrayList<Tile> tiles = getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getShoreUpTiles();
+        if (tiles.isEmpty()) {
+            gameView.notifyPlayers("Aucune partie de l'ile proche de vous à assécher");
+            setMoveAction();
+        } else {
+            getCurrentGame().setCurrentAction(InGameAction.SHORE_UP_TILE);
+            Parameters.printLog("get Shore Up tiles", LogType.INFO);
+            refreshBoard(tiles);
+        } // end if
     }
     
     
@@ -161,6 +232,8 @@ public class GameController implements Observer {
      *
      */
     private void doAction(Object object) {
+        Adventurer adv = getCurrentGame().getCurrentPlayer().getCurrentAdventurer();
+        
         if (object instanceof Coords) {
             Coords coords = (Coords) object;
             
@@ -169,21 +242,15 @@ public class GameController implements Observer {
                 movePawn(coords);
                 
                 break;
-            
+            case SHORE_UP_TILE:
+                shoreUp(getCurrentGame().getIsland().getTile(coords));
+                break;
             default:
                 break;
             }// end switch
         } // end if
         
     }
-    
-    
-    private void endTurn() {
-        playersChain.clear();
-        getCurrentGame().endTurn();
-        playersChain.push(getCurrentGame().getCurrentPlayer());
-        setMoveAction();
-    }// end endTurn
     
     
     /**
@@ -209,7 +276,7 @@ public class GameController implements Observer {
                 
                 break;
             case SHORE_UP_TILE:
-                
+                setShoreUpAction();
                 break;
             case USE_CAPACITY:
                 
@@ -232,10 +299,29 @@ public class GameController implements Observer {
             }// end switch
             
         } else if (arg1 instanceof MainMessage) {
-            System.out.println("Main action Message");
+            Parameters.printLog("Main action Message", LogType.INFO);
         } else {
             throw new IllegalArgumentException("The class " + arg0.getClass().getName() + " was going to send "
                     + arg1.getClass() + " Object, but a " + InGameMessage.class.getName() + " is expected");
+        } // end if
+        verifyEndTurn();
+    }
+    
+    
+    /**
+     * verify if the turn can be end
+     * 
+     * @author nihil
+     *
+     */
+    private void verifyEndTurn() {
+        if (getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getPossibleActions().isEmpty()) {
+            gameView.setEndTurn(true);
+            gameView.notifyPlayers("C'est la fin du tour pour " + getCurrentGame().getCurrentPlayer().getName());
+            reInitBoard();
+            Parameters.printLog("SetEndTurn", LogType.INFO);
+        } else {
+            gameView.setEndTurn(false);
         } // end if
     }
     

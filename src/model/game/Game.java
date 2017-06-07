@@ -5,6 +5,7 @@ import java.util.*;
 import model.adventurers.Adventurer;
 import model.adventurers.AdventurerType;
 import model.player.Player;
+import util.BoardType;
 import util.LogType;
 import util.Parameters;
 import util.message.InGameAction;
@@ -25,13 +26,22 @@ public class Game {
     private InGameAction currentAction;
     
     
-    public Game() {
+    /**
+     * @author nihil
+     *
+     */
+    public Game(BoardType bType) {
         started = false;
-        island = new Island();
+        island = new Island(bType);
         treasureDeck = new TreasureDeck();
         floodDeck = new FloodDeck();
         players = new LinkedList<>();
         treasures = new ArrayList<>();
+    }
+    
+    
+    public Game() {
+        this(BoardType.DEFAULT);
     }
     
     

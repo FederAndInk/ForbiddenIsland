@@ -176,11 +176,9 @@ public class GameView extends JFrame {
      *
      */
     public void setActions(ArrayList<InGameAction> act) {
-        if (act.contains(InGameAction.USE_CAPACITY)) {
-            useCapacityBtn.setEnabled(true);
-        } else {
-            useCapacityBtn.setEnabled(false);
-        } // end if
+        useCapacityBtn.setEnabled(act.contains(InGameAction.USE_CAPACITY));
+        moveBtn.setEnabled(act.contains(InGameAction.MOVE));
+        shoreUpBtn.setEnabled(act.contains(InGameAction.SHORE_UP_TILE));
     }
     
     

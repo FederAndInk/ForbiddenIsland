@@ -162,7 +162,6 @@ public class GameView extends JFrame {
      *
      */
     public void setEndTurn(boolean b) {
-        // FIXME : do something for endTurn
         endTurnBtn.setBorder(b ? BorderFactory.createLineBorder(Color.GREEN, 4) : UIManager.getBorder("Button.border"));
         endTurnBtn.repaint();
         moveBtn.setEnabled(!b);

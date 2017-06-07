@@ -1,5 +1,6 @@
 package controller;
 
+import java.io.Serializable;
 import java.util.*;
 
 import model.game.Game;
@@ -12,7 +13,11 @@ import util.message.MainMessage;
 
 
 
-public class MainController implements Observer {
+/**
+ * @author nihil
+ *
+ */
+public class MainController implements Observer, Serializable {
     
     private HashMap<String, Player> players;
     private ArrayList<Game>         savedGames;
@@ -58,11 +63,9 @@ public class MainController implements Observer {
     
     
     public boolean addPlayer(String pName) {
-        // FIXME : get data from the UI or the UI send the player directly ?
         if (!getPlayers().containsKey(pName)) {
             players.put(pName, new Player(pName));
         } // end if
-          // gameController.getCurrentGame().addPlayer(players.get(pName), AdventurerType.PILOT.getClassFor(null));
         return true;
     }// end addPlayer
     

@@ -45,17 +45,18 @@ public class Engineer extends Adventurer {
     
     /**
      * @author nihil
+     * @throws ActionException
      *
      */
     @Override
-    protected void finishAction() {
+    protected void finishAction() throws ActionException {
         if (continueShoreUp) {
             setActionPoints(getActionPoints() - 1);
             setContinueShoreUp(false);
         } else if (getActionPoints() > 0) {
             setActionPoints(getActionPoints() - 1);
         } else {
-            // TODO : throw new
+            throw new ActionException(getActionPoints());
         } // end if
     }// end finishAction
     

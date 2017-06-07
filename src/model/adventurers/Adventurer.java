@@ -85,13 +85,14 @@ public abstract class Adventurer {
     
     /**
      * @author nihil
+     * @throws ActionException
      *
      */
-    protected void finishAction() {
+    protected void finishAction() throws ActionException {
         if (getActionPoints() > 0) {
             setActionPoints(getActionPoints() - 1);
         } else {
-            // TODO : throw new
+            throw new ActionException(getActionPoints());
         } // end if
     }
     

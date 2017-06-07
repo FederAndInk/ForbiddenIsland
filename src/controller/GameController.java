@@ -96,9 +96,6 @@ public class GameController implements Observer {
      * @param coords
      */
     private void movePawn(Coords coords) {
-        
-        // TODO : do something if the move can't be applied (exception)
-        // TODO : get the tile from the UI
         try {
             Game g = getCurrentGame();
             Adventurer adv = g.getCurrentPlayer().getCurrentAdventurer();

@@ -132,15 +132,11 @@ public class BoardPanel extends JPanel {
             
             @Override
             public void componentHidden(ComponentEvent arg0) {
-                // TODO Auto-generated method stub
-                
             }
             
             
             @Override
             public void componentMoved(ComponentEvent arg0) {
-                // TODO Auto-generated method stub
-                
             }
         });
     }

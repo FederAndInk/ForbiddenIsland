@@ -51,7 +51,6 @@ public class Parameters {
             genv.registerFont(font);
             return font;
         } catch (FontFormatException | IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return null;

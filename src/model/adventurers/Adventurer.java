@@ -10,6 +10,7 @@ import model.player.Inventory;
 import model.player.Player;
 import util.LogType;
 import util.Parameters;
+import util.exception.ActionException;
 import util.exception.InadequateUseOfCapacity;
 import util.exception.MoveException;
 import util.message.InGameAction;
@@ -67,12 +68,16 @@ public abstract class Adventurer {
     }
     
     
-    public void shoreUp(Tile tile) {
+    public void shoreUp(Tile tile) throws MoveException, ActionException {
         if (getActionPoints() >= 1 && getShoreUpTiles().contains(tile)) {
             tile.setState(TileState.DRIED);
             finishAction();
         } else {
-            // FIXME : add throws
+            if (getActionPoints() < 1) {
+                throw new ActionException(getActionPoints());
+            } else {
+                throw new MoveException(tile);
+            } // end if
         }
     }
     
@@ -97,8 +102,9 @@ public abstract class Adventurer {
      * @param tile
      * @return true if the move done
      * @throws MoveException
+     * @throws ActionException
      */
-    public void move(Tile tile) throws MoveException {
+    public void move(Tile tile) throws MoveException, ActionException {
         if (getActionPoints() >= 1 && getReachableTiles().contains(tile)) {
             setCurrentTile(tile);
             Parameters.printLog("le deplacement a été effectué", LogType.INFO);
@@ -107,7 +113,7 @@ public abstract class Adventurer {
             if (getActionPoints() <= 0) {
                 throw new MoveException(tile);
             } else {
-                throw new MoveException(getActionPoints());
+                throw new ActionException(getActionPoints());
             } // end if
         }
         

@@ -19,6 +19,7 @@ import model.game.Tile;
 import model.player.Player;
 import util.LogType;
 import util.Parameters;
+import util.exception.ActionException;
 import util.exception.InadequateUseOfCapacity;
 import util.exception.MoveException;
 import util.message.InGameAction;
@@ -115,6 +116,8 @@ public class GameController implements Observer {
             setMoveAction();
         } catch (MoveException e) {
             e.printStackTrace();
+        } catch (ActionException e) {
+            e.printStackTrace();
         }
         
     }
@@ -129,12 +132,16 @@ public class GameController implements Observer {
         Game g = getCurrentGame();
         Adventurer adv = g.getCurrentPlayer().getCurrentAdventurer();
         
-        adv.shoreUp(tile);
-        Parameters.printLog("Shore Up " + tile, LogType.INFO);
-        
-        // to update the view
-        gameView.shoreUp(tile.getCoords());
-        setMoveAction();
+        try {
+            adv.shoreUp(tile);
+            Parameters.printLog("Shore Up " + tile, LogType.INFO);
+            
+            // to update the view
+            gameView.shoreUp(tile.getCoords());
+            setMoveAction();
+        } catch (MoveException | ActionException e) {
+            e.printStackTrace();
+        }
     }
     
     

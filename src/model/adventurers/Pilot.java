@@ -63,6 +63,7 @@ public class Pilot extends Adventurer {
                     tile = island.getTile(x, y);
                     if (tile != null && !tile.getState().equals(TileState.SINKED) && !tile.equals(getCurrentTile())) {
                         reachable.add(island.getTile(x, y));
+                        setHeliUsed(true);
                     }
                 }
                 
@@ -90,7 +91,7 @@ public class Pilot extends Adventurer {
     @Override
     public ArrayList<InGameAction> getPossibleActions() {
         ArrayList<InGameAction> list = super.getPossibleActions();
-        if (getActionPoints() > 0) {
+        if (getActionPoints() > 0 && !isHeliUsed()) {
             list.add(InGameAction.USE_CAPACITY);
         } // end if
         return list;

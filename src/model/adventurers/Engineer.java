@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import model.game.Tile;
 import model.game.TileState;
 import model.player.Player;
+import util.exception.ActionException;
 import util.exception.MoveException;
 import util.message.InGameAction;
 
@@ -59,7 +60,7 @@ public class Engineer extends Adventurer {
     
     
     @Override
-    public void shoreUp(Tile tile) {
+    public void shoreUp(Tile tile) throws ActionException, MoveException {
         if (getShoreUpTiles().contains(tile)) {
             if (isContinueShoreUp()) {
                 tile.setState(TileState.DRIED);
@@ -68,10 +69,10 @@ public class Engineer extends Adventurer {
                 setContinueShoreUp(true);
                 tile.setState(TileState.DRIED);
             } else {
-                // FIXME : add throws
+                throw new ActionException(getActionPoints());
             }
         } else {
-            // FIXME : add throws
+            throw new MoveException(tile);
         }
     }
     
@@ -93,7 +94,7 @@ public class Engineer extends Adventurer {
     
     
     @Override
-    public void move(Tile tile) throws MoveException {
+    public void move(Tile tile) throws MoveException, ActionException {
         if (continueShoreUp) {
             finishAction();
         } // end if

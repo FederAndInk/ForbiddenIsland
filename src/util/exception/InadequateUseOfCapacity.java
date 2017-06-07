@@ -4,6 +4,9 @@
 package util.exception;
 
 /**
+ * exception for :<br>
+ * adventurer who cannot use Capacity
+ * 
  * @author nihil
  *
  */

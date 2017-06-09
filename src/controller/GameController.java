@@ -10,7 +10,7 @@ import java.util.Stack;
 
 import javax.swing.JLayeredPane;
 
-import model.adventurers.Adventurer;
+import model.adventurers.*;
 import model.card.CardType;
 import model.game.Coords;
 import model.game.Game;
@@ -19,6 +19,7 @@ import model.game.Tile;
 import model.player.Player;
 import util.LogType;
 import util.Parameters;
+import util.Temporary;
 import util.exception.ActionException;
 import util.exception.InadequateUseOfCapacity;
 import util.exception.MoveException;
@@ -52,8 +53,22 @@ public class GameController implements Observer {
         this.mainController = mainController;
         gameView = new GameView();
         gameView.getListObs().addObserver(this);
+        gameView.getListObs().addObserver(getMainController());
         playersChain = new Stack<>();
     }
+    
+    
+    @Temporary
+    private void tmpGameStart() {
+        Player p1 = new Player("p1");
+        Player p2 = new Player("p2");
+        Player p3 = new Player("p3");
+        Player p4 = new Player("p4");
+        getCurrentGame().addPlayer(new Diver(p1));
+        getCurrentGame().addPlayer(new Explorer(p2));
+        getCurrentGame().addPlayer(new Pilot(p3));
+        getCurrentGame().addPlayer(new Engineer(p4));
+    }// end tmpGameStart
     
     
     /**
@@ -61,6 +76,7 @@ public class GameController implements Observer {
      *
      */
     public void StartGame() {
+        tmpGameStart();
         getCurrentGame().initGame();
         playersChain.clear();
         playersChain.push(getCurrentGame().getCurrentPlayer());
@@ -400,13 +416,13 @@ public class GameController implements Observer {
                 break;
             }// end switch
             
+            turnGestion();
         } else if (arg1 instanceof MainMessage) {
             Parameters.printLog("Main action Message", LogType.INFO);
         } else {
             throw new IllegalArgumentException("The class " + arg0.getClass().getName() + " was going to send "
                     + arg1.getClass() + " Object, but a " + InGameMessage.class.getName() + " is expected");
         } // end if
-        turnGestion();
     }
     
     

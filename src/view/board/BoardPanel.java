@@ -39,8 +39,8 @@ public class BoardPanel extends JPanel {
     
     public BoardPanel(JFrame parentFrame) {
         super();
-        layout = new SpringLayout();
         gridPane = new JPanel(new GridLayout(6, 6, 3, 3));
+        layout = new SpringLayout();
         setParentFrame(parentFrame);
         setLayout(layout);
         setBoardSize(0.9);
@@ -90,6 +90,8 @@ public class BoardPanel extends JPanel {
                 i++;
             } // end if
         } // end for
+        repaint();
+        doLayout();
     }
     
     

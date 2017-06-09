@@ -126,12 +126,12 @@ public class TilePanel extends JLayeredPane {
     private void paintBackground(Graphics g) {
         try {
             BufferedImage bi = ImageIO.read(new File(site.getFile(state)));
-            if (site.isDoubleLigned()) {
+            if (state.equals(TileState.SINKED)) {
+                remove(text);
+                g.drawImage(bi, 0, 0, (int) getSize().getWidth(), (int) (getSize().getHeight()), this);
+            } else if (site.isDoubleLigned()) {
                 Parameters.printLog("Draw double ligned image", LogType.GRAPHICS);
                 g.drawImage(bi, 0, 0, (int) getSize().getWidth(), (int) (getSize().getHeight() * 0.85), this);
-            } else if (state.equals(TileState.SINKED)) {
-                text.setVisible(false);
-                g.drawImage(bi, 0, 0, (int) getSize().getWidth(), (int) (getSize().getHeight()), this);
             } else {
                 g.drawImage(bi, 0, 0, (int) getSize().getWidth(), (int) getSize().getHeight(), this);
             } // end if

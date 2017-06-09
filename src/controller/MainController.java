@@ -5,6 +5,7 @@ import java.util.*;
 
 import model.game.Game;
 import model.player.Player;
+import util.BoardType;
 import util.LogType;
 import util.Parameters;
 import util.message.InGameMessage;
@@ -35,12 +36,12 @@ public class MainController implements Observer, Serializable {
     }
     
     
-    public void createGame() {
+    public void createGame(BoardType bType) {
         // TODO : complete with IHM
         if (gameController.getCurrentGame() != null) {
             // FIXME : do something to prevent erasement
         } // end if
-        gameController.setCurrentGame(new Game());
+        gameController.setCurrentGame(new Game(bType));
     }
     
     
@@ -87,7 +88,12 @@ public class MainController implements Observer, Serializable {
                 
                 break;
             case CREATE_GAME:
-                createGame();
+                if (m.getContent() instanceof BoardType) {
+                    BoardType bType = (BoardType) m.getContent();
+                    createGame(bType);
+                } else {
+                    throw new IllegalArgumentException("no board type given");
+                } // end if
                 break;
             case BEGIN_GAME:
                 gameController.StartGame();
@@ -112,7 +118,8 @@ public class MainController implements Observer, Serializable {
                 
                 break;
             case QUIT:
-                
+                // FIXME do something on close (save)
+                System.exit(0);
                 break;
             default:
                 if (arg1 instanceof InGameMessage) {
@@ -136,4 +143,11 @@ public class MainController implements Observer, Serializable {
         return players;
     }
     
+    
+    /**
+     * @return the gameController
+     */
+    public GameController getGameController() {
+        return gameController;
+    }
 }

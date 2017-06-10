@@ -131,8 +131,6 @@ public class GameView extends JFrame {
         option.add(quit);
         
         newGame.setActionCommand(NEW_GAME);
-        // FIXME : to remove
-        newGame.setEnabled(false);
         quit.setActionCommand(QUIT);
         
         getContentPane().add(mainPane);
@@ -311,8 +309,9 @@ public class GameView extends JFrame {
      */
     public void setBoard(ArrayList<Site> board, Observer observer) {
         gamePane = new BoardPanel(this);
-        mainPane.add(gamePane, BorderLayout.CENTER);
         gamePane.initGrid(board, observer);
+        mainPane.add(gamePane, BorderLayout.CENTER);
+        revalidate();
         repaint();
         doLayout();
     }
@@ -361,10 +360,7 @@ public class GameView extends JFrame {
                 clearChanged();
                 break;
             case NEW_GAME:
-                if (newGame.isEnabled()) {
-                    throw new UnsupportedOperationException("Not Finished yet");
-                } // end if
-                remove(gamePane);
+                mainPane.remove(gamePane);
                 setChanged();
                 notifyObservers(new MainMessage(MainAction.CREATE_GAME, getBoard()));
                 clearChanged();

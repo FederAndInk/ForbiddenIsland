@@ -15,12 +15,13 @@ import model.game.TileState;
  * @author nihil
  *
  */
-public class TileException extends Exception {
+public class TileException extends ForbiddenIslandException {
     /**
      * @author nihil
      * give the state you want to set
      */
     public TileException(Tile tile, TileState tileState) {
-        super("The tile " + tile.getSite() + " cannot become " + tileState + " it is in " + tile.getState() + " State");
+        super("The tile " + tile.getSite() + " cannot become " + tileState + " it is in " + tile.getState() + " State",
+                ExceptionType.TILE_STATE);
     }
 }

@@ -8,6 +8,7 @@ import model.player.Player;
 import util.BoardType;
 import util.LogType;
 import util.Parameters;
+import util.exception.PlayerOutOfIslandException;
 import util.message.InGameAction;
 
 
@@ -16,6 +17,7 @@ public class Game {
     private final static Integer MAX_PLAYER = 4;
     private final static Integer MIN_PLAYER = 2;
     private ArrayList<Treasure>  treasures;
+    private SeaLevel             seaLevel;
     private Island               island;
     private LinkedList<Player>   players;
     private Deck                 treasureDeck;
@@ -50,10 +52,12 @@ public class Game {
      * 
      * @author nihil
      */
-    public void initGame() {
+    public void initGame(SeaLevel seaLevel) {
         if (players.size() < 2) {
             throw new IndexOutOfBoundsException("Too few players");
         } // end if
+        
+        this.seaLevel = seaLevel;
         randomAdventurer();
         initTreasure();
         for (Player player : players) {
@@ -146,8 +150,32 @@ public class Game {
         
         int indLastP = getPlayers().indexOf(getCurrentPlayer());
         setCurrentPlayer(getPlayers().get((indLastP + 1) % 4));
-        
+        getCurrentPlayer().getCurrentAdventurer().beginTurn();
         setCurrentAction(InGameAction.MOVE);
+    }
+    
+    
+    public void setTileState(Tile tile, TileState state) throws PlayerOutOfIslandException {
+        tile.setState(state);
+        if (state.equals(TileState.SINKED) && !getPlayersOnTile(tile).isEmpty()) {
+            throw new PlayerOutOfIslandException();
+        } // end if
+    }// end setTileState
+    
+    
+    /**
+     * get the players on tile
+     * 
+     * @author nihil
+     */
+    public ArrayList<Player> getPlayersOnTile(Tile tile) {
+        ArrayList<Player> players = new ArrayList<>();
+        for (Player player : getPlayers()) {
+            if (player.getCurrentAdventurer().getCurrentTile().equals(tile)) {
+                players.add(player);
+            } // end if
+        } // end for
+        return players;
     }
     
     
@@ -219,7 +247,7 @@ public class Game {
      * @param currentPlayer
      * the currentPlayer to set
      */
-    private void setCurrentPlayer(Player currentPlayer) {
+    public void setCurrentPlayer(Player currentPlayer) {
         this.currentPlayer = currentPlayer;
     }
     

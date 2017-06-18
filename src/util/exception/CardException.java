@@ -14,12 +14,12 @@ import model.adventurers.AdventurerType;
  * @author nihil
  *
  */
-public class CardException extends Exception {
+public class CardException extends ForbiddenIslandException {
     /**
      * @author nihil
      *
      */
     public CardException(int noCard, AdventurerType adv) {
-        super("You are trying to add a " + noCard + "th card to " + adv + " inventory");
+        super("You are trying to add a " + noCard + "th card to " + adv + " inventory", ExceptionType.TOO_MANY_CARD);
     }
 }

@@ -72,5 +72,6 @@ public enum InGameAction {
     /**
      * @give nothing
      */
-    END_TURN
+    END_TURN,
+    CHANGE_STATE_OF_TILE
 }

@@ -10,10 +10,7 @@ import model.player.Inventory;
 import model.player.Player;
 import util.LogType;
 import util.Parameters;
-import util.exception.ActionException;
-import util.exception.InadequateUseOfCapacity;
-import util.exception.MoveException;
-import util.exception.TileException;
+import util.exception.*;
 import util.message.InGameAction;
 
 
@@ -158,6 +155,38 @@ public abstract class Adventurer {
     
     
     /**
+     * swim, (when the adventurer get drown)
+     * 
+     * @author nihil
+     *
+     * @param tile
+     * @throws MoveException
+     * @throws ActionException
+     */
+    public void swim(Tile tile) throws MoveException, ActionException {
+        setActionPoints(1);
+        move(tile);
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     * @return the tiles where the adventurer can swim
+     * @throws EndGameException
+     */
+    public ArrayList<Tile> getSwimmableTiles() throws EndGameException {
+        if (currentTile.getState().equals(TileState.SINKED)) {
+            setActionPoints(0);
+        } // end if
+        if (getReachableTiles().isEmpty()) {
+            throw new EndGameException();
+        } // end if
+        return getReachableTiles();
+    }
+    
+    
+    /**
      * return the list of possible actions dynamically
      * 
      * @author nihil
@@ -166,6 +195,12 @@ public abstract class Adventurer {
      */
     public ArrayList<InGameAction> getPossibleActions() {
         ArrayList<InGameAction> list = new ArrayList<>();
+        // if an adventurer get drow
+        if (currentTile.getState().equals(TileState.SINKED)) {
+            list.add(InGameAction.SWIM);
+            return list;
+        } // end if
+        
         // action required
         if (getActionPoints() > 0) {
             list.add(InGameAction.GIVE_CARD);
@@ -186,12 +221,12 @@ public abstract class Adventurer {
      * @author nihil
      *
      * @param tile
-     * @throws InadequateUseOfCapacity
+     * @throws InadequateUseOfCapacityException
      * @throws MoveException
      * @throws ActionException
      */
-    public void useCapacity(Object o) throws InadequateUseOfCapacity, MoveException, ActionException {
-        throw new InadequateUseOfCapacity();
+    public void useCapacity(Object o) throws InadequateUseOfCapacityException, MoveException, ActionException {
+        throw new InadequateUseOfCapacityException();
     }// end useCapacity
     
     
@@ -199,10 +234,20 @@ public abstract class Adventurer {
      * @author nihil
      *
      * @return the objects where a capacity can be applied
-     * @throws InadequateUseOfCapacity
+     * @throws InadequateUseOfCapacityException
      */
-    public ArrayList<Object> getPotentialUse() throws InadequateUseOfCapacity {
-        throw new InadequateUseOfCapacity();
+    public ArrayList<Object> getPotentialUse() throws InadequateUseOfCapacityException {
+        throw new InadequateUseOfCapacityException();
+    }
+    
+    
+    /**
+     * 
+     * @author nihil
+     *
+     */
+    public void beginTurn() {
+        setActionPoints(MAX_ACTION_POINTS);
     }
     
     
@@ -211,7 +256,7 @@ public abstract class Adventurer {
      *
      */
     public void endTurn() {
-        setActionPoints(MAX_ACTION_POINTS);
+        setActionPoints(0);
     }
     
     

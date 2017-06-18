@@ -10,7 +10,7 @@ package util.exception;
  * @author nihil
  *
  */
-public class ActionException extends Exception {
+public class ActionException extends ForbiddenIslandException {
     /**
      * 
      * @author nihil
@@ -20,6 +20,6 @@ public class ActionException extends Exception {
      * (0) the remaining action
      */
     public ActionException(int nbAction) {
-        super("Action impossible, " + nbAction + " actions remaining");
+        super("Action impossible, " + nbAction + " actions remaining", ExceptionType.ACTION);
     }// end name
 }

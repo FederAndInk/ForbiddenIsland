@@ -7,7 +7,7 @@ import model.game.Tile;
 import model.game.TileState;
 import model.player.Player;
 import util.exception.ActionException;
-import util.exception.InadequateUseOfCapacity;
+import util.exception.InadequateUseOfCapacityException;
 import util.exception.MoveException;
 import util.message.InGameAction;
 
@@ -31,7 +31,7 @@ public class Pilot extends Adventurer {
     
     
     @Override
-    public void useCapacity(Object o) throws MoveException, ActionException, InadequateUseOfCapacity {
+    public void useCapacity(Object o) throws MoveException, ActionException, InadequateUseOfCapacityException {
         if (o instanceof Tile) {
             Tile tile = (Tile) o;
             if (getPotentialUse().contains(tile) && getActionPoints() > 0) {
@@ -55,11 +55,11 @@ public class Pilot extends Adventurer {
      * @author nihil
      *
      * @return the tiles where the pilot can go with their helicopter
-     * @throws InadequateUseOfCapacity
+     * @throws InadequateUseOfCapacityException
      * @see {@link #getReachableTiles()} and use removeAll to get only the tile where the pilot can go exclusively with their helicopter
      */
     @Override
-    public ArrayList<Object> getPotentialUse() throws InadequateUseOfCapacity {
+    public ArrayList<Object> getPotentialUse() throws InadequateUseOfCapacityException {
         
         ArrayList<Object> reachable = new ArrayList<>();
         
@@ -77,7 +77,7 @@ public class Pilot extends Adventurer {
                 
             }
         } else {
-            throw new InadequateUseOfCapacity();
+            throw new InadequateUseOfCapacityException();
         } // end if
         return reachable;
     }

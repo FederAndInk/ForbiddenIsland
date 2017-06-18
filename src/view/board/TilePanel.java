@@ -6,16 +6,21 @@ package view.board;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Observable;
+import java.util.Observer;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.JLayeredPane;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.border.Border;
 
 import model.adventurers.AdventurerType;
@@ -42,12 +47,21 @@ public class TilePanel extends JLayeredPane {
     private PlayerPanel playerPanel;
     private TextTile    text;
     
-    private mlTile listenerObs;
+    private MlTile listenerObs;
+    private AlTile aListenerObs;
+    
+    // Debug (context menu)
+    private JPopupMenu          debug;
+    private JMenuItem           floodTile;
+    private static final String DEBUG_FLOOD = "flood";
     
     private static final Border ACTIVE_BORDER_HOVER       = BorderFactory.createLineBorder(Color.GREEN, 5, true);
     private static final Border ACTIVE_BORDER_SHORE_HOVER = BorderFactory.createLineBorder(new Color(255, 212, 2), 5,
             true);
+    private static final Border ACTIVE_BORDER_SWIM_HOVER  = BorderFactory.createLineBorder(Color.BLUE, 5, true);
     private static final Border ACTIVE_BORDER_EXIT        = BorderFactory.createLineBorder(new Color(10, 194, 10), 4,
+            true);
+    private static final Border ACTIVE_BORDER_SWIM_EXIT   = BorderFactory.createLineBorder(new Color(20, 79, 254), 4,
             true);
     private static final Border ACTIVE_BORDER_SHORE_EXIT  = BorderFactory.createLineBorder(new Color(249, 170, 0), 4,
             true);
@@ -77,11 +91,18 @@ public class TilePanel extends JLayeredPane {
     private void init() {
         text = new TextTile(site.getNameStyle());
         playerPanel = new PlayerPanel();
+        floodTile = new JMenuItem("Change Tile State");
         
         setEnabled(false);
         setState(TileState.DRIED);
         add(text, BorderLayout.SOUTH);
         add(playerPanel, BorderLayout.CENTER);
+        
+        if (Parameters.debug) {
+            debug = new JPopupMenu();
+            setComponentPopupMenu(debug);
+            debug.add(floodTile);
+        } // end if
     }
     
     
@@ -129,11 +150,17 @@ public class TilePanel extends JLayeredPane {
             if (state.equals(TileState.SINKED)) {
                 remove(text);
                 g.drawImage(bi, 0, 0, (int) getSize().getWidth(), (int) (getSize().getHeight()), this);
-            } else if (site.isDoubleLigned()) {
-                Parameters.printLog("Draw double ligned image", LogType.GRAPHICS);
-                g.drawImage(bi, 0, 0, (int) getSize().getWidth(), (int) (getSize().getHeight() * 0.85), this);
             } else {
-                g.drawImage(bi, 0, 0, (int) getSize().getWidth(), (int) getSize().getHeight(), this);
+                if (getIndexOf(text) == -1) {
+                    add(text, BorderLayout.SOUTH);
+                }
+                
+                if (site.isDoubleLigned()) {
+                    Parameters.printLog("Draw double ligned image", LogType.GRAPHICS);
+                    g.drawImage(bi, 0, 0, (int) getSize().getWidth(), (int) (getSize().getHeight() * 0.85), this);
+                } else {
+                    g.drawImage(bi, 0, 0, (int) getSize().getWidth(), (int) getSize().getHeight(), this);
+                }
             } // end if
         } catch (IOException e1) {
             e1.printStackTrace();
@@ -146,8 +173,15 @@ public class TilePanel extends JLayeredPane {
      *
      */
     private void initListeners() {
-        listenerObs = new mlTile();
+        listenerObs = new MlTile();
+        
         addMouseListener(listenerObs);
+        
+        if (Parameters.debug) {
+            aListenerObs = new AlTile();
+            floodTile.setActionCommand(DEBUG_FLOOD);
+            floodTile.addActionListener(aListenerObs);
+        } // end if
     }
     
     
@@ -170,7 +204,10 @@ public class TilePanel extends JLayeredPane {
                 setBorder(ACTIVE_BORDER_SHORE_EXIT);
                 
                 break;
-            
+            case SWIM:
+                setBorder(ACTIVE_BORDER_SWIM_EXIT);
+                
+                break;
             default:
                 setBorder(ACTIVE_BORDER_EXIT);
                 break;
@@ -218,20 +255,39 @@ public class TilePanel extends JLayeredPane {
     public void setState(TileState state) {
         this.state = state;
         text.setState(state);
-        if (state.equals(TileState.SINKED)) {
-            remove(text);
-        }
         repaint();
     }
     
     // the inner class for an event listener
-    protected class mlTile extends Observable implements MouseListener {
+    protected class AlTile extends Observable implements ActionListener {
+        
+        /**
+         * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+         */
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            switch (e.getActionCommand()) {
+            case DEBUG_FLOOD:
+                setChanged();
+                notifyObservers(new InGameMessage(InGameAction.CHANGE_STATE_OF_TILE, getPos()));
+                clearChanged();
+                break;
+            
+            default:
+                break;
+            }// end switch
+        }
+        
+    }
+    
+    // the inner class for an event listener
+    protected class MlTile extends Observable implements MouseListener {
         
         /**
          * @author nihil
          *
          */
-        public mlTile() {
+        public MlTile() {
             super();
         }
         
@@ -254,7 +310,10 @@ public class TilePanel extends JLayeredPane {
                     setBorder(ACTIVE_BORDER_SHORE_EXIT);
                     
                     break;
-                
+                case SWIM:
+                    setBorder(ACTIVE_BORDER_SWIM_EXIT);
+                    
+                    break;
                 default:
                     setBorder(ACTIVE_BORDER_EXIT);
                     break;
@@ -270,7 +329,9 @@ public class TilePanel extends JLayeredPane {
                 case SHORE_UP_TILE:
                     setBorder(ACTIVE_BORDER_SHORE_HOVER);
                     break;
-                
+                case SWIM:
+                    setBorder(ACTIVE_BORDER_SWIM_HOVER);
+                    break;
                 default:
                     setBorder(ACTIVE_BORDER_HOVER);
                     break;
@@ -287,15 +348,6 @@ public class TilePanel extends JLayeredPane {
                 clearChanged();
             } // end if
         }
-    }
-    
-    
-    /**
-     * @return the listenerObs
-     * in order to add observers
-     */
-    protected mlTile getListenerObs() {
-        return listenerObs;
     }
     
     
@@ -321,5 +373,18 @@ public class TilePanel extends JLayeredPane {
      */
     public void setAction(InGameAction action) {
         this.action = action;
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     * @param observer
+     */
+    public void addObs(Observer observer) {
+        if (Parameters.debug) {
+            aListenerObs.addObserver(observer);
+        } // end if
+        listenerObs.addObserver(observer);
     }
 }

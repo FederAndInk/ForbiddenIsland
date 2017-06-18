@@ -81,7 +81,7 @@ public class BoardPanel extends JPanel {
             
             panel = f == null ? new JLayeredPane() : new TilePanel(f, new Coords(j, i));
             if (panel instanceof TilePanel) {
-                ((TilePanel) panel).getListenerObs().addObserver(observer);
+                ((TilePanel) panel).addObs(observer);
             } // end if
             gridPane.add(panel);
             j++;

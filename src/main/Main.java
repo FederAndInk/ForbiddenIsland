@@ -1,6 +1,7 @@
 package main;
 
 import controller.MainController;
+import model.game.SeaLevel;
 import util.BoardType;
 
 
@@ -13,7 +14,7 @@ public class Main {
         
         mainController.createGame(BoardType.HARD_TEST);
         
-        mainController.getGameController().StartGame();
+        mainController.getGameController().StartGame(SeaLevel.LEVEL2);
     }
     
 }

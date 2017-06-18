@@ -94,8 +94,15 @@ public class Engineer extends Adventurer {
             return super.getPossibleActions();
         }
         if (continueShoreUp && getActionPoints() == 1) {
+            setActionPoints(0);
+            arrayList.addAll(super.getPossibleActions());
+            setActionPoints(1);
             arrayList.add(InGameAction.SHORE_UP_TILE);
         }
+        // we have to pass the super actions
+        if (getActionPoints() == 0) {
+            arrayList.addAll(super.getPossibleActions());
+        } // end if
         return arrayList;
     }
     

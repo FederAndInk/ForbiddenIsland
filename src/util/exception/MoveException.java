@@ -4,6 +4,7 @@
 package util.exception;
 
 import model.game.Tile;
+import model.game.TileState;
 
 
 
@@ -14,7 +15,7 @@ import model.game.Tile;
  * @author nihil
  *
  */
-public class MoveException extends Exception {
+public class MoveException extends ForbiddenIslandException {
     
     /**
      * @author nihil
@@ -24,7 +25,8 @@ public class MoveException extends Exception {
      */
     public MoveException(Tile tile) {
         // TODO : complite msg
-        super("Move impossible to " + tile);
+        super("Move impossible to " + tile,
+                tile.getState().equals(TileState.SINKED) ? ExceptionType.TILE_STATE : ExceptionType.NOT_REACHABLE);
     }
     
     
@@ -33,6 +35,6 @@ public class MoveException extends Exception {
      *
      */
     public MoveException() {
-        super("Move impossible");
+        super("Move impossible", ExceptionType.NOT_REACHABLE);
     }
 }

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.*;
 
 import model.game.Game;
+import model.game.SeaLevel;
 import model.player.Player;
 import util.BoardType;
 import util.LogType;
@@ -67,6 +68,7 @@ public class MainController implements Observer, Serializable {
         if (!getPlayers().containsKey(pName)) {
             players.put(pName, new Player(pName));
         } // end if
+          // TODO : something to return
         return true;
     }// end addPlayer
     
@@ -96,7 +98,8 @@ public class MainController implements Observer, Serializable {
                 } // end if
                 break;
             case BEGIN_GAME:
-                gameController.StartGame();
+                // FIXME : add view and give the sealevel
+                gameController.StartGame(SeaLevel.LEVEL2);
                 
                 break;
             case LOAD_GAME:

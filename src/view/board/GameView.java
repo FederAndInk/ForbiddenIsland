@@ -52,8 +52,7 @@ public class GameView extends JFrame {
     private JMenu                playerSelect;
     private JRadioButtonMenuItem randomP;
     private ButtonGroup          grpPlayer;
-    
-    private JMenuItem quit;
+    private JMenuItem            quit;
     
     private JTextPane     messages;
     private JLabel        infoPlayerC;
@@ -155,6 +154,7 @@ public class GameView extends JFrame {
         messages.setEditable(false);
         info.add(infoPlayerC);
         info.add(currentP);
+        
     }
     
     
@@ -206,14 +206,14 @@ public class GameView extends JFrame {
     private void initListeners() {
         setListObs(new ListenerAction());
         
-        addWindowListener(getListObs());
-        newGame.addActionListener(getListObs());
-        quit.addActionListener(getListObs());
+        addWindowListener(listObs);
+        newGame.addActionListener(listObs);
+        quit.addActionListener(listObs);
         
-        endTurnBtn.addActionListener(getListObs());
-        moveBtn.addActionListener(getListObs());
-        shoreUpBtn.addActionListener(getListObs());
-        useCapacityBtn.addActionListener(getListObs());
+        endTurnBtn.addActionListener(listObs);
+        moveBtn.addActionListener(listObs);
+        shoreUpBtn.addActionListener(listObs);
+        useCapacityBtn.addActionListener(listObs);
     }
     
     
@@ -318,14 +318,6 @@ public class GameView extends JFrame {
     
     
     /**
-     * @return the listObs
-     */
-    public ListenerAction getListObs() {
-        return listObs;
-    }
-    
-    
-    /**
      * @param listObs
      * the listObs to set
      */
@@ -356,7 +348,7 @@ public class GameView extends JFrame {
             switch (e.getActionCommand()) {
             case QUIT:
                 setChanged();
-                notifyObservers(new MainMessage(MainAction.QUIT, null));
+                notifyObservers(new MainMessage(MainAction.QUIT));
                 clearChanged();
                 break;
             case NEW_GAME:
@@ -377,22 +369,22 @@ public class GameView extends JFrame {
             switch (e.getActionCommand()) {
             case END_TURN:
                 setChanged();
-                notifyObservers(new InGameMessage(InGameAction.END_TURN, null));
+                notifyObservers(new InGameMessage(InGameAction.END_TURN));
                 clearChanged();
                 break;
             case MOVE:
                 setChanged();
-                notifyObservers(new InGameMessage(InGameAction.MOVE, null));
+                notifyObservers(new InGameMessage(InGameAction.MOVE));
                 clearChanged();
                 break;
             case SHORE_UP:
                 setChanged();
-                notifyObservers(new InGameMessage(InGameAction.SHORE_UP_TILE, null));
+                notifyObservers(new InGameMessage(InGameAction.SHORE_UP_TILE));
                 clearChanged();
                 break;
             case USE_CAPACITY:
                 setChanged();
-                notifyObservers(new InGameMessage(InGameAction.USE_CAPACITY, null));
+                notifyObservers(new InGameMessage(InGameAction.USE_CAPACITY));
                 clearChanged();
                 break;
             
@@ -417,7 +409,7 @@ public class GameView extends JFrame {
         @Override
         public void windowClosing(WindowEvent e) {
             setChanged();
-            notifyObservers(new MainMessage(MainAction.QUIT, null));
+            notifyObservers(new MainMessage(MainAction.QUIT));
             clearChanged();
         }
         
@@ -461,5 +453,15 @@ public class GameView extends JFrame {
         public void windowDeactivated(WindowEvent e) {
         }
         
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     * @param mainController
+     */
+    public void addObs(Observer observer) {
+        listObs.addObserver(observer);
     }
 }

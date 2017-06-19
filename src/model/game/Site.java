@@ -10,32 +10,33 @@ import util.Parameters;
  * @author lordofkawaiii
  */
 public enum Site {
-    CAVE_OF_EMBERS("Cave of Embers"),
-    OBSERVATORY("Observatory"),
-    SILVER_GATE("Silver Gate"),
-    IRON_GATE("Iron Gate"),
-    PHANTOM_ROCK("Phantom Rock"),
-    TEMPLE_OF_THE_SUN("Temple of the" + Site.getHtmlNewLine() + "Sun"),
-    WATCHTOWER("Watchtower"),
-    CORAL_PALACE("Coral Palace"),
-    WHISPERING_GARDEN("Whispering" + Site.getHtmlNewLine() + "Garden"),
-    CRIMSON_FOREST("Crimson Forest"),
-    FOOLS_LANDING("Fools' Landing"),
-    DUNES_OF_DECEPTION("Dunes of" + Site.getHtmlNewLine() + "Deception"),
-    GOLD_GATE("Gold Gate"),
-    COPPER_GATE("Copper Gate"),
-    LOST_LAGOON("Lost Lagoon"),
-    CAVE_OF_SHADOWS("Cave of Shadows"),
-    TIDAL_PALACE("Tidal Palace"),
-    MISTY_MARSH("Misty Marsh"),
-    TWILIGHT_HOLLOW("Twilight Hollow"),
-    TEMPLE_OF_THE_MOON("Temple of the" + Site.getHtmlNewLine() + "Moon"),
-    BRONZE_GATE("Bronze Gate"),
-    BREAKERS_BRIDGE("Breakers Bridge"),
-    CLIFFS_OF_ABANDON("Cliffs of" + Site.getHtmlNewLine() + "Abandon"),
-    HOWLING_GARDEN("Howling Garden");
+    CAVE_OF_EMBERS("Cave of Embers", TreasureType.CRYSTAL_OF_FIRE),
+    OBSERVATORY("Observatory", null),
+    SILVER_GATE("Silver Gate", null),
+    IRON_GATE("Iron Gate", null),
+    PHANTOM_ROCK("Phantom Rock", null),
+    TEMPLE_OF_THE_SUN("Temple of the" + Site.getHtmlNewLine() + "Sun", TreasureType.EARTH_STONE),
+    WATCHTOWER("Watchtower", null),
+    CORAL_PALACE("Coral Palace", TreasureType.OCEANS_CHALICE),
+    WHISPERING_GARDEN("Whispering" + Site.getHtmlNewLine() + "Garden", TreasureType.STATUE_OF_THE_WIND),
+    CRIMSON_FOREST("Crimson Forest", null),
+    FOOLS_LANDING("Fools' Landing", null),
+    DUNES_OF_DECEPTION("Dunes of" + Site.getHtmlNewLine() + "Deception", null),
+    GOLD_GATE("Gold Gate", null),
+    COPPER_GATE("Copper Gate", null),
+    LOST_LAGOON("Lost Lagoon", null),
+    CAVE_OF_SHADOWS("Cave of Shadows", TreasureType.CRYSTAL_OF_FIRE),
+    TIDAL_PALACE("Tidal Palace", TreasureType.OCEANS_CHALICE),
+    MISTY_MARSH("Misty Marsh", null),
+    TWILIGHT_HOLLOW("Twilight Hollow", null),
+    TEMPLE_OF_THE_MOON("Temple of the" + Site.getHtmlNewLine() + "Moon", TreasureType.EARTH_STONE),
+    BRONZE_GATE("Bronze Gate", null),
+    BREAKERS_BRIDGE("Breakers Bridge", null),
+    CLIFFS_OF_ABANDON("Cliffs of" + Site.getHtmlNewLine() + "Abandon", null),
+    HOWLING_GARDEN("Howling Garden", TreasureType.STATUE_OF_THE_WIND);
     
-    private String name;
+    private String       name;
+    private TreasureType treasureType;
     
     private static final String HTML_NEW_LINE = "</p><p class=\"second\">";
     private static final String HTML_STYLE    = "<style>body{margin: auto;text-align: center;} p.second{margin-top:-5,margin-bottom:-2}</style>";
@@ -43,9 +44,10 @@ public enum Site {
     private static final String HTML_END      = "</p></body></html>";
     
     
-    Site(String name) {
+    Site(String name, TreasureType treasureType) {
         this.name = name;
         Parameters.printLog("instancate Site type", LogType.INFO);
+        this.treasureType = treasureType;
     }
     
     
@@ -60,6 +62,11 @@ public enum Site {
      */
     public String getNameStyle() {
         return HTML_BEG + name + HTML_END;
+    }
+    
+    
+    public TreasureType geTreasureType() {
+        return treasureType;
     }
     
     

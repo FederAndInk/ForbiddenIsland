@@ -2,6 +2,8 @@ package model.adventurers;
 
 import java.util.ArrayList;
 
+import model.card.Card;
+import model.card.TreasureCard;
 import model.game.Coords;
 import model.game.Island;
 import model.game.Tile;
@@ -367,5 +369,30 @@ public abstract class Adventurer {
     public AdventurerType getADVENTURER_TYPE() {
         return ADVENTURER_TYPE;
     }
+  
+    public void giveCard(TreasureCard card, Player player) {
+        if (card.getTreasureType().equals(getCurrentTile().getSite().geTreasureType())) {
+            if (player.getCurrentAdventurer().getCurrentTile().equals(getCurrentTile())) {
+                if (player.getCurrentAdventurer().getInventory().isFull()) {
+                    if (getInventory().removeCard(card)) {
+                        player.getCurrentAdventurer().recieveCard(card);
+                    } else {
+                        // FIXME : add throws
+                        Parameters.printLog("il a pas la carte " + card + " dans l'inventaire de " + this,
+                                LogType.ACCESS);
+                    }
+                }
+            }
+        }
+    }
     
+    
+    public void recieveCard(Card card) {
+        getInventory().addCard(card);
+    }
+    
+    
+    public void drawCard() {
+        
+    }
 }

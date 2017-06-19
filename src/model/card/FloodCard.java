@@ -2,6 +2,7 @@ package model.card;
 
 import model.game.Tile;
 import model.game.TileState;
+import util.exception.TileException;
 
 
 
@@ -18,7 +19,7 @@ public class FloodCard extends Card {
     
     
     @Override
-    public void applyAction(Tile destTile, Object applied) {
+    public void applyAction(Tile destTile, Object applied) throws TileException {
         switch (destTile.getState()) {
         case DRIED:
             destTile.setState(TileState.FLOODED);
@@ -29,8 +30,7 @@ public class FloodCard extends Card {
             break;
         
         case SINKED:
-            // TODO add exception
-            break;
+            throw new TileException(destTile, TileState.SINKED);
         }
     }
     

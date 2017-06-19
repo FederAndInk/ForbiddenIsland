@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import model.game.Tile;
 import model.game.TileState;
 import model.player.Player;
+import util.exception.MoveException;
 
 
 
@@ -19,7 +20,7 @@ public class Helicopter extends Card {
     
     
     @Override
-    public void applyAction(Tile destTile, Object applied) {
+    public void applyAction(Tile destTile, Object applied) throws MoveException {
         if (applied instanceof ArrayList) {
             ArrayList<Player> playersToMove = (ArrayList) (applied);
             if (destTile.getState() != TileState.SINKED) {
@@ -27,7 +28,7 @@ public class Helicopter extends Card {
                     p.getCurrentAdventurer().setCurrentTile(destTile);
                 }
             } else {
-                // TODO add exceptions
+                throw new MoveException(destTile);
             }
         } else {
             throw new IllegalArgumentException("Don't have list of player");

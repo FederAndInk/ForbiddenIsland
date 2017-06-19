@@ -2,6 +2,7 @@ package model.card;
 
 import model.game.Tile;
 import model.game.TileState;
+import util.exception.TileException;
 
 
 
@@ -23,11 +24,11 @@ public class SandBag extends Card {
      * @param applied
      */
     @Override
-    public void applyAction(Tile destTile, Object applied) {
+    public void applyAction(Tile destTile, Object applied) throws TileException {
         if (destTile.getState() == TileState.FLOODED) {
             destTile.setState(TileState.DRIED);
         } else {
-            // TODO add exception
+            throw new TileException(destTile, TileState.DRIED);
         }
     }
     

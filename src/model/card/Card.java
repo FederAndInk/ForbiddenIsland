@@ -1,6 +1,7 @@
 package model.card;
 
 import model.game.Tile;
+import util.exception.EndGameException;
 
 
 
@@ -17,7 +18,7 @@ public abstract class Card {
     }
     
     
-    public abstract void applyAction(Tile destTile, Object applied) throws IllegalAccessException;
+    public abstract void applyAction(Tile destTile, Object applied) throws IllegalAccessException, EndGameException;
     
     
     /**

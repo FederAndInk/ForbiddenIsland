@@ -1,5 +1,9 @@
 package model.game;
 
+import util.exception.EndGameException;
+
+
+
 public enum SeaLevel {
     /**
      * Easy
@@ -60,4 +64,8 @@ public enum SeaLevel {
         return equals(LEVEL10);
     }
     
+    
+    public SeaLevel next() {
+        return values()[ordinal() + 1 % values().length];
+    }
 }

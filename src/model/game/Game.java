@@ -8,6 +8,7 @@ import model.player.Player;
 import util.BoardType;
 import util.LogType;
 import util.Parameters;
+import util.exception.EndGameException;
 import util.exception.PlayerOutOfIslandException;
 import util.message.InGameAction;
 
@@ -176,6 +177,14 @@ public class Game {
             } // end if
         } // end for
         return players;
+    }
+    
+    
+    public void increaseSeaLevel() throws EndGameException {
+        seaLevel = seaLevel.next();
+        if (seaLevel.isLast()) {
+            throw new EndGameException();
+        }
     }
     
     

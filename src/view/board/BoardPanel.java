@@ -39,8 +39,8 @@ public class BoardPanel extends JPanel {
     
     public BoardPanel(JFrame parentFrame) {
         super();
-        layout = new SpringLayout();
         gridPane = new JPanel(new GridLayout(6, 6, 3, 3));
+        layout = new SpringLayout();
         setParentFrame(parentFrame);
         setLayout(layout);
         setBoardSize(0.9);
@@ -81,7 +81,7 @@ public class BoardPanel extends JPanel {
             
             panel = f == null ? new JLayeredPane() : new TilePanel(f, new Coords(j, i));
             if (panel instanceof TilePanel) {
-                ((TilePanel) panel).getListenerObs().addObserver(observer);
+                ((TilePanel) panel).addObs(observer);
             } // end if
             gridPane.add(panel);
             j++;
@@ -90,6 +90,8 @@ public class BoardPanel extends JPanel {
                 i++;
             } // end if
         } // end for
+        repaint();
+        doLayout();
     }
     
     
@@ -132,15 +134,11 @@ public class BoardPanel extends JPanel {
             
             @Override
             public void componentHidden(ComponentEvent arg0) {
-                // TODO Auto-generated method stub
-                
             }
             
             
             @Override
             public void componentMoved(ComponentEvent arg0) {
-                // TODO Auto-generated method stub
-                
             }
         });
     }

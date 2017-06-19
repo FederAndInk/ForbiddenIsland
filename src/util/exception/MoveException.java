@@ -4,16 +4,18 @@
 package util.exception;
 
 import model.game.Tile;
+import model.game.TileState;
 
 
 
 /**
+ * exception for :<br>
+ * Move action
+ * 
  * @author nihil
  *
  */
-public class MoveException extends Exception {
-    private ExceptionType type;
-    
+public class MoveException extends ForbiddenIslandException {
     
     /**
      * @author nihil
@@ -23,21 +25,9 @@ public class MoveException extends Exception {
      */
     public MoveException(Tile tile) {
         // TODO : complite msg
-        super("Move impossible to " + tile);
+        super("Move impossible to " + tile,
+                tile.getState().equals(TileState.SINKED) ? ExceptionType.TILE_STATE : ExceptionType.NOT_REACHABLE);
     }
-    
-    
-    /**
-     * 
-     * @author nihil
-     * actually this happen when there is no remaining actions
-     *
-     * @param nbAction
-     * (0) the remaining action
-     */
-    public MoveException(int nbAction) {
-        super("Move impossible, " + nbAction + "remaining");
-    }// end name
     
     
     /**
@@ -45,14 +35,6 @@ public class MoveException extends Exception {
      *
      */
     public MoveException() {
-        super("Move impossible");
-    }
-    
-    
-    /**
-     * @return the type
-     */
-    public ExceptionType getType() {
-        return type;
+        super("Move impossible", ExceptionType.NOT_REACHABLE);
     }
 }

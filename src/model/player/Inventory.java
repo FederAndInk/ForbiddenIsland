@@ -3,6 +3,7 @@ package model.player;
 import java.util.ArrayList;
 
 import model.card.Card;
+import model.card.TreasureCard;
 import model.game.Treasure;
 
 
@@ -46,6 +47,21 @@ public class Inventory {
             } // end if
         } // end for
         return false;
+    }
+    
+    
+    public boolean isFull() {
+        return (cards.size() >= MAX_CARD);
+    }
+    
+    
+    public void addCard(Card card) {
+        cards.add(card);
+    }
+    
+    
+    public boolean removeCard(TreasureCard card) {
+        return cards.remove(card);
     }
     
 }

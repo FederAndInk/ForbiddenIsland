@@ -7,7 +7,7 @@ public class SandBag extends Card {
      *
      * @param type
      */
-    protected SandBag() {
+    public SandBag() {
         super(CardType.SANDBAG_CARD);
     }
     

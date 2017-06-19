@@ -8,6 +8,7 @@ import org.w3c.dom.events.EventException;
 
 import model.card.Card;
 import model.player.Player;
+import util.exception.CardException;
 
 
 
@@ -46,8 +47,9 @@ public abstract class Deck {
     }// end deckGestion
     
     
-    public Card draw(Player p) {
+    public Card draw(Player p) throws CardException {
         Card c = deck.pop();
+        p.getCurrentAdventurer().getInventory().addCard(c);
         deckGestion();
         return c;
     }// end draw

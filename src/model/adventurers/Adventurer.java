@@ -2,9 +2,9 @@ package model.adventurers;
 
 import java.util.ArrayList;
 
-import model.card.Card;
 import model.card.TreasureCard;
 import model.game.Coords;
+import model.game.Deck;
 import model.game.Island;
 import model.game.Tile;
 import model.game.TileState;
@@ -12,7 +12,12 @@ import model.player.Inventory;
 import model.player.Player;
 import util.LogType;
 import util.Parameters;
-import util.exception.*;
+import util.exception.ActionException;
+import util.exception.CardException;
+import util.exception.EndGameException;
+import util.exception.InadequateUseOfCapacityException;
+import util.exception.MoveException;
+import util.exception.TileException;
 import util.message.InGameAction;
 
 
@@ -44,7 +49,7 @@ public abstract class Adventurer {
         setActionPoints(MAX_ACTION_POINTS);
         setPlayer(player);
         player.setCurrentAdventurer(this);
-        setInventory(new Inventory());
+        setInventory(new Inventory(this));
     }
     
     
@@ -333,7 +338,7 @@ public abstract class Adventurer {
      * @param currentTile
      * the currentTile to set
      */
-    protected void setCurrentTile(Tile currentTile) {
+    public void setCurrentTile(Tile currentTile) {
         this.currentTile = currentTile;
     }
     
@@ -371,31 +376,37 @@ public abstract class Adventurer {
     }
     
     
-    
-    public void giveCard(TreasureCard card, Player player) {
+    public void giveCard(TreasureCard card, Player player) throws CardException {
         if (card.getTreasureType().equals(getCurrentTile().getSite().geTreasureType())) {
             if (player.getCurrentAdventurer().getCurrentTile().equals(getCurrentTile())) {
-                if (player.getCurrentAdventurer().getInventory().isFull()) {
-                    if (getInventory().removeCard(card)) {
-                        player.getCurrentAdventurer().recieveCard(card);
-                    } else {
-                        // FIXME : add throws
-                        Parameters.printLog("il a pas la carte " + card + " dans l'inventaire de " + this,
-                                LogType.ACCESS);
-                    }
+                if (getInventory().removeCard(card)) {
+                    Parameters.printLog("\nle joueur " + this.getPlayer() + " donne la carte " + card, LogType.INFO);
+                    player.getCurrentAdventurer().recieveCard(card);
+                } else {
+                    // FIXME : add throws
+                    getInventory().addCard(card);
+                    Parameters.printLog("il a pas la carte " + card + " dans l'inventaire de " + this, LogType.ERROR);
                 }
+            } else {
+                Parameters.printLog("les joueurs ne sont pas sur la même case", LogType.ERROR); // TODO : to move to recieve
             }
+            
+        } else {
+            Parameters.printLog("le type de carte ne correspond pas", LogType.ERROR);
         }
     }
     
     
-    public void recieveCard(Card card) {
+    public void recieveCard(TreasureCard card) throws CardException {
+        Parameters.printLog("\nle joueur " + this.getPlayer() + " reçois la carte " + card, LogType.INFO);
         getInventory().addCard(card);
+        
     }
     
     
-    public void drawCard() {
-        
+    public void drawCard(Deck deck) throws CardException {
+        Parameters.printLog("le joueur " + this.getPlayer() + " pioche la carte " + deck.draw(this.getPlayer()),
+                LogType.INFO);
     }
     
 }

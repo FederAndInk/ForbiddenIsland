@@ -6,7 +6,7 @@ public class Helicopter extends Card {
      *
      * @param type
      */
-    protected Helicopter() {
+    public Helicopter() {
         super(CardType.HELICOPTER_CARD);
     }
 }

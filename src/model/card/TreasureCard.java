@@ -13,7 +13,7 @@ public class TreasureCard extends Card {
      *
      * @param type
      */
-    protected TreasureCard(TreasureType treasureType) {
+    public TreasureCard(TreasureType treasureType) {
         super(CardType.TREASURE_CARD);
         this.treasureType = treasureType;
     }
@@ -21,6 +21,13 @@ public class TreasureCard extends Card {
     
     public TreasureType getTreasureType() {
         return treasureType;
+    }
+    
+    
+    @Override
+    public String toString() {
+        // TODO Auto-generated method stub
+        return super.toString() + " " + treasureType;
     }
     
 }

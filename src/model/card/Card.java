@@ -11,20 +11,28 @@ public abstract class Card {
     protected Card(CardType type) {
         this.setType(type);
     }
-
-
+    
+    
     /**
      * @return the type
      */
     public CardType getType() {
         return type;
     }
-
-
+    
+    
     /**
-     * @param type the type to set
+     * @param type
+     * the type to set
      */
     public void setType(CardType type) {
         this.type = type;
+    }
+    
+    
+    @Override
+    public String toString() {
+        // TODO Auto-generated method stub
+        return getType().toString();
     }
 }

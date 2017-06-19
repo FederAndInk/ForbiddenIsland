@@ -6,7 +6,7 @@ public class WatersRise extends Card {
      *
      * @param type
      */
-    protected WatersRise() {
+    public WatersRise() {
         super(CardType.WATERSRISE_CARD);
     }
 }

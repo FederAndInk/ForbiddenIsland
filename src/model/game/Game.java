@@ -1,6 +1,10 @@
 package model.game;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 
 import model.adventurers.Adventurer;
 import model.adventurers.AdventurerType;
@@ -20,8 +24,8 @@ public class Game {
     private SeaLevel             seaLevel;
     private Island               island;
     private LinkedList<Player>   players;
-    private Deck                 treasureDeck;
-    private Deck                 floodDeck;
+    private TreasureDeck         treasureDeck;
+    private FloodDeck            floodDeck;
     private Player               currentPlayer;
     private boolean              started;
     

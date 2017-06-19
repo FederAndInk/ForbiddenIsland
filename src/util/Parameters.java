@@ -5,7 +5,11 @@
  */
 package util;
 
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontFormatException;
+import java.awt.GraphicsEnvironment;
+import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -22,7 +26,7 @@ public class Parameters {
     // ====================================================================================
     // Paramètres NF
     public static final Boolean LOGS      = true;   // Afficher des traces par System.out.println()
-    public static final boolean SHORT_LOG = true;
+    public static final boolean SHORT_LOG = false;
     public static final Boolean ALEAS     = true;   // Attribuer les aventuriers aléatoirement ou non, mélanger les défausses et les pioches
     public static Lang          LANG      = Lang.EN;
     public static final boolean debug     = true;

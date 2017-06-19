@@ -13,6 +13,7 @@ import model.player.Player;
 import util.LogType;
 import util.Parameters;
 import util.exception.ActionException;
+import util.exception.CantGiveCard;
 import util.exception.CardException;
 import util.exception.EndGameException;
 import util.exception.InadequateUseOfCapacityException;
@@ -376,7 +377,7 @@ public abstract class Adventurer {
     }
     
     
-    public void giveCard(TreasureCard card, Player player) throws CardException {
+    public void giveCard(TreasureCard card, Player player) throws CardException, CantGiveCard {
         if (card.getTreasureType().equals(getCurrentTile().getSite().geTreasureType())) {
             if (player.getCurrentAdventurer().getCurrentTile().equals(getCurrentTile())) {
                 if (getInventory().removeCard(card)) {
@@ -388,11 +389,13 @@ public abstract class Adventurer {
                     Parameters.printLog("il a pas la carte " + card + " dans l'inventaire de " + this, LogType.ERROR);
                 }
             } else {
-                Parameters.printLog("les joueurs ne sont pas sur la même case", LogType.ERROR); // TODO : to move to recieve
+                Parameters.printLog("les joueurs ne sont pas sur la même case", LogType.ERROR);
+                throw new CantGiveCard(this, player.getCurrentAdventurer());
             }
             
         } else {
             Parameters.printLog("le type de carte ne correspond pas", LogType.ERROR);
+            throw new CantGiveCard(card.getTreasureType(), this);
         }
     }
     

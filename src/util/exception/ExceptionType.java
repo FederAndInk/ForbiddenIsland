@@ -15,5 +15,7 @@ public enum ExceptionType {
     TILE_STATE,
     PLAYER_OUT_OF_ISLAND,
     MISSING_CARD,
-    END_GAME;
+    END_GAME,
+    INCORRECT_TILE,
+    DIFFERENT_TILE;
 }

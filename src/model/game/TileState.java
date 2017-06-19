@@ -12,4 +12,13 @@ public enum TileState {
     public String toString() {
         return name().toLowerCase();
     }
+    
+    
+    /**
+     * @author nihil
+     *
+     */
+    public TileState next() {
+        return values()[(ordinal() + 1) % values().length];
+    }
 }

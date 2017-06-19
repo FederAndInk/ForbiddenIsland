@@ -23,6 +23,17 @@ public class InGameMessage extends Message {
     
     
     /**
+     * @author nihil
+     *
+     * @param changeStateOfTile
+     */
+    public InGameMessage(InGameAction type) {
+        super(null);
+        this.type = type;
+    }
+    
+    
+    /**
      * @see util.message.Message#getType()
      */
     @Override

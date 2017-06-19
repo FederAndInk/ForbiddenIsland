@@ -1,9 +1,12 @@
 package controller;
 
+import java.io.Serializable;
 import java.util.*;
 
 import model.game.Game;
+import model.game.SeaLevel;
 import model.player.Player;
+import util.BoardType;
 import util.LogType;
 import util.Parameters;
 import util.message.InGameMessage;
@@ -12,7 +15,11 @@ import util.message.MainMessage;
 
 
 
-public class MainController implements Observer {
+/**
+ * @author nihil
+ *
+ */
+public class MainController implements Observer, Serializable {
     
     private HashMap<String, Player> players;
     private ArrayList<Game>         savedGames;
@@ -30,12 +37,12 @@ public class MainController implements Observer {
     }
     
     
-    public void createGame() {
+    public void createGame(BoardType bType) {
         // TODO : complete with IHM
         if (gameController.getCurrentGame() != null) {
             // FIXME : do something to prevent erasement
         } // end if
-        gameController.setCurrentGame(new Game());
+        gameController.setCurrentGame(new Game(bType));
     }
     
     
@@ -58,11 +65,10 @@ public class MainController implements Observer {
     
     
     public boolean addPlayer(String pName) {
-        // FIXME : get data from the UI or the UI send the player directly ?
         if (!getPlayers().containsKey(pName)) {
             players.put(pName, new Player(pName));
         } // end if
-          // gameController.getCurrentGame().addPlayer(players.get(pName), AdventurerType.PILOT.getClassFor(null));
+          // TODO : something to return
         return true;
     }// end addPlayer
     
@@ -84,10 +90,16 @@ public class MainController implements Observer {
                 
                 break;
             case CREATE_GAME:
-                createGame();
+                if (m.getContent() instanceof BoardType) {
+                    BoardType bType = (BoardType) m.getContent();
+                    createGame(bType);
+                } else {
+                    throw new IllegalArgumentException("no board type given");
+                } // end if
                 break;
             case BEGIN_GAME:
-                gameController.StartGame();
+                // FIXME : add view and give the sealevel
+                gameController.StartGame(SeaLevel.LEVEL2);
                 
                 break;
             case LOAD_GAME:
@@ -109,7 +121,8 @@ public class MainController implements Observer {
                 
                 break;
             case QUIT:
-                
+                // FIXME do something on close (save)
+                System.exit(0);
                 break;
             default:
                 if (arg1 instanceof InGameMessage) {
@@ -133,4 +146,11 @@ public class MainController implements Observer {
         return players;
     }
     
+    
+    /**
+     * @return the gameController
+     */
+    public GameController getGameController() {
+        return gameController;
+    }
 }

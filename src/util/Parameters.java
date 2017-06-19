@@ -25,6 +25,7 @@ public class Parameters {
     public static final boolean SHORT_LOG = true;
     public static final Boolean ALEAS     = true;   // Attribuer les aventuriers aléatoirement ou non, mélanger les défausses et les pioches
     public static Lang          LANG      = Lang.EN;
+    public static final boolean debug     = true;
     // Fonts
     public static Font DEFAULT_FONT = initFont();
     // screen
@@ -51,7 +52,6 @@ public class Parameters {
             genv.registerFont(font);
             return font;
         } catch (FontFormatException | IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return null;

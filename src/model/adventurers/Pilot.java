@@ -6,6 +6,9 @@ import model.game.Island;
 import model.game.Tile;
 import model.game.TileState;
 import model.player.Player;
+import util.exception.ActionException;
+import util.exception.InadequateUseOfCapacityException;
+import util.exception.MoveException;
 import util.message.InGameAction;
 
 
@@ -28,14 +31,19 @@ public class Pilot extends Adventurer {
     
     
     @Override
-    public void useCapacity(Object o) {
+    public void useCapacity(Object o) throws MoveException, ActionException, InadequateUseOfCapacityException {
         if (o instanceof Tile) {
             Tile tile = (Tile) o;
             if (getPotentialUse().contains(tile) && getActionPoints() > 0) {
                 setCurrentTile(tile);
+                setHeliUsed(true);
                 setActionPoints(getActionPoints() - 1);
             } else {
-                // TODO :throw exception
+                if (getActionPoints() < 1) {
+                    throw new ActionException(getActionPoints());
+                } else {
+                    throw new MoveException(tile);
+                } // end if
             } // end if
         } else {
             throw new IllegalArgumentException("not a Tile !");
@@ -47,10 +55,11 @@ public class Pilot extends Adventurer {
      * @author nihil
      *
      * @return the tiles where the pilot can go with their helicopter
+     * @throws InadequateUseOfCapacityException
      * @see {@link #getReachableTiles()} and use removeAll to get only the tile where the pilot can go exclusively with their helicopter
      */
     @Override
-    public ArrayList<Object> getPotentialUse() {
+    public ArrayList<Object> getPotentialUse() throws InadequateUseOfCapacityException {
         
         ArrayList<Object> reachable = new ArrayList<>();
         
@@ -67,9 +76,10 @@ public class Pilot extends Adventurer {
                 }
                 
             }
-        }
+        } else {
+            throw new InadequateUseOfCapacityException();
+        } // end if
         return reachable;
-        // TODO :penser a changer l'etat de heliused when the turn end
     }
     
     
@@ -90,7 +100,7 @@ public class Pilot extends Adventurer {
     @Override
     public ArrayList<InGameAction> getPossibleActions() {
         ArrayList<InGameAction> list = super.getPossibleActions();
-        if (getActionPoints() > 0) {
+        if (getActionPoints() > 0 && !isHeliUsed()) {
             list.add(InGameAction.USE_CAPACITY);
         } // end if
         return list;

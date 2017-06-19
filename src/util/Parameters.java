@@ -5,7 +5,11 @@
  */
 package util;
 
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontFormatException;
+import java.awt.GraphicsEnvironment;
+import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -29,7 +33,8 @@ public class Parameters {
     // Fonts
     public static Font DEFAULT_FONT = initFont();
     // screen
-    public static Dimension appSize    = Toolkit.getDefaultToolkit().getScreenSize();
+    public static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    public static Dimension appSize;
     public static Boolean   fullscreen = true;
     // path
     public static final String RESOURCES  = "./resources/";

@@ -1,6 +1,10 @@
 package view.board;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GraphicsEnvironment;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
@@ -9,7 +13,19 @@ import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JTextPane;
+import javax.swing.UIManager;
 
 import model.adventurers.AdventurerType;
 import model.game.Coords;
@@ -23,6 +39,7 @@ import util.message.InGameAction;
 import util.message.InGameMessage;
 import util.message.MainAction;
 import util.message.MainMessage;
+import view.player.Icone;
 
 
 
@@ -59,6 +76,16 @@ public class GameView extends JFrame {
     private PawnComponant currentP;
     private JPanel        info;
     
+    // player info
+    private JPanel paneDroit;
+    private Icone  player3spe;
+    // private JPanel playerSpe3;
+    // private JPanel playerSpe4;
+    // private JPanel icone3;
+    // private JPanel descriptionSpe3;
+    // private JPanel icone4;
+    // private JPanel descriptionSpe4;
+    
     private JButton endTurnBtn;
     private JButton moveBtn;
     private JButton shoreUpBtn;
@@ -71,8 +98,11 @@ public class GameView extends JFrame {
         super();
         
         initComponents();
-        initListeners();
         setScreen();
+        Parameters.appSize = getSize();
+        
+        initPlayerState();
+        initListeners();
         
     }
     
@@ -136,7 +166,6 @@ public class GameView extends JFrame {
         mainPane.add(eastPane, BorderLayout.EAST);
         mainPane.add(messages, BorderLayout.NORTH);
         mainPane.add(westPane, BorderLayout.WEST);
-        eastPane.add(actionCommands, BorderLayout.NORTH);
         
         endTurnBtn.setActionCommand(END_TURN);
         moveBtn.setActionCommand(MOVE);
@@ -155,6 +184,34 @@ public class GameView extends JFrame {
         info.add(infoPlayerC);
         info.add(currentP);
         
+    }
+    
+    
+    private void initPlayerState() {
+        player3spe = new Icone();
+        paneDroit = new JPanel(new GridLayout(2, 1));
+        // icone3 = new JPanel(new BorderLayout());
+        
+        // descriptionSpe3 = new JPanel(new BorderLayout());
+        // icone4 = new JPanel(new BorderLayout());
+        // playerSpe4 = new JPanel(new GridLayout(1, 2));
+        // descriptionSpe4 = new JPanel(ne BorderLayout());
+        //
+        // icone3.setBackground(Color.green);
+        // descriptionSpe3.setBackground(Color.PINK);
+        //
+        //
+        // descriptionSpe4.setBackground(Color.PINK);
+        //
+        // eastPane.add(paneDroit, BorderLayout.CENTER);
+        eastPane.add(player3spe, BorderLayout.CENTER);
+        // eastPane.add(playerSpe4, BorderLayout.SOUTH) ;
+        
+        // playerSpe4.add(descriptionSpe4);
+        // playerSpe4.add(icone4);
+        
+        paneDroit.add(actionCommands);
+        //
     }
     
     
@@ -246,7 +303,7 @@ public class GameView extends JFrame {
      *
      */
     public void setScreen() {
-        setSize(Parameters.appSize);
+        setSize(Parameters.screenSize);
         if (Parameters.fullscreen) {
             setUndecorated(true);
             setExtendedState(MAXIMIZED_BOTH);

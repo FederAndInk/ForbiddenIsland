@@ -3,6 +3,8 @@ package view.board;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
@@ -14,10 +16,13 @@ import model.game.Coords;
 import model.game.Island;
 import model.game.Site;
 import model.game.TileState;
+import util.BoardType;
 import util.LogType;
 import util.Parameters;
 import util.message.InGameAction;
 import util.message.InGameMessage;
+import util.message.MainAction;
+import util.message.MainMessage;
 
 
 
@@ -26,12 +31,28 @@ public class GameView extends JFrame {
     private static final String MOVE         = "move";
     private static final String SHORE_UP     = "shore";
     private static final String USE_CAPACITY = "cap";
+    private static final String NEW_GAME     = "newGame";
+    private static final String QUIT         = "quit";
     
     private JPanel     mainPane;
     private BoardPanel gamePane;
     private JPanel     eastPane;
     private JPanel     westPane;
     private JPanel     actionCommands;
+    
+    private JMenuBar  bar;
+    private JMenu     option;
+    private JMenuItem newGame;
+    
+    private JMenu                gameOpt;
+    private JMenu                board;
+    private JRadioButtonMenuItem defaultB;
+    private JRadioButtonMenuItem hardTestB;
+    private ButtonGroup          grpBoard;
+    private JMenu                playerSelect;
+    private JRadioButtonMenuItem randomP;
+    private ButtonGroup          grpPlayer;
+    private JMenuItem            quit;
     
     private JTextPane     messages;
     private JLabel        infoPlayerC;
@@ -48,6 +69,7 @@ public class GameView extends JFrame {
     
     public GameView() {
         super();
+        
         initComponents();
         initListeners();
         setScreen();
@@ -61,10 +83,25 @@ public class GameView extends JFrame {
      */
     private void initComponents() {
         mainPane = new JPanel(new BorderLayout());
-        gamePane = new BoardPanel(this);
+        
         eastPane = new JPanel(new BorderLayout());
         westPane = new JPanel(new BorderLayout());
         actionCommands = new JPanel(new GridLayout(4, 1));
+        
+        bar = new JMenuBar();
+        option = new JMenu("Options");
+        newGame = new JMenuItem("Nouvelle Partie");
+        
+        gameOpt = new JMenu("Option de nouvelle partie");
+        board = new JMenu("Choix du Plateau");
+        defaultB = new JRadioButtonMenuItem("Defaut");
+        hardTestB = new JRadioButtonMenuItem("Test hard");
+        grpBoard = new ButtonGroup();
+        playerSelect = new JMenu("Selection des Aventuriers");
+        randomP = new JRadioButtonMenuItem("Aleatoire");
+        grpPlayer = new ButtonGroup();
+        
+        quit = new JMenuItem("Quitter");
         
         endTurnBtn = new JButton("Fin de tour");
         moveBtn = new JButton("Se déplacer");
@@ -76,8 +113,26 @@ public class GameView extends JFrame {
         currentP = new PawnComponant(AdventurerType.DIVER);
         info = new JPanel(new GridLayout(2, 1));
         
+        setJMenuBar(bar);
+        bar.add(option);
+        option.add(newGame);
+        option.add(gameOpt);
+        gameOpt.add(board);
+        board.add(defaultB);
+        board.add(hardTestB);
+        grpBoard.add(defaultB);
+        grpBoard.add(hardTestB);
+        defaultB.setSelected(true);
+        gameOpt.add(playerSelect);
+        playerSelect.add(randomP);
+        grpPlayer.add(randomP);
+        randomP.setSelected(true);
+        option.add(quit);
+        
+        newGame.setActionCommand(NEW_GAME);
+        quit.setActionCommand(QUIT);
+        
         getContentPane().add(mainPane);
-        mainPane.add(gamePane, BorderLayout.CENTER);
         mainPane.add(eastPane, BorderLayout.EAST);
         mainPane.add(messages, BorderLayout.NORTH);
         mainPane.add(westPane, BorderLayout.WEST);
@@ -99,6 +154,7 @@ public class GameView extends JFrame {
         messages.setEditable(false);
         info.add(infoPlayerC);
         info.add(currentP);
+        
     }
     
     
@@ -150,10 +206,14 @@ public class GameView extends JFrame {
     private void initListeners() {
         setListObs(new ListenerAction());
         
-        endTurnBtn.addActionListener(getListObs());
-        moveBtn.addActionListener(getListObs());
-        shoreUpBtn.addActionListener(getListObs());
-        useCapacityBtn.addActionListener(getListObs());
+        addWindowListener(listObs);
+        newGame.addActionListener(listObs);
+        quit.addActionListener(listObs);
+        
+        endTurnBtn.addActionListener(listObs);
+        moveBtn.addActionListener(listObs);
+        shoreUpBtn.addActionListener(listObs);
+        useCapacityBtn.addActionListener(listObs);
     }
     
     
@@ -162,7 +222,6 @@ public class GameView extends JFrame {
      *
      */
     public void setEndTurn(boolean b) {
-        // FIXME : do something for endTurn
         endTurnBtn.setBorder(b ? BorderFactory.createLineBorder(Color.GREEN, 4) : UIManager.getBorder("Button.border"));
         endTurnBtn.repaint();
         moveBtn.setEnabled(!b);
@@ -221,9 +280,10 @@ public class GameView extends JFrame {
      * enable a specific tile
      * @param b
      * @param c
+     * @param action
      */
-    public void setEnabled(boolean b, Coords c) {
-        getTileG(c).setEnabled(b);
+    public void setEnabled(boolean b, Coords c, InGameAction action) {
+        ((TilePanel) getTileG(c)).setEnabled(b, action);
     }
     
     
@@ -248,15 +308,12 @@ public class GameView extends JFrame {
      *
      */
     public void setBoard(ArrayList<Site> board, Observer observer) {
+        gamePane = new BoardPanel(this);
         gamePane.initGrid(board, observer);
-    }
-    
-    
-    /**
-     * @return the listObs
-     */
-    public ListenerAction getListObs() {
-        return listObs;
+        mainPane.add(gamePane, BorderLayout.CENTER);
+        revalidate();
+        repaint();
+        doLayout();
     }
     
     
@@ -268,33 +325,66 @@ public class GameView extends JFrame {
         this.listObs = listObs;
     }
     
-    public static class ListenerAction extends Observable implements ActionListener {
+    
+    /**
+     * @return the grpBoard
+     */
+    public BoardType getBoard() {
+        if (hardTestB.isSelected()) {
+            return BoardType.HARD_TEST;
+        } else {
+            return BoardType.DEFAULT;
+        } // end if
+    }
+    
+    public class ListenerAction extends Observable implements ActionListener, WindowListener {
         
         /**
          * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
          */
         @Override
         public void actionPerformed(ActionEvent e) {
+            // Menu
+            switch (e.getActionCommand()) {
+            case QUIT:
+                setChanged();
+                notifyObservers(new MainMessage(MainAction.QUIT));
+                clearChanged();
+                break;
+            case NEW_GAME:
+                mainPane.remove(gamePane);
+                setChanged();
+                notifyObservers(new MainMessage(MainAction.CREATE_GAME, getBoard()));
+                clearChanged();
+                setChanged();
+                notifyObservers(new MainMessage(MainAction.BEGIN_GAME, getBoard()));
+                clearChanged();
+                break;
             
+            default:
+                break;
+            }// end switch
+            
+            // InTurn
             switch (e.getActionCommand()) {
             case END_TURN:
                 setChanged();
-                notifyObservers(new InGameMessage(InGameAction.END_TURN, null));
+                notifyObservers(new InGameMessage(InGameAction.END_TURN));
                 clearChanged();
                 break;
             case MOVE:
                 setChanged();
-                notifyObservers(new InGameMessage(InGameAction.MOVE, null));
+                notifyObservers(new InGameMessage(InGameAction.MOVE));
                 clearChanged();
                 break;
             case SHORE_UP:
                 setChanged();
-                notifyObservers(new InGameMessage(InGameAction.SHORE_UP_TILE, null));
+                notifyObservers(new InGameMessage(InGameAction.SHORE_UP_TILE));
                 clearChanged();
                 break;
             case USE_CAPACITY:
                 setChanged();
-                notifyObservers(new InGameMessage(InGameAction.USE_CAPACITY, null));
+                notifyObservers(new InGameMessage(InGameAction.USE_CAPACITY));
                 clearChanged();
                 break;
             
@@ -304,5 +394,74 @@ public class GameView extends JFrame {
             
         }
         
+        
+        /**
+         * @see java.awt.event.WindowListener#windowOpened(java.awt.event.WindowEvent)
+         */
+        @Override
+        public void windowOpened(WindowEvent e) {
+        }
+        
+        
+        /**
+         * @see java.awt.event.WindowListener#windowClosing(java.awt.event.WindowEvent)
+         */
+        @Override
+        public void windowClosing(WindowEvent e) {
+            setChanged();
+            notifyObservers(new MainMessage(MainAction.QUIT));
+            clearChanged();
+        }
+        
+        
+        /**
+         * @see java.awt.event.WindowListener#windowClosed(java.awt.event.WindowEvent)
+         */
+        @Override
+        public void windowClosed(WindowEvent e) {
+        }
+        
+        
+        /**
+         * @see java.awt.event.WindowListener#windowIconified(java.awt.event.WindowEvent)
+         */
+        @Override
+        public void windowIconified(WindowEvent e) {
+        }
+        
+        
+        /**
+         * @see java.awt.event.WindowListener#windowDeiconified(java.awt.event.WindowEvent)
+         */
+        @Override
+        public void windowDeiconified(WindowEvent e) {
+        }
+        
+        
+        /**
+         * @see java.awt.event.WindowListener#windowActivated(java.awt.event.WindowEvent)
+         */
+        @Override
+        public void windowActivated(WindowEvent e) {
+        }
+        
+        
+        /**
+         * @see java.awt.event.WindowListener#windowDeactivated(java.awt.event.WindowEvent)
+         */
+        @Override
+        public void windowDeactivated(WindowEvent e) {
+        }
+        
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     * @param mainController
+     */
+    public void addObs(Observer observer) {
+        listObs.addObserver(observer);
     }
 }

@@ -1,5 +1,9 @@
 package model.game;
 
+import util.BoardGeneration;
+
+
+
 public class Tile {
     
     private Coords    coords;
@@ -69,6 +73,8 @@ public class Tile {
     
     
     /**
+     * Used only by {@link BoardGeneration} and {@link Game#setTileState(Tile, TileState)}
+     * 
      * @param state
      * the state to set
      */

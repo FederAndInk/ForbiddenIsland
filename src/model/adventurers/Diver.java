@@ -71,6 +71,6 @@ public class Diver extends Adventurer {
     
     @Override
     public ArrayList<Tile> getShoreUpTiles() {
-        return super.getReachableTiles();
+        return getShoreUpTiles(super.getReachableTiles());
     }
 }

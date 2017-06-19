@@ -318,7 +318,9 @@ public abstract class Adventurer {
                     if (getInventory().removeCard(card)) {
                         player.getCurrentAdventurer().recieveCard(card);
                     } else {
-                        Parameters.printLog("il a pas la carte ", LogType.ACCESS);
+                        // FIXME : add throws
+                        Parameters.printLog("il a pas la carte " + card + " dans l'inventaire de " + this,
+                                LogType.ACCESS);
                     }
                 }
             }

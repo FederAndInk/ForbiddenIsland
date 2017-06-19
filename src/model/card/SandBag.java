@@ -1,5 +1,11 @@
 package model.card;
 
+import model.game.Tile;
+import model.game.TileState;
+import util.exception.TileException;
+
+
+
 public class SandBag extends Card {
     
     /**
@@ -14,11 +20,16 @@ public class SandBag extends Card {
     
     /**
      * 
+     * @param destTile
      * @param applied
      */
-    public void applyAction(Object applied) {
-        // TODO - implement SandBag.applyAction
-        throw new UnsupportedOperationException();
+    @Override
+    public void applyAction(Tile destTile, Object applied) throws TileException {
+        if (destTile.getState() == TileState.FLOODED) {
+            destTile.setState(TileState.DRIED);
+        } else {
+            throw new TileException(destTile, TileState.DRIED);
+        }
     }
     
 }

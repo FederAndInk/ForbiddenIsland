@@ -38,12 +38,18 @@ public abstract class Deck {
     private void deckGestion() throws EventException {
         if (deck.isEmpty()) {
             // TODO: send message to controller
-            deck.addAll(discard);
+            shuffleDeck();
         } // end if
         if (deck.isEmpty() && discard.isEmpty()) {
             throw new EventException((short) 0, "Not enough card in both discard and deck");
         } // end if
     }// end deckGestion
+    
+    
+    public void shuffleDeck() {
+        deck.addAll(discard);
+        Collections.shuffle(deck);
+    }
     
     
     public Card draw(Player p) {

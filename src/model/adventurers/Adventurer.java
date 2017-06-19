@@ -379,7 +379,7 @@ public abstract class Adventurer {
     
     public void giveCard(TreasureCard card, Player player) throws CardException, CantGiveCard {
         if (card.getTreasureType().equals(getCurrentTile().getSite().geTreasureType())) {
-            if (player.getCurrentAdventurer().getCurrentTile().equals(getCurrentTile())) {
+            if (this.reachableExchangePlayer(player)) {
                 if (getInventory().removeCard(card)) {
                     Parameters.printLog("\nle joueur " + this.getPlayer() + " donne la carte " + card, LogType.INFO);
                     player.getCurrentAdventurer().recieveCard(card);
@@ -397,6 +397,11 @@ public abstract class Adventurer {
             Parameters.printLog("le type de carte ne correspond pas", LogType.ERROR);
             throw new CantGiveCard(card.getTreasureType(), this);
         }
+    }
+    
+    
+    public Boolean reachableExchangePlayer(Player player) {
+        return (player.getCurrentAdventurer().getCurrentTile().equals(getCurrentTile()));
     }
     
     

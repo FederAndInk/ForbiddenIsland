@@ -31,4 +31,13 @@ public class Messenger extends Adventurer {
         } // end if
         return list;
     }
+    
+    
+    /**
+     * @return true
+     */
+    @Override
+    public Boolean reachableExchangePlayer(Player player) {
+        return true;
+    }
 }

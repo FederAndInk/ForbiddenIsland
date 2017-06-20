@@ -17,25 +17,30 @@ import util.Parameters;
  *
  */
 public enum AdventurerType {
-    DIVER("Diver", Site.IRON_GATE),
-    ENGINEER("Engineer", Site.BRONZE_GATE),
-    EXPLORER("Explorer", Site.COPPER_GATE),
-    MESSENGER("Messenger", Site.SILVER_GATE),
-    NAVIGATOR("Navigator", Site.GOLD_GATE),
-    PILOT("Pilot", Site.FOOLS_LANDING),
-    RANDOM("Random", null);
+    DIVER("Diver", Site.IRON_GATE, "Peut se deplacer à travers une case coulée ou plus pour une action"),
+    ENGINEER("Engineer", Site.BRONZE_GATE, "Peut assecher deux cases pour une action"),
+    EXPLORER("Explorer", Site.COPPER_GATE, "Peut assecher et se deplacer en diagonal pour une action"),
+    MESSENGER("Messenger", Site.SILVER_GATE, "Peut donner une carte à n'importe qui sur la carte pour une action"),
+    NAVIGATOR(
+            "Navigator",
+            Site.GOLD_GATE,
+            "Peut deplacer un autre joueur d'une ou deux case adjacente pour une action"),
+    PILOT("Pilot", Site.FOOLS_LANDING, "Peut voler vers n'importe où une fois par tour pour une action"),
+    RANDOM("Random", null, "Random");
     
     private String className;
     private Site   spawn;
+    private String description;
     
     
     /**
      * @author nihil
      *
      */
-    private AdventurerType(String className, Site spawn) {
+    private AdventurerType(String className, Site spawn, String description) {
         this.className = className;
         this.spawn = spawn;
+        this.description = description;
     }
     
     

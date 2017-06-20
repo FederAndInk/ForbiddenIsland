@@ -2,6 +2,7 @@ package model.adventurers;
 
 import java.util.ArrayList;
 
+import model.game.TreasureType;
 import model.player.Player;
 import util.message.InGameAction;
 
@@ -37,7 +38,16 @@ public class Messenger extends Adventurer {
      * @return true
      */
     @Override
-    public Boolean reachableExchangePlayer(Player player) {
+    public boolean reachableExchangePlayer(Player player) {
+        return true;
+    }
+    
+    
+    /**
+     * @see model.adventurers.Adventurer#isExchangePossibleHere(model.game.TreasureType)
+     */
+    @Override
+    protected boolean isExchangePossibleHere(TreasureType type) {
         return true;
     }
 }

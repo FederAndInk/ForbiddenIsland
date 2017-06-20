@@ -69,6 +69,17 @@ public class GameController implements Observer {
     
     /**
      * @author nihil
+     *
+     */
+    private void chainPlayers(ArrayList<Player> players) {
+        for (Player player : players) {
+            chainPlayer(player);
+        } // end for
+    }
+    
+    
+    /**
+     * @author nihil
      * @param player
      *
      */
@@ -167,10 +178,16 @@ public class GameController implements Observer {
             gameView.movePawn(adv.getADVENTURER_TYPE(), cTile.getCoords(), tile.getCoords());
         } catch (MoveException | ActionException e) {
             e.printStackTrace();
+        } catch (EndGameException e) {
+            e.printStackTrace();
+            // FIXME : endGame
         } finally {
             unChainPlayer();
             defaultAction();
         }
+        if (!playersChain.isEmpty()) {
+            setSwim();
+        } // end if
         
     }
     
@@ -275,20 +292,19 @@ public class GameController implements Observer {
         try {
             currentGame.setTileState(tile, state);
         } catch (PlayerOutOfIslandException e) {
-            for (Player player : currentGame.getPlayersOnTile(tile)) {
-                setSwim(player);
-            } // end for
+            chainPlayers(getCurrentGame().getPlayersOnTile(tile));
+            setSwim();
         }
         defaultAction();
     }
     
     
-    private void setSwim(Player player) {
-        Parameters.printLog("set swim for " + player.getCurrentAdventurer(), LogType.INFO);
-        chainPlayer(player);
+    private void setSwim() {
+        Player p = getCurrentGame().getCurrentPlayer();
+        Parameters.printLog("set swim for " + p.getCurrentAdventurer(), LogType.INFO);
         getCurrentGame().setCurrentAction(InGameAction.SWIM);
         try {
-            refreshBoard(player.getCurrentAdventurer().getSwimmableTiles(), InGameAction.SWIM);
+            refreshBoard(p.getCurrentAdventurer().getSwimmableTiles(), InGameAction.SWIM);
         } catch (EndGameException e) {
             e.printStackTrace();
             // FIXME : do something : end of game

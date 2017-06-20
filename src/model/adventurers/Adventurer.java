@@ -161,10 +161,15 @@ public abstract class Adventurer {
      * @param tile
      * @throws MoveException
      * @throws ActionException
+     * @throws EndGameException
      */
-    public void swim(Tile tile) throws MoveException, ActionException {
-        setActionPoints(1);
-        move(tile);
+    public void swim(Tile tile) throws MoveException, ActionException, EndGameException {
+        if (getSwimmableTiles().contains(tile)) {
+            setActionPoints(1);
+            move(tile);
+        } else {
+            throw new MoveException(tile);
+        } // end if
     }
     
     
@@ -394,7 +399,8 @@ public abstract class Adventurer {
     }
     
     
-    public void giveCard(TreasureCard card, Player player) throws CardException, GiveCardException, MissingCardException {
+    public void giveCard(TreasureCard card, Player player)
+            throws CardException, GiveCardException, MissingCardException {
         if (isExchangePossibleHere(card.getTreasureType())) {
             if (reachableExchangePlayer(player)) {
                 if (getInventory().removeCard(card)) {

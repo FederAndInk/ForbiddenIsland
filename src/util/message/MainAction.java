@@ -38,5 +38,6 @@ public enum MainAction {
     SAVE_GAME,
     LOAD_GAME,
     REMOVE_GAME,
+    ABANDON,
     QUIT;
 }

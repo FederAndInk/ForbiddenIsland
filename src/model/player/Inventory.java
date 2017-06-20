@@ -1,6 +1,7 @@
 package model.player;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import model.adventurers.Adventurer;
 import model.card.Card;
@@ -40,12 +41,12 @@ public class Inventory {
      * @return true if the inventory has a card standalone usable
      */
     public boolean hasCardUsable() {
-        for (Card card : cards) {
-            if (card.getType().isUsable()) {
-                return true;
-            } // end if
-        } // end for
-        return false;
+        boolean b = false;
+        Iterator<Card> it = cards.iterator();
+        while (it.hasNext() && !b) {
+            b = it.next().getType().isUsable();
+        } // end while
+        return b;
     }
     
     
@@ -58,7 +59,7 @@ public class Inventory {
         if (!(getAdventurer().getPlayer().getCurrentAdventurer().getInventory().isFull())) {
             cards.add(card);
         } else {
-            Parameters.printLog("l'inventaire est plein", LogType.INFO); 
+            Parameters.printLog("l'inventaire est plein", LogType.INFO);
             throw new CardException(card, getAdventurer().getADVENTURER_TYPE());
         }
     }
@@ -67,7 +68,8 @@ public class Inventory {
     public void addTreasure(Treasure treasure) {
         treasures.add(treasure);
     }
-
+    
+    
     public boolean removeCard(Card card) {
         return cards.remove(card);
     }
@@ -96,10 +98,6 @@ public class Inventory {
             }
         }
         return nbCards;
-    }
-
-    public Card getCard() {
-        return cards.get(1);
     }
     
     

@@ -40,6 +40,8 @@ public enum InGameAction {
     USE_CARD_SAND_BAG,
     USE_CARD_HELICOPTER,
     DISCARD,
+    DRAW_FLOOD,
+    DRAW_TREASURE,
     /**
      * @give the {@link Player#name} who want to do the interruption
      * 
@@ -75,5 +77,5 @@ public enum InGameAction {
      * @give nothing
      */
     END_TURN,
-    CHANGE_STATE_OF_TILE
+    CHANGE_STATE_OF_TILE;
 }

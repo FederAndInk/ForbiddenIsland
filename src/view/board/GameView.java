@@ -12,6 +12,7 @@ import java.util.Observer;
 import javax.swing.*;
 
 import model.adventurers.AdventurerType;
+import model.card.CardType;
 import model.game.Coords;
 import model.game.Island;
 import model.game.Site;
@@ -23,6 +24,7 @@ import util.message.InGameAction;
 import util.message.InGameMessage;
 import util.message.MainAction;
 import util.message.MainMessage;
+import view.Cards.DeckComponant;
 
 
 
@@ -59,6 +61,11 @@ public class GameView extends JFrame {
     private PawnComponant currentP;
     private JPanel        info;
     
+    // Decks
+    private DeckComponant treasureDeck;
+    private DeckComponant floodDeck;
+    private JPanel        decksPane;
+    
     private JButton endTurnBtn;
     private JButton moveBtn;
     private JButton shoreUpBtn;
@@ -71,6 +78,7 @@ public class GameView extends JFrame {
         super();
         
         initComponents();
+        initDecks();
         initListeners();
         setScreen();
         
@@ -174,6 +182,20 @@ public class GameView extends JFrame {
         info.add(infoPlayerC);
         info.add(currentP);
         
+    }
+    
+    
+    /***
+     * @author nihil
+     */
+    private void initDecks() {
+        treasureDeck = new DeckComponant(CardType.TREASURE_CARD);
+        floodDeck = new DeckComponant(CardType.FLOOD_CARD);
+        decksPane = new JPanel(new GridLayout(2, 1));
+        
+        westPane.add(decksPane, BorderLayout.CENTER);
+        decksPane.add(treasureDeck);
+        decksPane.add(floodDeck);
     }
     
     

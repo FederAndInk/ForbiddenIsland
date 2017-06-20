@@ -60,6 +60,15 @@ public enum Site {
      * @author nihil
      *
      */
+    public String getCard() {
+        return Parameters.CARDS + "Flood_Card_" + getName() + "@2x.png";
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     */
     public String getNameStyle() {
         return HTML_BEG + name + HTML_END;
     }

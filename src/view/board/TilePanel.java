@@ -289,7 +289,7 @@ public class TilePanel extends JLayeredPane {
                 break;
             case DEBUG_HELICOPTER:
                 setChanged();
-                notifyObservers(new InGameMessage(InGameAction.SELECT_PAWN));
+                notifyObservers(new InGameMessage(InGameAction.USE_CARD_HELICOPTER));
                 clearChanged();
                 break;
             case DEBUG_HELICOPTER2:

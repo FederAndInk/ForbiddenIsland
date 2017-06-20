@@ -34,7 +34,7 @@ import util.message.InGameMessage;
  *
  */
 public class PawnComponant extends JComponent {
-    private float          pawnSize = (float) 0.24;
+    private float          pawnSize = (float) 0.4;
     private AdventurerType pawn;
     private boolean        selected;
     
@@ -79,9 +79,9 @@ public class PawnComponant extends JComponent {
         BufferedImage bImage;
         try {
             bImage = ImageIO.read(new File(pawn.getPath()));
-            int dimBase = (int) (pawnSize * getParent().getSize().getWidth());
-            int dimAjust = dimBase * bImage.getHeight() / bImage.getWidth();
-            setPreferredSize(new Dimension(dimBase, dimAjust));
+            int dimBase = (int) (pawnSize * getParent().getSize().getHeight());
+            int dimAjust = dimBase * bImage.getWidth() / bImage.getHeight();
+            setPreferredSize(new Dimension(dimAjust, dimBase));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -111,6 +111,9 @@ public class PawnComponant extends JComponent {
             
             @Override
             public void componentShown(ComponentEvent e) {
+                initSize();
+                e.getComponent().doLayout();
+                e.getComponent().repaint();
             }
             
             

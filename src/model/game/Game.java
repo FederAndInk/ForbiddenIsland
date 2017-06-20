@@ -9,11 +9,7 @@ import model.player.Player;
 import util.BoardType;
 import util.LogType;
 import util.Parameters;
-import util.exception.ActionException;
-import util.exception.NotEnoughCardsException;
-import util.exception.EndGameException;
-import util.exception.PlayerOutOfIslandException;
-import util.exception.WrongTileTreasureException;
+import util.exception.*;
 import util.message.InGameAction;
 
 
@@ -28,6 +24,7 @@ public class Game {
     private TreasureDeck         treasureDeck;
     private FloodDeck            floodDeck;
     private Player               currentPlayer;
+    private int                  cardsDrawn;
     private boolean              started;
     
     private ArrayList<Player> SelectedPlayers;
@@ -46,6 +43,7 @@ public class Game {
         players = new LinkedList<>();
         treasures = new ArrayList<>();
         SelectedPlayers = new ArrayList<>();
+        cardsDrawn = 0;
     }
     
     
@@ -165,8 +163,7 @@ public class Game {
      * @return the possibleActions
      */
     public ArrayList<InGameAction> getPossibleActions() {
-        ArrayList<InGameAction> list = new ArrayList<>();
-        list.addAll(currentPlayer.getCurrentAdventurer().getPossibleActions());
+        ArrayList<InGameAction> list = currentPlayer.getCurrentAdventurer().getPossibleActions();
         
         return list;
     }
@@ -176,7 +173,17 @@ public class Game {
      * @author nihil
      *
      */
+    private void draw() {
+        cardsDrawn++;
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     */
     public void endTurn() {
+        cardsDrawn = 0;
         getCurrentPlayer().getCurrentAdventurer().endTurn();
         
         int indLastP = getPlayers().indexOf(getCurrentPlayer());

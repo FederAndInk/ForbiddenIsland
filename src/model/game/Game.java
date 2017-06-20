@@ -12,6 +12,7 @@ import model.player.Player;
 import util.BoardType;
 import util.LogType;
 import util.Parameters;
+import util.exception.EndGameException;
 import util.exception.PlayerOutOfIslandException;
 import util.message.InGameAction;
 
@@ -29,7 +30,8 @@ public class Game {
     private Player               currentPlayer;
     private boolean              started;
     
-    private InGameAction currentAction;
+    private ArrayList<Player> SelectedPlayers;
+    private InGameAction      currentAction;
     
     
     /**
@@ -43,6 +45,7 @@ public class Game {
         floodDeck = new FloodDeck();
         players = new LinkedList<>();
         treasures = new ArrayList<>();
+        SelectedPlayers = new ArrayList<>();
     }
     
     
@@ -156,6 +159,39 @@ public class Game {
         setCurrentPlayer(getPlayers().get((indLastP + 1) % 4));
         getCurrentPlayer().getCurrentAdventurer().beginTurn();
         setCurrentAction(InGameAction.MOVE);
+        deselectPlayers();
+    }
+    
+    
+    public void setTileState(Tile tile, TileState state) throws PlayerOutOfIslandException {
+        tile.setState(state);
+        if (state.equals(TileState.SINKED) && !getPlayersOnTile(tile).isEmpty()) {
+            throw new PlayerOutOfIslandException();
+        } // end if
+    }// end setTileState
+    
+    
+    /**
+     * get the players on tile
+     * 
+     * @author nihil
+     */
+    public ArrayList<Player> getPlayersOnTile(Tile tile) {
+        ArrayList<Player> players = new ArrayList<>();
+        for (Player player : getPlayers()) {
+            if (player.getCurrentAdventurer().getCurrentTile().equals(tile)) {
+                players.add(player);
+            } // end if
+        } // end for
+        return players;
+    }
+    
+    
+    public void increaseSeaLevel() throws EndGameException {
+        seaLevel = seaLevel.next();
+        if (seaLevel.isLast()) {
+            throw new EndGameException();
+        }
     }
     
     
@@ -257,6 +293,41 @@ public class Game {
     
     
     /**
+     * @author nihil
+     * @param player
+     * @return true if this adding the player, return false this removing the player
+     *
+     */
+    public boolean toggleSelectionPlayer(Player player) {
+        if (!SelectedPlayers.remove(player)) {
+            SelectedPlayers.add(player);
+            Parameters.printLog("Add player " + player + " to selected", LogType.ACCESS);
+            return true;
+        } // end if
+        Parameters.printLog("remove player " + player + " to selected", LogType.ACCESS);
+        return false;
+    }
+    
+    
+    /**
+     * @return the selectedPlayers
+     */
+    public ArrayList<Player> getSelectedPlayers() {
+        return SelectedPlayers;
+    }
+    
+    
+    /**
+     * @author nihil
+     * @param player
+     *
+     */
+    public void deselectPlayers() {
+        SelectedPlayers.clear();
+    }
+    
+    
+    /**
      * @return the currentAction
      */
     public InGameAction getCurrentAction() {
@@ -271,5 +342,20 @@ public class Game {
     public void setCurrentAction(InGameAction currentAction) {
         this.currentAction = currentAction;
         Parameters.printLog("Set action to : " + currentAction, LogType.INFO);
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     * @param advT
+     * @return the player specified by the {@link AdventurerType} or null if not in this {@link Game}
+     */
+    public Player getPlayer(AdventurerType advT) {
+        Iterator<Player> it = getPlayers().iterator();
+        Player p = null;
+        while (it.hasNext() && !(p = it.next()).getCurrentAdventurer().getADVENTURER_TYPE().equals(advT)) {
+        }
+        return p;
     }
 }

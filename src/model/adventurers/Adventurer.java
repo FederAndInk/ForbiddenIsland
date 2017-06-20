@@ -366,7 +366,6 @@ public abstract class Adventurer {
         return ADVENTURER_TYPE;
     }
     
-    
     public void giveCard(TreasureCard card, Player player) throws CardException, CantGiveCard, MissingCard {
         if (isExchangePossibleHere(card.getTreasureType())) {
             if (reachableExchangePlayer(player)) {
@@ -403,7 +402,6 @@ public abstract class Adventurer {
     protected boolean isExchangePossibleHere(TreasureType type) {
         return type.equals(getCurrentTile().getSite().geTreasureType());
     }
-    
     
     public void recieveCard(TreasureCard card) throws CardException {
         Parameters.printLog("\nle joueur " + getPlayer() + " reçois la carte " + card, LogType.INFO);

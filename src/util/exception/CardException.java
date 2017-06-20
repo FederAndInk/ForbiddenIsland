@@ -7,7 +7,6 @@ import model.adventurers.AdventurerType;
 import model.card.Card;
 
 
-
 /**
  * exception for :<br>
  * Cards, as Exceeding card limit

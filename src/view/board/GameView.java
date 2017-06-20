@@ -110,8 +110,27 @@ public class GameView extends JFrame {
         
         messages = new JTextPane();
         infoPlayerC = new JLabel("Joueur ");
-        currentP = new PawnComponant(AdventurerType.DIVER);
         info = new JPanel(new GridLayout(2, 1));
+        currentP = new PawnComponant(AdventurerType.DIVER);
+        
+        setJMenuBar(bar);
+        bar.add(option);
+        option.add(newGame);
+        option.add(gameOpt);
+        gameOpt.add(board);
+        board.add(defaultB);
+        board.add(hardTestB);
+        grpBoard.add(defaultB);
+        grpBoard.add(hardTestB);
+        defaultB.setSelected(true);
+        gameOpt.add(playerSelect);
+        playerSelect.add(randomP);
+        grpPlayer.add(randomP);
+        randomP.setSelected(true);
+        option.add(quit);
+        
+        newGame.setActionCommand(NEW_GAME);
+        quit.setActionCommand(QUIT);
         
         setJMenuBar(bar);
         bar.add(option);
@@ -301,6 +320,26 @@ public class GameView extends JFrame {
     
     
     /**
+     * @author nihil
+     *
+     * @param toggleSelectionPlayer
+     * @param adventurer_TYPE
+     */
+    public void setSelectPawn(boolean selected, AdventurerType advType, Coords location) {
+        ((TilePanel) getTileG(location)).getPlayerPanel().setSelected(selected, advType);
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     */
+    public void setActivePawn(boolean selected, AdventurerType advType, Coords location) {
+        ((TilePanel) getTileG(location)).getPlayerPanel().setEnable(selected, advType);
+    }
+    
+    
+    /**
      * to set the board of the view (create components ...)
      * 
      * @author nihil
@@ -360,7 +399,6 @@ public class GameView extends JFrame {
                 notifyObservers(new MainMessage(MainAction.BEGIN_GAME, getBoard()));
                 clearChanged();
                 break;
-            
             default:
                 break;
             }// end switch

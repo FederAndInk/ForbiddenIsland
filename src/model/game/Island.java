@@ -102,4 +102,36 @@ public class Island {
         } // end try
     }
     
+    
+    /**
+     * @author nihil
+     *
+     * @return
+     */
+    public ArrayList<Tile> getTileNot(TileState state) {
+        ArrayList<Tile> tiles = new ArrayList<>();
+        
+        for (Tile[] ts : grid) {
+            for (Tile tile : ts) {
+                if (tile != null && !tile.getState().equals(state)) {
+                    tiles.add(tile);
+                } // end if
+            } // end for
+        } // end for
+        return tiles;
+    }
+    
+    
+    public ArrayList<Tile> getTiles(TileState state) {
+        ArrayList<Tile> tiles = new ArrayList<>();
+        for (Tile[] ts : grid) {
+            for (Tile tile : ts) {
+                if (tile != null && tile.getState().equals(state)) {
+                    tiles.add(tile);
+                }
+            }
+        }
+        return tiles;
+    }
+    
 }

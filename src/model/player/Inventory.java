@@ -11,7 +11,7 @@ import model.game.TreasureType;
 import util.LogType;
 import util.Parameters;
 import util.exception.CardException;
-import util.exception.MissingCard;
+import util.exception.MissingCardException;
 
 
 
@@ -111,16 +111,16 @@ public class Inventory {
     /**
      * @param treasureType
      * @return the specified card or exception
-     * @throws MissingCard
+     * @throws MissingCardException
      */
-    public Card getCard(TreasureType treasureType) throws MissingCard {
+    public Card getCard(TreasureType treasureType) throws MissingCardException {
         for (Card i : cards) {
             if (i.getType().equals(CardType.TREASURE_CARD)
                     && ((TreasureCard) i).getTreasureType().equals(treasureType)) {
                 return i;
             }
         }
-        throw new MissingCard(treasureType, getAdventurer());
+        throw new MissingCardException(treasureType, getAdventurer());
     }
     
     

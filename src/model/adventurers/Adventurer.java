@@ -2,12 +2,8 @@ package model.adventurers;
 
 import java.util.ArrayList;
 
+import model.card.Card;
 import model.card.TreasureCard;
-import model.game.Coords;
-import model.game.Island;
-import model.game.Tile;
-import model.game.TileState;
-import model.game.Treasure;
 import model.game.*;
 import model.player.Inventory;
 import model.player.Player;
@@ -398,7 +394,7 @@ public abstract class Adventurer {
     }
     
     
-    public void giveCard(TreasureCard card, Player player) throws CardException, CantGiveCard, MissingCard {
+    public void giveCard(TreasureCard card, Player player) throws CardException, GiveCardException, MissingCardException {
         if (isExchangePossibleHere(card.getTreasureType())) {
             if (reachableExchangePlayer(player)) {
                 if (getInventory().removeCard(card)) {
@@ -407,16 +403,16 @@ public abstract class Adventurer {
                 } else {
                     Parameters.printLog("il n'y a pas la carte " + card + " dans l'inventaire de " + this,
                             LogType.ERROR);
-                    throw new MissingCard(card.getTreasureType(), this);
+                    throw new MissingCardException(card.getTreasureType(), this);
                 }
             } else {
                 Parameters.printLog("les joueurs ne sont pas sur la même case", LogType.ERROR);
-                throw new CantGiveCard(this, player.getCurrentAdventurer());
+                throw new GiveCardException(this, player.getCurrentAdventurer());
             }
             
         } else {
             Parameters.printLog("le type de carte ne correspond pas", LogType.ERROR);
-            throw new CantGiveCard(card.getTreasureType(), this);
+            throw new GiveCardException(card.getTreasureType(), this);
         }
     }
     
@@ -428,11 +424,11 @@ public abstract class Adventurer {
     
     /**
      * @author nihil
-     * @return
+     * @return true if the exchange of card is possible on the {@link #getCurrentTile()}
      *
      */
     protected boolean isExchangePossibleHere(TreasureType type) {
-        return type.equals(getCurrentTile().getSite().geTreasureType());
+        return type.equals(getCurrentTile().getSite().getTreasureType());
     }
     
     

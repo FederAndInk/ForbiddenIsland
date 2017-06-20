@@ -77,6 +77,12 @@ public enum AdventurerType {
     }
     
     
+    // réccupérer le logo du joueur en train de jouer
+    public String getPathUser() {
+        return Parameters.LOGO + getClassName() + "_AdventurerUser_Ison@2x.png";
+    }
+    
+    
     /**
      * @author nihil
      *

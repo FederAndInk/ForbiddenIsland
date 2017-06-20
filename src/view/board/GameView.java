@@ -40,6 +40,7 @@ import util.message.InGameMessage;
 import util.message.MainAction;
 import util.message.MainMessage;
 import view.player.Icone;
+import view.player.playerInventory;
 
 
 
@@ -77,14 +78,17 @@ public class GameView extends JFrame {
     private JPanel        info;
     
     // player info
-    private JPanel paneDroit;
-    private Icone  player3spe;
+    private JPanel          paneDroit;
+    private Icone           player3spe;
+    private Icone           player4spe;
+    private playerInventory inventory;
     // private JPanel playerSpe3;
     // private JPanel playerSpe4;
     // private JPanel icone3;
     // private JPanel descriptionSpe3;
     // private JPanel icone4;
     // private JPanel descriptionSpe4;
+    private JPanel flood;
     
     private JButton endTurnBtn;
     private JButton moveBtn;
@@ -102,8 +106,15 @@ public class GameView extends JFrame {
         Parameters.appSize = getSize();
         
         initPlayerState();
+        initPlayerInventory();
         initListeners();
         
+    }
+    
+    
+    private void initPlayerInventory() {
+        inventory = new playerInventory();
+        mainPane.add(inventory, BorderLayout.NORTH);
     }
     
     
@@ -164,7 +175,7 @@ public class GameView extends JFrame {
         
         getContentPane().add(mainPane);
         mainPane.add(eastPane, BorderLayout.EAST);
-        mainPane.add(messages, BorderLayout.NORTH);
+        
         mainPane.add(westPane, BorderLayout.WEST);
         
         endTurnBtn.setActionCommand(END_TURN);
@@ -189,7 +200,9 @@ public class GameView extends JFrame {
     
     private void initPlayerState() {
         player3spe = new Icone();
+        player4spe = new Icone();
         paneDroit = new JPanel(new GridLayout(2, 1));
+        flood = new JPanel();
         // icone3 = new JPanel(new BorderLayout());
         
         // descriptionSpe3 = new JPanel(new BorderLayout());
@@ -204,13 +217,19 @@ public class GameView extends JFrame {
         // descriptionSpe4.setBackground(Color.PINK);
         //
         // eastPane.add(paneDroit, BorderLayout.CENTER);
-        eastPane.add(player3spe, BorderLayout.CENTER);
+        eastPane.setBackground(Color.RED);
+        eastPane.add(player3spe, BorderLayout.NORTH);
+        eastPane.add(player4spe, BorderLayout.SOUTH);
+        eastPane.add(paneDroit, BorderLayout.CENTER);
+        
         // eastPane.add(playerSpe4, BorderLayout.SOUTH) ;
         
         // playerSpe4.add(descriptionSpe4);
         // playerSpe4.add(icone4);
-        
+        flood.setBackground(Color.BLUE);
+        flood.add(new JLabel("   "));
         paneDroit.add(actionCommands);
+        paneDroit.add(flood);
         //
     }
     

@@ -2,6 +2,8 @@ package model.adventurers;
 
 import java.util.ArrayList;
 
+import model.card.Card;
+import model.card.TreasureCard;
 import model.game.Coords;
 import model.game.Island;
 import model.game.Tile;
@@ -10,8 +12,7 @@ import model.player.Inventory;
 import model.player.Player;
 import util.LogType;
 import util.Parameters;
-import util.exception.InadequateUseOfCapacity;
-import util.exception.MoveException;
+import util.exception.*;
 import util.message.InGameAction;
 
 
@@ -47,6 +48,54 @@ public abstract class Adventurer {
     }
     
     
+    protected ArrayList<Tile> getShoreUpTiles(ArrayList<Tile> reachableTiles) {
+        ArrayList<Tile> sUTiles = reachableTiles;
+        sUTiles.add(getCurrentTile());
+        
+        for (int i = 0; i < sUTiles.size(); i++) {
+            if (!sUTiles.get(i).getState().equals(TileState.FLOODED)) {
+                sUTiles.remove(sUTiles.get(i));
+                i--;
+            }
+        } // end for
+        return sUTiles;
+        
+    }
+    
+    
+    public ArrayList<Tile> getShoreUpTiles() {
+        return getShoreUpTiles(getReachableTiles());
+    }
+    
+    
+    public void shoreUp(Tile tile) throws ActionException, TileException {
+        if (getActionPoints() >= 1 && getShoreUpTiles().contains(tile)) {
+            tile.setState(TileState.DRIED);
+            finishAction();
+        } else {
+            if (getActionPoints() < 1) {
+                throw new ActionException(getActionPoints());
+            } else {
+                throw new TileException(tile, tile.getState());
+            } // end if
+        }
+    }
+    
+    
+    /**
+     * @author nihil
+     * @throws ActionException
+     *
+     */
+    protected void finishAction() throws ActionException {
+        if (getActionPoints() > 0) {
+            setActionPoints(getActionPoints() - 1);
+        } else {
+            throw new ActionException(getActionPoints());
+        } // end if
+    }
+    
+    
     /**
      * 
      * 
@@ -54,23 +103,34 @@ public abstract class Adventurer {
      * @param tile
      * @return true if the move done
      * @throws MoveException
+     * @throws ActionException
      */
-    public void move(Tile tile) throws MoveException {
+    public void move(Tile tile) throws MoveException, ActionException {
         if (getActionPoints() >= 1 && getReachableTiles().contains(tile)) {
             setCurrentTile(tile);
-            setActionPoints(getActionPoints() - 1);
             Parameters.printLog("le deplacement a été effectué", LogType.INFO);
+            finishAction();
         } else {
             if (getActionPoints() <= 0) {
                 throw new MoveException(tile);
             } else {
-                throw new MoveException(getActionPoints());
+                throw new ActionException(getActionPoints());
             } // end if
         }
         
     }
     
     
+    /**
+     * get the adjacent tiles<br>
+     * .*.<br>
+     * *.*<br>
+     * .*.
+     * 
+     * @author nihil
+     *
+     * @return
+     */
     public ArrayList<Tile> getReachableTiles() {
         
         ArrayList<Tile> reachable = new ArrayList<>();
@@ -85,7 +145,6 @@ public abstract class Adventurer {
         for (int i = -1; i <= 2; i += 1) {
             effI = i % 2;
             effJ = j % 2;
-            System.out.println(effI + "," + effJ);
             tileTmp = island.getTile(coords.getCol() + effI, coords.getRow() + effJ);
             if ((tileTmp != null) && (tileTmp.getState() != TileState.SINKED)) {
                 reachable.add(tileTmp);
@@ -98,13 +157,78 @@ public abstract class Adventurer {
     
     
     /**
+     * swim, (when the adventurer get drown)
+     * 
      * @author nihil
      *
      * @param tile
-     * @throws InadequateUseOfCapacity
+     * @throws MoveException
+     * @throws ActionException
      */
-    public void useCapacity(Object o) throws InadequateUseOfCapacity {
-        throw new InadequateUseOfCapacity();
+    public void swim(Tile tile) throws MoveException, ActionException {
+        setActionPoints(1);
+        move(tile);
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     * @return the tiles where the adventurer can swim
+     * @throws EndGameException
+     */
+    public ArrayList<Tile> getSwimmableTiles() throws EndGameException {
+        if (currentTile.getState().equals(TileState.SINKED)) {
+            setActionPoints(0);
+        } // end if
+        if (getReachableTiles().isEmpty()) {
+            throw new EndGameException();
+        } // end if
+        return getReachableTiles();
+    }
+    
+    
+    /**
+     * return the list of possible actions dynamically
+     * 
+     * @author nihil
+     *
+     * @return
+     */
+    public ArrayList<InGameAction> getPossibleActions() {
+        ArrayList<InGameAction> list = new ArrayList<>();
+        // if an adventurer get drow
+        if (currentTile.getState().equals(TileState.SINKED)) {
+            list.add(InGameAction.SWIM);
+            return list;
+        } // end if
+        
+        // action required
+        if (getActionPoints() > 0) {
+            list.add(InGameAction.GIVE_CARD);
+            list.add(InGameAction.MOVE);
+            if (!getShoreUpTiles().isEmpty()) {
+                list.add(InGameAction.SHORE_UP_TILE);
+            } // end if
+        } // end if
+          // no action required
+        if (inventory.hasCardUsable()) {
+            list.add(InGameAction.USE_CARD);
+        } // end if
+        return list;
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     * @param tile
+     * @throws InadequateUseOfCapacityException
+     * @throws MoveException
+     * @throws ActionException
+     */
+    public void useCapacity(Object o) throws InadequateUseOfCapacityException, MoveException, ActionException {
+        throw new InadequateUseOfCapacityException();
     }// end useCapacity
     
     
@@ -112,10 +236,20 @@ public abstract class Adventurer {
      * @author nihil
      *
      * @return the objects where a capacity can be applied
-     * @throws InadequateUseOfCapacity
+     * @throws InadequateUseOfCapacityException
      */
-    public ArrayList<Object> getPotentialUse() throws InadequateUseOfCapacity {
-        throw new InadequateUseOfCapacity();
+    public ArrayList<Object> getPotentialUse() throws InadequateUseOfCapacityException {
+        throw new InadequateUseOfCapacityException();
+    }
+    
+    
+    /**
+     * 
+     * @author nihil
+     *
+     */
+    public void beginTurn() {
+        setActionPoints(MAX_ACTION_POINTS);
     }
     
     
@@ -124,7 +258,7 @@ public abstract class Adventurer {
      *
      */
     public void endTurn() {
-        setActionPoints(MAX_ACTION_POINTS);
+        setActionPoints(0);
     }
     
     
@@ -199,7 +333,7 @@ public abstract class Adventurer {
      * @param currentTile
      * the currentTile to set
      */
-    protected void setCurrentTile(Tile currentTile) {
+    public void setCurrentTile(Tile currentTile) {
         this.currentTile = currentTile;
     }
     
@@ -235,22 +369,30 @@ public abstract class Adventurer {
     public AdventurerType getADVENTURER_TYPE() {
         return ADVENTURER_TYPE;
     }
+  
+    public void giveCard(TreasureCard card, Player player) {
+        if (card.getTreasureType().equals(getCurrentTile().getSite().geTreasureType())) {
+            if (player.getCurrentAdventurer().getCurrentTile().equals(getCurrentTile())) {
+                if (player.getCurrentAdventurer().getInventory().isFull()) {
+                    if (getInventory().removeCard(card)) {
+                        player.getCurrentAdventurer().recieveCard(card);
+                    } else {
+                        // FIXME : add throws
+                        Parameters.printLog("il a pas la carte " + card + " dans l'inventaire de " + this,
+                                LogType.ACCESS);
+                    }
+                }
+            }
+        }
+    }
     
     
-    /**
-     * @author nihil
-     *
-     * @return
-     */
-    public ArrayList<InGameAction> getPossibleActions() {
-        ArrayList<InGameAction> list = new ArrayList<>();
-        if (getActionPoints() > 0) {
-            list.add(InGameAction.GET_TREASURE);
-            list.add(InGameAction.GIVE_CARD);
-            list.add(InGameAction.MOVE);
-            list.add(InGameAction.SHORE_UP_TILE);
-        } // end if
-        list.add(InGameAction.USE_CARD);
-        return null;
+    public void recieveCard(Card card) {
+        getInventory().addCard(card);
+    }
+    
+    
+    public void drawCard() {
+        
     }
 }

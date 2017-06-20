@@ -3,14 +3,16 @@
  */
 package view.board;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Observer;
 
 import javax.swing.JPanel;
 
 import model.adventurers.AdventurerType;
-import model.game.Coords;
+import util.FIGraphics;
+import util.LogType;
+import util.Parameters;
 
 
 
@@ -20,9 +22,7 @@ import model.game.Coords;
  */
 public class PlayerPanel extends JPanel {
     private ArrayList<AdventurerType> pawns;
-    private Coords                    lastPawnPos;
-    private GridBagConstraints        constraints;
-    private GridBagLayout             layout;
+    private ArrayList<Observer>       obs;
     
     
     /**
@@ -34,8 +34,8 @@ public class PlayerPanel extends JPanel {
         // to see the background
         setOpaque(false);
         pawns = new ArrayList<>();
+        obs = new ArrayList<>();
         init();
-        lastPawnPos = null;
     }
     
     
@@ -44,12 +44,7 @@ public class PlayerPanel extends JPanel {
      *
      */
     private void init() {
-        layout = new GridBagLayout();
-        setLayout(layout);
         
-        constraints = new GridBagConstraints();
-        constraints.weighty = 1;
-        constraints.weightx = 1;
     }
     
     
@@ -58,33 +53,21 @@ public class PlayerPanel extends JPanel {
      *
      * @return the next position to place the pawn
      */
-    private Coords getNextCoords() {
+    private Point getNextCoords() {
         switch (pawns.size()) {
         case 0:
-            return new Coords(0, 0);
+            return new Point((int) (getSize().getWidth() * 0.05), (int) (getSize().getHeight() * 0.05));
         
         case 1:
-            return new Coords(2, 1);
+            return new Point((int) (getSize().getWidth() * 0.15), (int) (getSize().getHeight() * 0.15));
         
         case 2:
-            return new Coords(1, 1);
+            return new Point((int) (getSize().getWidth() * 0.25), (int) (getSize().getHeight() * 0.25));
         
         default:
-            return new Coords(3, 0);
+            return new Point((int) (getSize().getWidth() * 0.45), (int) (getSize().getHeight() * 0.05));
         }// end switch
     }// end getNextCoords
-    
-    
-    /**
-     * @author nihil
-     *
-     */
-    protected void addPawn(AdventurerType pawn) {
-        constraints.gridx = getNextCoords().getCol();
-        constraints.gridy = getNextCoords().getRow();
-        add(new PawnComponant(pawn), constraints);
-        pawns.add(pawn);
-    }
     
     
     /**
@@ -92,9 +75,63 @@ public class PlayerPanel extends JPanel {
      * @param pawn
      *
      */
-    protected void removePawn(AdventurerType pawn) {
-        pawns.remove(pawn);
-        remove(pawns.size());
+    protected void addPawn(AdventurerType pawn) {
+        Parameters.printLog("Add " + pawn + " n°" + pawns.size() + " to " + ((TilePanel) getParent()).getPos(),
+                LogType.INFO);
+        PawnComponant pComponant = FIGraphics.getPawn(pawn);
+        add(pComponant);
+        pawns.add(pawn);
+        doLayout();
     }
     
+    
+    /**
+     * @author nihil
+     * @param pawn
+     * to remove if {@link AdventurerType#RANDOM} remove all
+     *
+     */
+    protected void removePawn(AdventurerType pawn) {
+        if (pawn.equals(AdventurerType.RANDOM)) {
+            removeAll();
+            pawns.clear();
+        } else {
+            Parameters.printLog("Remove " + pawn + " from " + ((TilePanel) getParent()).getPos(), LogType.INFO);
+            pawns.remove(pawn);
+            remove(FIGraphics.getPawn(pawn));
+        }
+        doLayout();
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     * @param selected
+     * @param advType
+     */
+    protected void setEnable(boolean enable, AdventurerType advType) {
+        FIGraphics.getPawn(advType).setEnabled(enable);
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     * @param selected
+     * @param advType
+     */
+    public void setSelected(boolean selected, AdventurerType advType) {
+        FIGraphics.getPawn(advType).setSelected(selected);
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     * @param observer
+     */
+    public void addObs(Observer observer) {
+        obs.add(observer);
+    }
 }

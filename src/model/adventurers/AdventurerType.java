@@ -4,10 +4,10 @@
 package model.adventurers;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 
 import model.game.Site;
 import model.player.Player;
-import util.LogType;
 import util.Parameters;
 
 
@@ -23,7 +23,7 @@ public enum AdventurerType {
     MESSENGER("Messenger", Site.SILVER_GATE),
     NAVIGATOR("Navigator", Site.GOLD_GATE),
     PILOT("Pilot", Site.FOOLS_LANDING),
-    RANDOM(null, null);
+    RANDOM("Random", null);
     
     public final String className;
     private Site        spawn;
@@ -36,7 +36,6 @@ public enum AdventurerType {
     private AdventurerType(String className, Site spawn) {
         this.className = className;
         this.spawn = spawn;
-        Parameters.printLog("instancate " + className + " type with " + spawn, LogType.INFO);
     }
     
     
@@ -45,6 +44,19 @@ public enum AdventurerType {
      */
     public String getClassName() {
         return className;
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     */
+    public static ArrayList<Site> getSpawns() {
+        ArrayList<Site> spawns = new ArrayList<>();
+        for (AdventurerType advT : values()) {
+            spawns.add(advT.getSpawn());
+        } // end for
+        return spawns;
     }
     
     
@@ -62,6 +74,15 @@ public enum AdventurerType {
      */
     public String getPath() {
         return Parameters.LOGO + getClassName() + "_Adventurer_Icon@2x.png";
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     */
+    public String getIcon() {
+        return Parameters.LOGO + "RoleTable_Icon_" + getClassName() + "@2x.png";
     }
     
     

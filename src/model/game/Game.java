@@ -5,6 +5,11 @@ import java.util.*;
 import model.adventurers.Adventurer;
 import model.adventurers.AdventurerType;
 import model.player.Player;
+import util.BoardType;
+import util.LogType;
+import util.Parameters;
+import util.exception.EndGameException;
+import util.exception.PlayerOutOfIslandException;
 import util.message.InGameAction;
 
 
@@ -13,6 +18,7 @@ public class Game {
     private final static Integer MAX_PLAYER = 4;
     private final static Integer MIN_PLAYER = 2;
     private ArrayList<Treasure>  treasures;
+    private SeaLevel             seaLevel;
     private Island               island;
     private LinkedList<Player>   players;
     private Deck                 treasureDeck;
@@ -20,16 +26,27 @@ public class Game {
     private Player               currentPlayer;
     private boolean              started;
     
-    private InGameAction currentAction;
+    private ArrayList<Player> SelectedPlayers;
+    private InGameAction      currentAction;
     
     
-    public Game() {
+    /**
+     * @author nihil
+     *
+     */
+    public Game(BoardType bType) {
         started = false;
-        island = new Island();
+        island = new Island(bType);
         treasureDeck = new TreasureDeck();
         floodDeck = new FloodDeck();
         players = new LinkedList<>();
         treasures = new ArrayList<>();
+        SelectedPlayers = new ArrayList<>();
+    }
+    
+    
+    public Game() {
+        this(BoardType.DEFAULT);
     }
     
     
@@ -38,10 +55,12 @@ public class Game {
      * 
      * @author nihil
      */
-    public void initGame() {
+    public void initGame(SeaLevel seaLevel) {
         if (players.size() < 2) {
             throw new IndexOutOfBoundsException("Too few players");
         } // end if
+        
+        this.seaLevel = seaLevel;
         randomAdventurer();
         initTreasure();
         for (Player player : players) {
@@ -67,11 +86,11 @@ public class Game {
      * @return the number of players after adding they
      * @throws IndexOutOfBoundsException
      */
-    public Integer addPlayer(Player p, Adventurer adventurer) throws IndexOutOfBoundsException {
+    public Integer addPlayer(Adventurer adventurer) throws IndexOutOfBoundsException {
         if (players.size() < MAX_PLAYER) {
-            p.setCurrentGame(this);
-            p.setCurrentAdventurer(adventurer);
-            players.add(p);
+            adventurer.getPlayer().setCurrentGame(this);
+            adventurer.getPlayer().setCurrentAdventurer(adventurer);
+            players.add(adventurer.getPlayer());
         } else {
             throw new IndexOutOfBoundsException("Too many players");
         }
@@ -134,8 +153,42 @@ public class Game {
         
         int indLastP = getPlayers().indexOf(getCurrentPlayer());
         setCurrentPlayer(getPlayers().get((indLastP + 1) % 4));
+        getCurrentPlayer().getCurrentAdventurer().beginTurn();
         
         setCurrentAction(InGameAction.MOVE);
+        deselectPlayers();
+    }
+    
+    
+    public void setTileState(Tile tile, TileState state) throws PlayerOutOfIslandException {
+        tile.setState(state);
+        if (state.equals(TileState.SINKED) && !getPlayersOnTile(tile).isEmpty()) {
+            throw new PlayerOutOfIslandException();
+        } // end if
+    }// end setTileState
+    
+    
+    /**
+     * get the players on tile
+     * 
+     * @author nihil
+     */
+    public ArrayList<Player> getPlayersOnTile(Tile tile) {
+        ArrayList<Player> players = new ArrayList<>();
+        for (Player player : getPlayers()) {
+            if (player.getCurrentAdventurer().getCurrentTile().equals(tile)) {
+                players.add(player);
+            } // end if
+        } // end for
+        return players;
+    }
+    
+    
+    public void increaseSeaLevel() throws EndGameException {
+        seaLevel = seaLevel.next();
+        if (seaLevel.isLast()) {
+            throw new EndGameException();
+        }
     }
     
     
@@ -207,8 +260,43 @@ public class Game {
      * @param currentPlayer
      * the currentPlayer to set
      */
-    private void setCurrentPlayer(Player currentPlayer) {
+    public void setCurrentPlayer(Player currentPlayer) {
         this.currentPlayer = currentPlayer;
+    }
+    
+    
+    /**
+     * @author nihil
+     * @param player
+     * @return true if this adding the player, return false this removing the player
+     *
+     */
+    public boolean toggleSelectionPlayer(Player player) {
+        if (!SelectedPlayers.remove(player)) {
+            SelectedPlayers.add(player);
+            Parameters.printLog("Add player " + player + " to selected", LogType.ACCESS);
+            return true;
+        } // end if
+        Parameters.printLog("remove player " + player + " to selected", LogType.ACCESS);
+        return false;
+    }
+    
+    
+    /**
+     * @return the selectedPlayers
+     */
+    public ArrayList<Player> getSelectedPlayers() {
+        return SelectedPlayers;
+    }
+    
+    
+    /**
+     * @author nihil
+     * @param player
+     *
+     */
+    public void deselectPlayers() {
+        SelectedPlayers.clear();
     }
     
     
@@ -224,7 +312,23 @@ public class Game {
      * @param currentAction
      * the currentAction to set
      */
-    private void setCurrentAction(InGameAction currentAction) {
+    public void setCurrentAction(InGameAction currentAction) {
         this.currentAction = currentAction;
+        Parameters.printLog("Set action to : " + currentAction, LogType.INFO);
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     * @param advT
+     * @return the player specified by the {@link AdventurerType} or null if not in this {@link Game}
+     */
+    public Player getPlayer(AdventurerType advT) {
+        Iterator<Player> it = getPlayers().iterator();
+        Player p = null;
+        while (it.hasNext() && !(p = it.next()).getCurrentAdventurer().getADVENTURER_TYPE().equals(advT)) {
+        }
+        return p;
     }
 }

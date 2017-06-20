@@ -20,5 +20,6 @@ public enum BoardType {
      * *––––*</br>
      * **––**</br>
      */
-    DEFAULT
+    DEFAULT,
+    HARD_TEST;
 }

@@ -9,9 +9,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
+import model.adventurers.AdventurerType;
 import model.game.Coords;
 import model.game.Site;
 import model.game.Tile;
+import model.game.TileState;
 
 
 
@@ -35,10 +37,43 @@ public class BoardGeneration {
         case DEFAULT:
             return generateDefaultBoard();
         
+        case HARD_TEST:
+            return generateHardTest();
+        
         default:
             break;
         }// end switch
         return null;
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     * @return
+     */
+    private static Tile[][] generateHardTest() {
+        ArrayList<Site> l = new ArrayList<>(Arrays.asList(Site.values()));
+        Tile[][] tiles = new Tile[6][6];
+        Collections.shuffle(l);
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 6; j++) {
+                if (isBord(i, j)) {
+                    tiles[j][i] = null;
+                } else {
+                    tiles[j][i] = new Tile(new Coords(j, i), l.remove(l.size() - 1));
+                    if (!AdventurerType.getSpawns().contains(tiles[j][i].getSite())) {
+                        double rand = Math.random();
+                        if (rand < 0.3) {
+                            tiles[j][i].setState(TileState.FLOODED);
+                        } else if (rand < 0.4) {
+                            tiles[j][i].setState(TileState.SINKED);
+                        }
+                    } // end if
+                } // end if
+            }
+        }
+        return tiles;
     }
     
     

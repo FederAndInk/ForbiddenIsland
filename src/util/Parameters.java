@@ -21,9 +21,15 @@ public class Parameters {
     
     // ====================================================================================
     // Paramètres NF
-    public static final Boolean LOGS  = true;   // Afficher des traces par System.out.println()
-    public static final Boolean ALEAS = true;   // Attribuer les aventuriers aléatoirement ou non, mélanger les défausses et les pioches
-    public static Lang          LANG  = Lang.EN;
+    public static final Boolean LOGS        = true;   // Afficher des traces par System.out.println()
+    public static final boolean SHORT_LOG   = true;
+    public static final Boolean ALEAS       = true;   // Attribuer les aventuriers aléatoirement ou non, mélanger les défausses et les pioches
+    public static Lang          LANG        = Lang.EN;
+    public static final boolean debug       = true;
+    /**
+     * when an action is done with debugMode
+     */
+    public static boolean       debugAction = false;
     // Fonts
     public static Font DEFAULT_FONT = initFont();
     // screen
@@ -50,7 +56,6 @@ public class Parameters {
             genv.registerFont(font);
             return font;
         } catch (FontFormatException | IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return null;
@@ -67,9 +72,16 @@ public class Parameters {
         if (LOGS) {
             Calendar cal = Calendar.getInstance();
             SimpleDateFormat format1 = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-            
-            System.out.println(
-                    type.getColor() + format1.format(cal.getTime()) + " : " + text.toString() + type.getReset());
+            if (!SHORT_LOG) {
+                System.out.println(
+                        type.getColor() + format1.format(cal.getTime()) + " : " + text.toString() + type.getReset());
+                
+            } else {
+                if (type.equals(LogType.INFO)) {
+                    System.out.println(type.getColor() + format1.format(cal.getTime()) + " : " + text.toString()
+                            + type.getReset());
+                } // end if
+            } // end if
         } // end if
     }
 }

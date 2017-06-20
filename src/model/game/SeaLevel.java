@@ -1,9 +1,25 @@
 package model.game;
 
+import util.exception.EndGameException;
+
+
+
 public enum SeaLevel {
+    /**
+     * Easy
+     */
     LEVEL1("Level 1", 2, "Easy"),
+    /**
+     * Medium
+     */
     LEVEL2("Level 2", 2, "Medium"),
+    /**
+     * Hard
+     */
     LEVEL3("Level 3", 3, "Hard"),
+    /**
+     * Expert
+     */
     LEVEL4("Level 4", 3, "Expert"),
     LEVEL5("Level 5", 3, null),
     LEVEL6("Level 6", 4, null),
@@ -13,13 +29,13 @@ public enum SeaLevel {
     LEVEL10("Level 10", null, null);
     
     private String  levelName;
-    private Integer level;
+    private Integer nbCards;
     private String  difficulty;
     
     
-    private SeaLevel(String levelName, Integer level, String difficulty) {
+    private SeaLevel(String levelName, Integer nbCards, String difficulty) {
         this.levelName = levelName;
-        this.level = level;
+        this.nbCards = nbCards;
         this.difficulty = difficulty;
     }
     
@@ -29,8 +45,8 @@ public enum SeaLevel {
     }
     
     
-    public Integer getLevel() {
-        return level;
+    public Integer getNbCards() {
+        return nbCards;
     }
     
     
@@ -38,4 +54,18 @@ public enum SeaLevel {
         return difficulty;
     }
     
+    
+    /**
+     * @author nihil
+     * @return true if this is the last level
+     *
+     */
+    public boolean isLast() {
+        return equals(LEVEL10);
+    }
+    
+    
+    public SeaLevel next() {
+        return values()[ordinal() + 1 % values().length];
+    }
 }

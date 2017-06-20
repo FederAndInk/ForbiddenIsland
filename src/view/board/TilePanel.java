@@ -19,7 +19,6 @@ import javax.imageio.ImageIO;
 import javax.swing.JLayeredPane;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
-import javax.swing.border.Border;
 
 import model.adventurers.AdventurerType;
 import model.card.CardType;
@@ -88,7 +87,6 @@ public class TilePanel extends JLayeredPane {
     private void init() {
         text = new TextTile(site.getNameStyle());
         playerPanel = new PlayerPanel();
-        floodTile = new JMenuItem("Change Tile State");
         
         setEnabled(false);
         setState(TileState.DRIED);
@@ -409,6 +407,8 @@ public class TilePanel extends JLayeredPane {
         return playerPanel;
     }
     
+    
+    /**
      * @author nihil
      *
      * @param observer

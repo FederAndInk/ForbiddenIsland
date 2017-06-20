@@ -257,6 +257,7 @@ public class GameView extends JFrame {
         useCapacityBtn.setEnabled(act.contains(InGameAction.USE_CAPACITY));
         moveBtn.setEnabled(act.contains(InGameAction.MOVE));
         shoreUpBtn.setEnabled(act.contains(InGameAction.SHORE_UP_TILE));
+        endTurnBtn.setEnabled(act.contains(InGameAction.END_TURN));
     }
     
     

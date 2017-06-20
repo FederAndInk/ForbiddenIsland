@@ -218,19 +218,6 @@ public class GameController implements Observer {
     }
     
     
-    private void setSwim(Player player) {
-        Parameters.printLog("set swim for " + player.getCurrentAdventurer(), LogType.INFO);
-        chainPlayer(player);
-        getCurrentGame().setCurrentAction(InGameAction.SWIM);
-        try {
-            refreshBoard(player.getCurrentAdventurer().getSwimmableTiles(), InGameAction.SWIM);
-        } catch (EndGameException e) {
-            e.printStackTrace();
-            // FIXME : do something : end of game
-        }
-    }// end swim
-    
-    
     /**
      * @author nihil
      *
@@ -668,11 +655,6 @@ public class GameController implements Observer {
                 Tile tile = getCurrentGame().getIsland().getTile(coords);
                 changeTileState(tile, tile.getState().next());
                 break;
-            case CHANGE_STATE_OF_TILE:
-                Coords coords = (Coords) m.getContent();
-                Tile tile = getCurrentGame().getIsland().getTile(coords);
-                changeTileState(tile, tile.getState().next());
-                break;
             case END_TURN:
                 endTurn();
                 break;
@@ -699,7 +681,8 @@ public class GameController implements Observer {
      *
      */
     private boolean verifyEndTurn() {
-        if (getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getPossibleActions().isEmpty()) {
+        ArrayList<InGameAction> acts = getCurrentGame().getPossibleActions();
+        if (acts.size() == 1 && acts.contains(InGameAction.END_TURN)) {
             gameView.setEndTurn(true);
             gameView.notifyPlayers("C'est la fin du tour pour " + getCurrentGame().getCurrentPlayer().getName());
             reInitBoard();

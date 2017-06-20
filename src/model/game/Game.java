@@ -1,10 +1,6 @@
 package model.game;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
+import java.util.*;
 
 import model.adventurers.Adventurer;
 import model.adventurers.AdventurerType;
@@ -192,30 +188,6 @@ public class Game {
         if (seaLevel.isLast()) {
             throw new EndGameException();
         }
-    }
-    
-    
-    public void setTileState(Tile tile, TileState state) throws PlayerOutOfIslandException {
-        tile.setState(state);
-        if (state.equals(TileState.SINKED) && !getPlayersOnTile(tile).isEmpty()) {
-            throw new PlayerOutOfIslandException();
-        } // end if
-    }// end setTileState
-    
-    
-    /**
-     * get the players on tile
-     * 
-     * @author nihil
-     */
-    public ArrayList<Player> getPlayersOnTile(Tile tile) {
-        ArrayList<Player> players = new ArrayList<>();
-        for (Player player : getPlayers()) {
-            if (player.getCurrentAdventurer().getCurrentTile().equals(tile)) {
-                players.add(player);
-            } // end if
-        } // end for
-        return players;
     }
     
     

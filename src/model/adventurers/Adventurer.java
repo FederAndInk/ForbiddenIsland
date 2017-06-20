@@ -8,6 +8,7 @@ import model.game.Coords;
 import model.game.Island;
 import model.game.Tile;
 import model.game.TileState;
+import model.game.Treasure;
 import model.player.Inventory;
 import model.player.Player;
 import util.LogType;
@@ -185,6 +186,31 @@ public abstract class Adventurer {
             throw new EndGameException();
         } // end if
         return getReachableTiles();
+    }
+    
+    
+    public ArrayList<Card> createTreasure(Treasure treasure)
+            throws ActionException, NotEnoughCardsException, WrongTileTreasureException {
+        Tile tile = getCurrentTile();
+        ArrayList<Card> removedCards = new ArrayList<>();
+        if (tile.getSite().getTreasureType() != null) {
+            if (inventory.howManyCards(tile.getSite().getTreasureType()) == 4
+                    && treasure.getName() == tile.getSite().getTreasureType()) {
+                if (getActionPoints() >= 1) {
+                    inventory.addTreasure(treasure);
+                    for (int i = 0; i <= 3; i++) {
+                        removedCards.add(inventory.removeTreasureCard(tile.getSite().getTreasureType()));
+                    }
+                    return removedCards;
+                } else {
+                    throw new ActionException(getActionPoints());
+                }
+            } else {
+                throw new NotEnoughCardsException(inventory.howManyCards(tile.getSite().getTreasureType()));
+            }
+        } else {
+            throw new WrongTileTreasureException(tile, tile.getSite().getTreasureType().toString());
+        }
     }
     
     
@@ -369,9 +395,10 @@ public abstract class Adventurer {
     public AdventurerType getADVENTURER_TYPE() {
         return ADVENTURER_TYPE;
     }
-  
+    
+    
     public void giveCard(TreasureCard card, Player player) {
-        if (card.getTreasureType().equals(getCurrentTile().getSite().geTreasureType())) {
+        if (card.getTreasureType().equals(getCurrentTile().getSite().getTreasureType())) {
             if (player.getCurrentAdventurer().getCurrentTile().equals(getCurrentTile())) {
                 if (player.getCurrentAdventurer().getInventory().isFull()) {
                     if (getInventory().removeCard(card)) {

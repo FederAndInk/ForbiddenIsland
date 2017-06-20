@@ -3,15 +3,17 @@ package model.player;
 import java.util.ArrayList;
 
 import model.card.Card;
+import model.card.CardType;
 import model.card.TreasureCard;
 import model.game.Treasure;
+import model.game.TreasureType;
 
 
 
 public class Inventory {
     
     private ArrayList<Card>     cards;
-    private ArrayList<Treasure> tresures;
+    private ArrayList<Treasure> treasures;
     private static final int    MAX_CARD = 5;
     
     
@@ -21,17 +23,7 @@ public class Inventory {
      */
     public Inventory() {
         cards = new ArrayList<>();
-        tresures = new ArrayList<>();
-    }
-    
-    
-    /**
-     * 
-     * @param card
-     */
-    public void discard(Card card) {
-        // TODO - implement Inventory.discard
-        throw new UnsupportedOperationException();
+        treasures = new ArrayList<>();
     }
     
     
@@ -60,8 +52,38 @@ public class Inventory {
     }
     
     
-    public boolean removeCard(TreasureCard card) {
+    public void addTreasure(Treasure treasure) {
+        treasures.add(treasure);
+    }
+    
+    
+    public boolean removeCard(Card card) {
         return cards.remove(card);
     }
     
+    
+    public Card removeTreasureCard(TreasureType type) {
+        int i = 0;
+        Card card = cards.get(i);
+        while (!card.getType().equals(CardType.TREASURE_CARD) || ((TreasureCard) card).getTreasureType() != type) {
+            i++;
+            card = cards.get(i);
+        }
+        cards.remove(card);
+        return card;
+    }
+    
+    
+    public int howManyCards(TreasureType type) {
+        int nbCards = 0;
+        for (Card card : cards) {
+            if (card.getType().equals(CardType.TREASURE_CARD)) {
+                TreasureCard tCard = (TreasureCard) card;
+                if (tCard.getTreasureType() == type) {
+                    nbCards = nbCards + 1;
+                }
+            }
+        }
+        return nbCards;
+    }
 }

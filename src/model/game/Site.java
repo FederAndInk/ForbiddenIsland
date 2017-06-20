@@ -65,7 +65,7 @@ public enum Site {
     }
     
     
-    public TreasureType geTreasureType() {
+    public TreasureType getTreasureType() {
         return treasureType;
     }
     

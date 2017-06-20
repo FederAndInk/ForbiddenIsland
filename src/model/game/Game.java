@@ -4,11 +4,15 @@ import java.util.*;
 
 import model.adventurers.Adventurer;
 import model.adventurers.AdventurerType;
+import model.card.Card;
 import model.player.Player;
 import util.BoardType;
 import util.LogType;
 import util.Parameters;
+import util.exception.ActionException;
+import util.exception.NotEnoughCardsException;
 import util.exception.PlayerOutOfIslandException;
+import util.exception.WrongTileTreasureException;
 import util.message.InGameAction;
 
 
@@ -128,6 +132,30 @@ public class Game {
             treasures.add(new Treasure(treasureT));
         } // end for
     }// end initTreasure
+    
+    
+    /**
+     * Add treasure to the inventory of player
+     * 
+     * @param treasure
+     * @throws util.exception.ActionException
+     * @throws util.exception.NotEnoughCardsException
+     * @throws util.exception.WrongTileTreasureException
+     */
+    public void addTreasureToPlayer(Treasure treasure)
+            throws ActionException, NotEnoughCardsException, WrongTileTreasureException {
+        Player player = getCurrentPlayer();
+        if (treasures.contains(treasure)) {
+            try {
+                for (Card card : player.getCurrentAdventurer().createTreasure(treasure)) {
+                    getTreasureDeck().discard(card);
+                }
+                treasures.remove(treasure);
+            } catch (Exception e) {
+                throw e;
+            }
+        }
+    }
     
     
     /**

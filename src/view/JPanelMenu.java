@@ -10,6 +10,9 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import util.LogType;
+import util.Parameters;
+
 
 
 public class JPanelMenu extends JPanel {
@@ -23,8 +26,9 @@ public class JPanelMenu extends JPanel {
     private JButton         tuto;
     private JButton         option;
     private JPanelOption    optionPanel;
-    private JPanel          scorePanel;
+    private JPanelScore     scorePanel;
     private JPanelOptionJeu jeu;
+    private JPanelTuto      tutoPanel;
     private JLabel          titreLabel;
     
     public static final String JEU    = "jeu";
@@ -62,7 +66,7 @@ public class JPanelMenu extends JPanel {
         grid.add(option);
         score = new JButton("scores");
         grid.add(score);
-        tuto = new JButton("tutoriel");
+        tuto = new JButton("tutoriel/WORK IN PROGRESS");
         grid.add(tuto);
         
         // les options
@@ -70,7 +74,7 @@ public class JPanelMenu extends JPanel {
         card.add(optionPanel, "option");
         
         // les scores
-        scorePanel = new JPanel();
+        scorePanel = new JPanelScore();
         card.add(scorePanel, "scores");
         
         // les options du jeu
@@ -109,7 +113,8 @@ public class JPanelMenu extends JPanel {
                     
                 } else if (e.getSource().equals(tuto)) {
                     
-                    // toutdoux tuto
+                    Parameters.printLog("affiche Tuto", LogType.INFO);
+                    getCardLayout().show(getSuperParent(), "tutoPanel");
                     
                 } else if (e.getSource().equals(quitter)) {
                     
@@ -117,6 +122,7 @@ public class JPanelMenu extends JPanel {
                     
                 }
             }
+            
         };
         
         jouer.addActionListener(listener);
@@ -124,6 +130,16 @@ public class JPanelMenu extends JPanel {
         score.addActionListener(listener);
         tuto.addActionListener(listener);
         quitter.addActionListener(listener);
+    }
+    
+    
+    private JPanel getSuperParent() {
+        return (JPanel) getParent().getParent();
+    }
+    
+    
+    private CardLayout getCardLayout() {
+        return (CardLayout) getSuperParent().getLayout();
     }
     
     

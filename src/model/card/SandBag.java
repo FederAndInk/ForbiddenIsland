@@ -1,5 +1,8 @@
 package model.card;
 
+import java.util.ArrayList;
+
+import model.game.Island;
 import model.game.Tile;
 import model.game.TileState;
 import util.exception.TileException;
@@ -13,8 +16,17 @@ public class SandBag extends Card {
      *
      * @param type
      */
-    protected SandBag() {
+    public SandBag() {
         super(CardType.SANDBAG_CARD);
+    }
+    
+    
+    /**
+     * @see model.card.Card#getTilesDest(model.game.Island)
+     */
+    @Override
+    public ArrayList<Tile> getTilesDest(Island island) {
+        return island.getTiles(TileState.FLOODED);
     }
     
     

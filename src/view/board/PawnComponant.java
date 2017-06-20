@@ -9,16 +9,23 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 
 import model.adventurers.AdventurerType;
+import util.FIGraphics;
 import util.LogType;
 import util.Parameters;
+import util.message.InGameAction;
+import util.message.InGameMessage;
 
 
 
@@ -27,8 +34,9 @@ import util.Parameters;
  *
  */
 public class PawnComponant extends JComponent {
-    private float          pawnSize = (float) 0.25;
+    private float          pawnSize = (float) 0.24;
     private AdventurerType pawn;
+    private boolean        selected;
     
     
     /**
@@ -39,11 +47,35 @@ public class PawnComponant extends JComponent {
      */
     public PawnComponant(AdventurerType pawn) {
         this.pawn = pawn;
+        setSelected(false);
         initListeners();
     }
     
     
+    /**
+     * @see java.awt.Container#doLayout()
+     */
+    @Override
+    public void doLayout() {
+        super.doLayout();
+    }
+    
+    
+    /**
+     * @author nihil
+     * @param pawn
+     * give the {@link AdventurerType} and the maagic trick will do effect
+     * 
+     */
+    public PawnComponant(AdventurerType pawn, Observer obs) {
+        this.pawn = pawn;
+        setSelected(false);
+        initListeners(obs);
+    }
+    
+    
     protected void initSize() {
+        Parameters.printLog("Resizing players : " + getClass().getSimpleName(), LogType.GRAPHICS);
         BufferedImage bImage;
         try {
             bImage = ImageIO.read(new File(pawn.getPath()));
@@ -58,9 +90,23 @@ public class PawnComponant extends JComponent {
     
     /**
      * @author nihil
+     * @param obs
+     *
+     */
+    private void initListeners(Observer obs) {
+        initListeners();
+        MlTile mlTile = new MlTile();
+        addMouseListener(mlTile);
+        mlTile.addObserver(obs);
+    }
+    
+    
+    /**
+     * @author nihil
      *
      */
     private void initListeners() {
+        
         addComponentListener(new ComponentListener() {
             
             @Override
@@ -70,8 +116,6 @@ public class PawnComponant extends JComponent {
             
             @Override
             public void componentResized(ComponentEvent e) {
-                Parameters.printLog("Resizing players : " + e.getComponent().getClass().getSimpleName(),
-                        LogType.GRAPHICS);
                 initSize();
                 e.getComponent().doLayout();
             }
@@ -108,6 +152,43 @@ public class PawnComponant extends JComponent {
     }
     
     
+    /**
+     * @see javax.swing.JComponent#setEnabled(boolean)
+     */
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        if (enabled && !isSelected()) {
+            setBorder(FIGraphics.ACTIVE_BORDER_EXIT);
+        } else if (!enabled) {
+            setBorder(null);
+            setSelected(false);
+        } // end if
+    }
+    
+    
+    /**
+     * @return the selected
+     */
+    public boolean isSelected() {
+        return selected;
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     */
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+        if (selected) {
+            setBorder(FIGraphics.ACTIVE_BORDER_SELECTED);
+        } else {
+            setBorder(null);
+        } // end if
+    }
+    
+    
     public AdventurerType getPawn() {
         return pawn;
     }
@@ -120,5 +201,55 @@ public class PawnComponant extends JComponent {
      */
     protected void setPawnSize(float size) {
         this.pawnSize = size;
+    }
+    
+    // the inner class for an event listener
+    protected class MlTile extends Observable implements MouseListener {
+        
+        /**
+         * @author nihil
+         *
+         */
+        public MlTile() {
+            super();
+        }
+        
+        
+        @Override
+        public void mouseReleased(MouseEvent e) {
+        }
+        
+        
+        @Override
+        public void mousePressed(MouseEvent e) {
+        }
+        
+        
+        @Override
+        public void mouseExited(MouseEvent e) {
+            if (isEnabled() && !isSelected()) {
+                setBorder(FIGraphics.ACTIVE_BORDER_EXIT);
+            } else if (isEnabled()) {
+                setBorder(FIGraphics.ACTIVE_BORDER_SELECTED);
+            } // end if
+        }
+        
+        
+        @Override
+        public void mouseEntered(MouseEvent e) {
+            if (isEnabled()) {
+                setBorder(FIGraphics.ACTIVE_BORDER_HOVER);
+            } // end if
+        }
+        
+        
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            if (isEnabled()) {
+                setChanged();
+                notifyObservers(new InGameMessage(InGameAction.SELECT_PAWN, getPawn()));
+                clearChanged();
+            } // end if
+        }
     }
 }

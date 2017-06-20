@@ -1,5 +1,8 @@
 package model.card;
 
+import java.util.ArrayList;
+
+import model.game.Island;
 import model.game.Tile;
 import util.exception.EndGameException;
 import util.exception.MoveException;
@@ -16,12 +19,19 @@ public abstract class Card {
      *
      */
     protected Card(CardType type) {
-        this.setType(type);
+        setType(type);
     }
     
     
-    public abstract void applyAction(Tile destTile, Object applied)
-            throws IllegalAccessException, EndGameException, MoveException, TileException;
+    public ArrayList<Tile> getTilesDest(Island island) throws IllegalAccessException {
+        throw new IllegalAccessException(getType() + " Cannot be used");
+    }
+    
+    
+    public void applyAction(Tile destTile, Object applied)
+            throws IllegalAccessException, EndGameException, MoveException, TileException {
+        throw new IllegalAccessException();
+    }
     
     
     /**

@@ -21,11 +21,15 @@ public class Parameters {
     
     // ====================================================================================
     // Paramètres NF
-    public static final Boolean LOGS      = true;   // Afficher des traces par System.out.println()
-    public static final boolean SHORT_LOG = true;
-    public static final Boolean ALEAS     = true;   // Attribuer les aventuriers aléatoirement ou non, mélanger les défausses et les pioches
-    public static Lang          LANG      = Lang.EN;
-    public static final boolean debug     = true;
+    public static final Boolean LOGS        = true;   // Afficher des traces par System.out.println()
+    public static final boolean SHORT_LOG   = true;
+    public static final Boolean ALEAS       = true;   // Attribuer les aventuriers aléatoirement ou non, mélanger les défausses et les pioches
+    public static Lang          LANG        = Lang.EN;
+    public static final boolean debug       = true;
+    /**
+     * when an action is done with debugMode
+     */
+    public static boolean       debugAction = false;
     // Fonts
     public static Font DEFAULT_FONT = initFont();
     // screen

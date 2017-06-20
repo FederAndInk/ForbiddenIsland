@@ -12,8 +12,11 @@ import javax.swing.JLayeredPane;
 
 import model.adventurers.*;
 import model.card.CardType;
+import model.card.Helicopter;
+import model.card.SandBag;
 import model.game.*;
 import model.player.Player;
+import util.FIGraphics;
 import util.LogType;
 import util.Parameters;
 import util.Temporary;
@@ -94,6 +97,7 @@ public class GameController implements Observer {
     public void StartGame(SeaLevel seaLevel) {
         tmpGameStart();
         getCurrentGame().initGame(seaLevel);
+        FIGraphics.init(this);
         
         gameView.setBoard(getCurrentGame().getIsland().getSites(), this);
         
@@ -125,18 +129,17 @@ public class GameController implements Observer {
      *
      * @param coords
      */
-    private void movePawn(Coords coords) {
+    private void movePawn(Tile tile) {
         try {
             Game g = getCurrentGame();
             Adventurer adv = g.getCurrentPlayer().getCurrentAdventurer();
             Tile cTile = adv.getCurrentTile();
             
-            Tile t = g.getIsland().getTile(coords);
-            adv.move(t);
-            Parameters.printLog("Move to " + t, LogType.INFO);
+            adv.move(tile);
+            Parameters.printLog("Move to " + tile, LogType.INFO);
             
             // to update the view
-            gameView.movePawn(adv.getADVENTURER_TYPE(), cTile.getCoords(), coords);
+            gameView.movePawn(adv.getADVENTURER_TYPE(), cTile.getCoords(), tile.getCoords());
         } catch (MoveException e) {
             e.printStackTrace();
         } catch (ActionException e) {
@@ -152,17 +155,16 @@ public class GameController implements Observer {
      * @author nihil
      *
      */
-    private void swimPawn(Coords coords) {
+    private void swimPawn(Tile tile) {
         Game g = getCurrentGame();
         Adventurer adv = g.getCurrentPlayer().getCurrentAdventurer();
         Tile cTile = adv.getCurrentTile();
         
-        Tile t = g.getIsland().getTile(coords);
         try {
-            adv.swim(t);
-            Parameters.printLog("Move to " + t, LogType.INFO);
+            adv.swim(tile);
+            Parameters.printLog("Move to " + tile, LogType.INFO);
             // to update the view
-            gameView.movePawn(adv.getADVENTURER_TYPE(), cTile.getCoords(), coords);
+            gameView.movePawn(adv.getADVENTURER_TYPE(), cTile.getCoords(), tile.getCoords());
             
         } catch (MoveException | ActionException e) {
             e.printStackTrace();
@@ -218,6 +220,52 @@ public class GameController implements Observer {
     
     
     /**
+     * @author nihil
+     *
+     * @param coords
+     */
+    private void useCardSB(SandBag sandBag, Tile tile) {
+        try {
+            sandBag.applyAction(tile, null);
+            Parameters.printLog("Shore Up " + tile, LogType.INFO);
+            
+            gameView.shoreUp(tile.getCoords());
+        } catch (TileException e) {
+            e.printStackTrace();
+        } finally {
+            defaultAction();
+        }
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     * @param helicopter
+     * @param tile
+     */
+    private void useCardHC(Helicopter helicopter, Tile tile, ArrayList<Player> players) {
+        try {
+            Coords current = players.get(0).getCurrentAdventurer().getCurrentTile().getCoords();
+            helicopter.applyAction(tile, players);
+            Parameters.printLog("Use helicopter " + tile, LogType.INFO);
+            
+            for (Player player : players) {
+                Adventurer adv = player.getCurrentAdventurer();
+                gameView.movePawn(adv.getADVENTURER_TYPE(), current, adv.getCurrentTile().getCoords());
+            } // end for
+        } catch (IllegalAccessException | EndGameException | MoveException | TileException e) {
+            e.printStackTrace();
+        } finally {
+            getCurrentGame().deselectPlayers();
+            defaultAction();
+        }
+    }
+    
+    
+    /**
+     * For debug
+     * 
      * @author nihil
      *
      */
@@ -280,10 +328,13 @@ public class GameController implements Observer {
     
     
     /**
+     * set all tiles disable
+     * 
      * @author nihil
      *
      */
     private void reInitBoard() {
+        setActivePawns(false);
         for (int i = 0; i < Island.GRID_SIZE.getRow(); i++) {
             for (int j = 0; j < Island.GRID_SIZE.getCol(); j++) {
                 JLayeredPane tile = gameView.getTileG(new Coords(j, i));
@@ -303,6 +354,7 @@ public class GameController implements Observer {
      *
      */
     private void setMoveAction() {
+        resetActions();
         if (getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getActionPoints() > 0) {
             gameView.notifyPlayers("Cliquer sur une partie de l'ile en vert pour vous y rendre");
             getCurrentGame().setCurrentAction(InGameAction.MOVE);
@@ -316,12 +368,23 @@ public class GameController implements Observer {
     
     
     /**
+     * @author nihil
+     *
+     */
+    private void resetActions() {
+        getCurrentGame().deselectPlayers();
+        reInitBoard();
+    }
+    
+    
+    /**
      * to update the view for using capacity action of the current player
      * 
      * @author nihil
      *
      */
     private void setCapacityActionT() {
+        resetActions();
         if (getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getActionPoints() > 0) {
             gameView.notifyPlayers("Cliquer sur une partie de l'ile en vert pour vous y rendre");
             getCurrentGame().setCurrentAction(InGameAction.USE_CAPACITY);
@@ -360,7 +423,49 @@ public class GameController implements Observer {
      * @author nihil
      *
      */
+    private void setUseSandBag(SandBag sandBag) {
+        resetActions();
+        // FIXME : change by player inventory card
+        ArrayList<Tile> tiles = sandBag.getTilesDest(getCurrentGame().getIsland());
+        if (tiles.isEmpty()) {
+            gameView.notifyPlayers("Aucune partie de l'ile à assécher");
+            defaultAction();
+        } else {
+            getCurrentGame().setCurrentAction(InGameAction.USE_CARD_SAND_BAG);
+            gameView.notifyPlayers("Cliquer sur une partie de l'ile en beige pour l'assécher");
+            Parameters.printLog("get Shore Up tiles", LogType.INFO);
+            refreshBoard(tiles, InGameAction.SHORE_UP_TILE);
+        } // end if
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     * @param helicopter
+     */
+    private void setUseHelicopter(Helicopter helicopter) {
+        ArrayList<Tile> tiles = helicopter.getTilesDest(getCurrentGame().getIsland());
+        // to remove the current tile
+        tiles.remove(getCurrentGame().getSelectedPlayers().get(0).getCurrentAdventurer().getCurrentTile());
+        if (tiles.isEmpty()) {
+            gameView.notifyPlayers("Impossible :/");
+            defaultAction();
+        } else {
+            getCurrentGame().setCurrentAction(InGameAction.USE_CARD_HELICOPTER);
+            gameView.notifyPlayers("Cliquer sur une partie de l'ile pour vous y rendre");
+            Parameters.printLog("get Helicopter tiles", LogType.INFO);
+            refreshBoard(tiles, InGameAction.USE_CARD_HELICOPTER);
+        } // end if
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     */
     private void setShoreUpAction() {
+        resetActions();
         ArrayList<Tile> tiles = getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getShoreUpTiles();
         if (tiles.isEmpty()) {
             gameView.notifyPlayers("Aucune partie de l'ile proche de vous à assécher");
@@ -413,6 +518,38 @@ public class GameController implements Observer {
     
     /**
      * @author nihil
+     *
+     * @param player
+     */
+    private void togglePawnSelection(AdventurerType advT) {
+        Player p = getCurrentGame().getPlayer(advT);
+        getCurrentGame().toggleSelectionPlayer(p);
+        setActivePawns(true);
+        for (Player player : getCurrentGame().getSelectedPlayers()) {
+            gameView.setSelectPawn(true, player.getCurrentAdventurer().getADVENTURER_TYPE(),
+                    player.getCurrentAdventurer().getCurrentTile().getCoords());
+        } // end for
+    }
+    
+    
+    private void setActivePawns(boolean active) {
+        if (getCurrentGame().getSelectedPlayers().isEmpty()) {
+            for (Player player : getCurrentGame().getPlayers()) {
+                Adventurer adv = player.getCurrentAdventurer();
+                gameView.setActivePawn(active, adv.getADVENTURER_TYPE(), adv.getCurrentTile().getCoords());
+            } // end for
+        } else {
+            Tile tile = getCurrentGame().getSelectedPlayers().get(0).getCurrentAdventurer().getCurrentTile();
+            for (Player player : getCurrentGame().getPlayersOnTile(tile)) {
+                Adventurer adv = player.getCurrentAdventurer();
+                gameView.setActivePawn(active, adv.getADVENTURER_TYPE(), adv.getCurrentTile().getCoords());
+            } // end for
+        } // end if
+    }// end activePlayers
+    
+    
+    /**
+     * @author nihil
      * @param object
      *
      */
@@ -420,24 +557,41 @@ public class GameController implements Observer {
         Adventurer adv = getCurrentGame().getCurrentPlayer().getCurrentAdventurer();
         
         if (object instanceof Coords) {
-            Coords coords = (Coords) object;
+            Tile tile = getCurrentGame().getIsland().getTile((Coords) object);
             
             switch (getCurrentGame().getCurrentAction()) {
             case MOVE:
-                movePawn(coords);
+                movePawn(tile);
                 break;
             case SWIM:
-                swimPawn(coords);
+                swimPawn(tile);
                 break;
             case SHORE_UP_TILE:
-                shoreUp(getCurrentGame().getIsland().getTile(coords));
+                shoreUp(tile);
                 break;
             case USE_CAPACITY:
-                useCapacity(getCurrentGame().getIsland().getTile(coords));
+                useCapacity(tile);
+                break;
+            case USE_CARD_SAND_BAG:
+                if (Parameters.debugAction) {
+                    useCardSB(new SandBag(), tile);
+                } else {
+                    // FIXME : act with player inventory
+                } // end if
+                break;
+            case USE_CARD_HELICOPTER:
+                if (Parameters.debugAction) {
+                    useCardHC(new Helicopter(), tile, getCurrentGame().getSelectedPlayers());
+                } else {
+                    // FIXME : act with player inventory
+                } // end if
                 break;
             default:
                 break;
             }// end switch
+            if (Parameters.debugAction) {
+                Parameters.debugAction = false;
+            } // end if
         } // end if
         
     }
@@ -454,6 +608,14 @@ public class GameController implements Observer {
             switch ((InGameAction) m.getType()) {
             case SELECT_TILE:
                 doAction(m.getContent());
+                break;
+            case SELECT_PAWN:
+                reInitBoard();
+                if (m.getContent() instanceof AdventurerType) {
+                    togglePawnSelection((AdventurerType) m.getContent());
+                } else {
+                    setActivePawns(true);
+                } // end if
                 break;
             case MOVE:
                 setMoveAction();
@@ -472,12 +634,21 @@ public class GameController implements Observer {
                 setCapacityActionT();
                 break;
             case USE_CARD:
-                
+                if (m.getContent().equals(CardType.SANDBAG_CARD)) {
+                    if (Parameters.debugAction) {
+                        setUseSandBag(new SandBag());
+                    } else {
+                        // TODO : act with inventory
+                    } // end if
+                } else if (m.getContent().equals(CardType.HELICOPTER_CARD)) {
+                    if (Parameters.debugAction) {
+                        setUseHelicopter(new Helicopter());
+                    } else {
+                        // TODO : act with inventory
+                    } // end if
+                }
                 break;
             case INTERRUPT:
-                
-                break;
-            case SELECT_PAWN:
                 
                 break;
             case CHANGE_STATE_OF_TILE:

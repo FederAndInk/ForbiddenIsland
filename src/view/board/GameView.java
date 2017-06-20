@@ -110,8 +110,8 @@ public class GameView extends JFrame {
         
         messages = new JTextPane();
         infoPlayerC = new JLabel("Joueur ");
-        currentP = new PawnComponant(AdventurerType.DIVER);
         info = new JPanel(new GridLayout(2, 1));
+        currentP = new PawnComponant(AdventurerType.DIVER);
         
         setJMenuBar(bar);
         bar.add(option);
@@ -298,6 +298,26 @@ public class GameView extends JFrame {
     public void shoreUp(Coords tile) {
         ((TilePanel) getTileG(tile)).setState(TileState.DRIED);
     }// end shoreUp
+    
+    
+    /**
+     * @author nihil
+     *
+     * @param toggleSelectionPlayer
+     * @param adventurer_TYPE
+     */
+    public void setSelectPawn(boolean selected, AdventurerType advType, Coords location) {
+        ((TilePanel) getTileG(location)).getPlayerPanel().setSelected(selected, advType);
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     */
+    public void setActivePawn(boolean selected, AdventurerType advType, Coords location) {
+        ((TilePanel) getTileG(location)).getPlayerPanel().setEnable(selected, advType);
+    }
     
     
     /**

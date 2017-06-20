@@ -359,7 +359,7 @@ public abstract class Adventurer {
      * @param currentTile
      * the currentTile to set
      */
-    protected void setCurrentTile(Tile currentTile) {
+    public void setCurrentTile(Tile currentTile) {
         this.currentTile = currentTile;
     }
     

@@ -19,7 +19,7 @@ public class Tile {
     
     
     public void shoreUp() {
-        // TODO - implement Tile.shoreUp
+        // FIXME - implement Tile.shoreUp
         throw new UnsupportedOperationException();
     }
     
@@ -89,6 +89,16 @@ public class Tile {
     @Override
     public String toString() {
         return getCoords().toString() + " : " + getState() + " : " + getSite();
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     * @return
+     */
+    public boolean notSinked() {
+        return !getState().equals(TileState.SINKED);
     }
     
 }

@@ -1,5 +1,14 @@
 package model.card;
 
+import java.util.ArrayList;
+
+import model.game.Island;
+import model.game.Tile;
+import model.game.TileState;
+import util.exception.TileException;
+
+
+
 public class SandBag extends Card {
     
     /**
@@ -7,18 +16,32 @@ public class SandBag extends Card {
      *
      * @param type
      */
-    protected SandBag() {
+    public SandBag() {
         super(CardType.SANDBAG_CARD);
     }
     
     
     /**
+     * @see model.card.Card#getTilesDest(model.game.Island)
+     */
+    @Override
+    public ArrayList<Tile> getTilesDest(Island island) {
+        return island.getTiles(TileState.FLOODED);
+    }
+    
+    
+    /**
      * 
+     * @param destTile
      * @param applied
      */
-    public void applyAction(Object applied) {
-        // TODO - implement SandBag.applyAction
-        throw new UnsupportedOperationException();
+    @Override
+    public void applyAction(Tile destTile, Object applied) throws TileException {
+        if (destTile.getState() == TileState.FLOODED) {
+            destTile.setState(TileState.DRIED);
+        } else {
+            throw new TileException(destTile, TileState.DRIED);
+        }
     }
     
 }

@@ -11,6 +11,7 @@ import util.LogType;
 import util.Parameters;
 import util.exception.ActionException;
 import util.exception.NotEnoughCardsException;
+import util.exception.EndGameException;
 import util.exception.PlayerOutOfIslandException;
 import util.exception.WrongTileTreasureException;
 import util.message.InGameAction;
@@ -29,7 +30,8 @@ public class Game {
     private Player               currentPlayer;
     private boolean              started;
     
-    private InGameAction currentAction;
+    private ArrayList<Player> SelectedPlayers;
+    private InGameAction      currentAction;
     
     
     /**
@@ -43,6 +45,7 @@ public class Game {
         floodDeck = new FloodDeck();
         players = new LinkedList<>();
         treasures = new ArrayList<>();
+        SelectedPlayers = new ArrayList<>();
     }
     
     
@@ -179,7 +182,9 @@ public class Game {
         int indLastP = getPlayers().indexOf(getCurrentPlayer());
         setCurrentPlayer(getPlayers().get((indLastP + 1) % 4));
         getCurrentPlayer().getCurrentAdventurer().beginTurn();
+        
         setCurrentAction(InGameAction.MOVE);
+        deselectPlayers();
     }
     
     
@@ -204,6 +209,14 @@ public class Game {
             } // end if
         } // end for
         return players;
+    }
+    
+    
+    public void increaseSeaLevel() throws EndGameException {
+        seaLevel = seaLevel.next();
+        if (seaLevel.isLast()) {
+            throw new EndGameException();
+        }
     }
     
     
@@ -281,6 +294,41 @@ public class Game {
     
     
     /**
+     * @author nihil
+     * @param player
+     * @return true if this adding the player, return false this removing the player
+     *
+     */
+    public boolean toggleSelectionPlayer(Player player) {
+        if (!SelectedPlayers.remove(player)) {
+            SelectedPlayers.add(player);
+            Parameters.printLog("Add player " + player + " to selected", LogType.ACCESS);
+            return true;
+        } // end if
+        Parameters.printLog("remove player " + player + " to selected", LogType.ACCESS);
+        return false;
+    }
+    
+    
+    /**
+     * @return the selectedPlayers
+     */
+    public ArrayList<Player> getSelectedPlayers() {
+        return SelectedPlayers;
+    }
+    
+    
+    /**
+     * @author nihil
+     * @param player
+     *
+     */
+    public void deselectPlayers() {
+        SelectedPlayers.clear();
+    }
+    
+    
+    /**
      * @return the currentAction
      */
     public InGameAction getCurrentAction() {
@@ -295,5 +343,20 @@ public class Game {
     public void setCurrentAction(InGameAction currentAction) {
         this.currentAction = currentAction;
         Parameters.printLog("Set action to : " + currentAction, LogType.INFO);
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     * @param advT
+     * @return the player specified by the {@link AdventurerType} or null if not in this {@link Game}
+     */
+    public Player getPlayer(AdventurerType advT) {
+        Iterator<Player> it = getPlayers().iterator();
+        Player p = null;
+        while (it.hasNext() && !(p = it.next()).getCurrentAdventurer().getADVENTURER_TYPE().equals(advT)) {
+        }
+        return p;
     }
 }

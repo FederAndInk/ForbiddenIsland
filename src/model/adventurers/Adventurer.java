@@ -2,12 +2,8 @@ package model.adventurers;
 
 import java.util.ArrayList;
 
-import model.card.Card;
 import model.card.TreasureCard;
-import model.game.Coords;
-import model.game.Island;
-import model.game.Tile;
-import model.game.TileState;
+import model.game.*;
 import model.player.Inventory;
 import model.player.Player;
 import util.LogType;
@@ -44,7 +40,7 @@ public abstract class Adventurer {
         setActionPoints(MAX_ACTION_POINTS);
         setPlayer(player);
         player.setCurrentAdventurer(this);
-        setInventory(new Inventory());
+        setInventory(new Inventory(this));
     }
     
     
@@ -212,6 +208,7 @@ public abstract class Adventurer {
             } // end if
         } // end if
           // no action required
+        list.add(InGameAction.END_TURN);
         if (inventory.hasCardUsable()) {
             list.add(InGameAction.USE_CARD);
         } // end if
@@ -369,30 +366,49 @@ public abstract class Adventurer {
     public AdventurerType getADVENTURER_TYPE() {
         return ADVENTURER_TYPE;
     }
-  
-    public void giveCard(TreasureCard card, Player player) {
-        if (card.getTreasureType().equals(getCurrentTile().getSite().geTreasureType())) {
-            if (player.getCurrentAdventurer().getCurrentTile().equals(getCurrentTile())) {
-                if (player.getCurrentAdventurer().getInventory().isFull()) {
-                    if (getInventory().removeCard(card)) {
-                        player.getCurrentAdventurer().recieveCard(card);
-                    } else {
-                        // FIXME : add throws
-                        Parameters.printLog("il a pas la carte " + card + " dans l'inventaire de " + this,
-                                LogType.ACCESS);
-                    }
+    
+    
+    public void giveCard(TreasureCard card, Player player) throws CardException, CantGiveCard, MissingCard {
+        if (isExchangePossibleHere(card.getTreasureType())) {
+            if (reachableExchangePlayer(player)) {
+                if (getInventory().removeCard(card)) {
+                    Parameters.printLog("\nle joueur " + getPlayer() + " donne la carte " + card, LogType.INFO);
+                    player.getCurrentAdventurer().recieveCard(card);
+                } else {
+                    Parameters.printLog("il n'y a pas la carte " + card + " dans l'inventaire de " + this,
+                            LogType.ERROR);
+                    throw new MissingCard(card.getTreasureType(), this);
                 }
+            } else {
+                Parameters.printLog("les joueurs ne sont pas sur la même case", LogType.ERROR);
+                throw new CantGiveCard(this, player.getCurrentAdventurer());
             }
+            
+        } else {
+            Parameters.printLog("le type de carte ne correspond pas", LogType.ERROR);
+            throw new CantGiveCard(card.getTreasureType(), this);
         }
     }
     
     
-    public void recieveCard(Card card) {
-        getInventory().addCard(card);
+    protected boolean reachableExchangePlayer(Player player) {
+        return (player.getCurrentAdventurer().getCurrentTile().equals(getCurrentTile()));
     }
     
     
-    public void drawCard() {
+    /**
+     * @author nihil
+     * @return
+     *
+     */
+    protected boolean isExchangePossibleHere(TreasureType type) {
+        return type.equals(getCurrentTile().getSite().geTreasureType());
+    }
+    
+    
+    public void recieveCard(TreasureCard card) throws CardException {
+        Parameters.printLog("\nle joueur " + getPlayer() + " reçois la carte " + card, LogType.INFO);
+        getInventory().addCard(card);
         
     }
 }

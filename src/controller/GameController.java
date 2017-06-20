@@ -165,7 +165,6 @@ public class GameController implements Observer {
             Parameters.printLog("Move to " + tile, LogType.INFO);
             // to update the view
             gameView.movePawn(adv.getADVENTURER_TYPE(), cTile.getCoords(), tile.getCoords());
-            
         } catch (MoveException | ActionException e) {
             e.printStackTrace();
         } finally {
@@ -682,7 +681,8 @@ public class GameController implements Observer {
      *
      */
     private boolean verifyEndTurn() {
-        if (getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getPossibleActions().isEmpty()) {
+        ArrayList<InGameAction> acts = getCurrentGame().getPossibleActions();
+        if (acts.size() == 1 && acts.contains(InGameAction.END_TURN)) {
             gameView.setEndTurn(true);
             gameView.notifyPlayers("C'est la fin du tour pour " + getCurrentGame().getCurrentPlayer().getName());
             reInitBoard();

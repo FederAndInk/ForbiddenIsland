@@ -14,5 +14,8 @@ public enum ExceptionType {
     INADEQUATE_USE_OF_CAPACITY,
     TILE_STATE,
     PLAYER_OUT_OF_ISLAND,
-    END_GAME;
+    MISSING_CARD,
+    END_GAME,
+    INCORRECT_TILE,
+    DIFFERENT_TILE;
 }

@@ -28,6 +28,7 @@ public class WatersRise extends Card {
         if (applied instanceof Game) {
             Game game = (Game) applied;
             game.increaseSeaLevel();
+            game.getTreasureDeck().discard(this);
             game.getFloodDeck().shuffleDeck();
             game.getTreasureDeck().shuffleDeck();
         } else {

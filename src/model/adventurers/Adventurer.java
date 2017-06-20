@@ -2,6 +2,7 @@ package model.adventurers;
 
 import java.util.ArrayList;
 
+import model.card.Card;
 import model.card.TreasureCard;
 import model.game.*;
 import model.player.Inventory;
@@ -181,6 +182,31 @@ public abstract class Adventurer {
             throw new EndGameException();
         } // end if
         return getReachableTiles();
+    }
+    
+    
+    public ArrayList<Card> createTreasure(Treasure treasure)
+            throws ActionException, NotEnoughCardsException, WrongTileTreasureException {
+        Tile tile = getCurrentTile();
+        ArrayList<Card> removedCards = new ArrayList<>();
+        if (tile.getSite().getTreasureType() != null) {
+            if (inventory.howManyCards(tile.getSite().getTreasureType()) == 4
+                    && treasure.getName() == tile.getSite().getTreasureType()) {
+                if (getActionPoints() >= 1) {
+                    inventory.addTreasure(treasure);
+                    for (int i = 0; i <= 3; i++) {
+                        removedCards.add(inventory.removeTreasureCard(tile.getSite().getTreasureType()));
+                    }
+                    return removedCards;
+                } else {
+                    throw new ActionException(getActionPoints());
+                }
+            } else {
+                throw new NotEnoughCardsException(inventory.howManyCards(tile.getSite().getTreasureType()));
+            }
+        } else {
+            throw new WrongTileTreasureException(tile, tile.getSite().getTreasureType().toString());
+        }
     }
     
     
@@ -368,7 +394,7 @@ public abstract class Adventurer {
     }
     
     
-    public void giveCard(TreasureCard card, Player player) throws CardException, CantGiveCard, MissingCard {
+    public void giveCard(TreasureCard card, Player player) throws CardException, GiveCardException, MissingCardException {
         if (isExchangePossibleHere(card.getTreasureType())) {
             if (reachableExchangePlayer(player)) {
                 if (getInventory().removeCard(card)) {
@@ -377,16 +403,16 @@ public abstract class Adventurer {
                 } else {
                     Parameters.printLog("il n'y a pas la carte " + card + " dans l'inventaire de " + this,
                             LogType.ERROR);
-                    throw new MissingCard(card.getTreasureType(), this);
+                    throw new MissingCardException(card.getTreasureType(), this);
                 }
             } else {
                 Parameters.printLog("les joueurs ne sont pas sur la même case", LogType.ERROR);
-                throw new CantGiveCard(this, player.getCurrentAdventurer());
+                throw new GiveCardException(this, player.getCurrentAdventurer());
             }
             
         } else {
             Parameters.printLog("le type de carte ne correspond pas", LogType.ERROR);
-            throw new CantGiveCard(card.getTreasureType(), this);
+            throw new GiveCardException(card.getTreasureType(), this);
         }
     }
     
@@ -398,11 +424,11 @@ public abstract class Adventurer {
     
     /**
      * @author nihil
-     * @return
+     * @return true if the exchange of card is possible on the {@link #getCurrentTile()}
      *
      */
     protected boolean isExchangePossibleHere(TreasureType type) {
-        return type.equals(getCurrentTile().getSite().geTreasureType());
+        return type.equals(getCurrentTile().getSite().getTreasureType());
     }
     
     

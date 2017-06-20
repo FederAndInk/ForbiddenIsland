@@ -11,14 +11,14 @@ import model.game.TreasureType;
 import util.LogType;
 import util.Parameters;
 import util.exception.CardException;
-import util.exception.MissingCard;
+import util.exception.MissingCardException;
 
 
 
 public class Inventory {
     
     private ArrayList<Card>     cards;
-    private ArrayList<Treasure> tresures;
+    private ArrayList<Treasure> treasures;
     private Adventurer          adventurer;
     private static final int    MAX_CARD = 5;
     
@@ -29,18 +29,8 @@ public class Inventory {
      */
     public Inventory(Adventurer adventurer) {
         cards = new ArrayList<>();
-        tresures = new ArrayList<>();
+        treasures = new ArrayList<>();
         this.adventurer = adventurer;
-    }
-    
-    
-    /**
-     * 
-     * @param card
-     */
-    public void discard(Card card) {
-        // TODO - implement Inventory.discard
-        throw new UnsupportedOperationException();
     }
     
     
@@ -68,17 +58,46 @@ public class Inventory {
         if (!(getAdventurer().getPlayer().getCurrentAdventurer().getInventory().isFull())) {
             cards.add(card);
         } else {
-            Parameters.printLog("l'inventaire est plein", LogType.INFO); // TODO : to move to recieve
+            Parameters.printLog("l'inventaire est plein", LogType.INFO); 
             throw new CardException(card, getAdventurer().getADVENTURER_TYPE());
         }
     }
     
     
+    public void addTreasure(Treasure treasure) {
+        treasures.add(treasure);
+    }
+
     public boolean removeCard(Card card) {
         return cards.remove(card);
     }
     
     
+    public Card removeTreasureCard(TreasureType type) {
+        int i = 0;
+        Card card = cards.get(i);
+        while (!card.getType().equals(CardType.TREASURE_CARD) || ((TreasureCard) card).getTreasureType() != type) {
+            i++;
+            card = cards.get(i);
+        }
+        cards.remove(card);
+        return card;
+    }
+    
+    
+    public int howManyCards(TreasureType type) {
+        int nbCards = 0;
+        for (Card card : cards) {
+            if (card.getType().equals(CardType.TREASURE_CARD)) {
+                TreasureCard tCard = (TreasureCard) card;
+                if (tCard.getTreasureType() == type) {
+                    nbCards = nbCards + 1;
+                }
+            }
+        }
+        return nbCards;
+    }
+
     public Card getCard() {
         return cards.get(1);
     }
@@ -92,16 +111,16 @@ public class Inventory {
     /**
      * @param treasureType
      * @return the specified card or exception
-     * @throws MissingCard
+     * @throws MissingCardException
      */
-    public Card getCard(TreasureType treasureType) throws MissingCard {
+    public Card getCard(TreasureType treasureType) throws MissingCardException {
         for (Card i : cards) {
             if (i.getType().equals(CardType.TREASURE_CARD)
                     && ((TreasureCard) i).getTreasureType().equals(treasureType)) {
                 return i;
             }
         }
-        throw new MissingCard(treasureType, getAdventurer());
+        throw new MissingCardException(treasureType, getAdventurer());
     }
     
     
@@ -113,5 +132,4 @@ public class Inventory {
         }
         return null;
     }
-    
 }

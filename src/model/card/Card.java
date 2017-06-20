@@ -32,8 +32,6 @@ public abstract class Card {
             throws IllegalAccessException, EndGameException, MoveException, TileException {
         throw new IllegalAccessException();
     }
-    
-    
     /**
      * @return the type
      */
@@ -50,4 +48,9 @@ public abstract class Card {
         this.type = type;
     }
     
+    @Override
+    public String toString() {
+        // TODO Auto-generated method stub
+        return getType().toString();
+    }
 }

@@ -25,8 +25,8 @@ public class Game {
     private SeaLevel             seaLevel;
     private Island               island;
     private LinkedList<Player>   players;
-    private Deck                 treasureDeck;
-    private Deck                 floodDeck;
+    private TreasureDeck         treasureDeck;
+    private FloodDeck            floodDeck;
     private Player               currentPlayer;
     private boolean              started;
     
@@ -182,7 +182,6 @@ public class Game {
         int indLastP = getPlayers().indexOf(getCurrentPlayer());
         setCurrentPlayer(getPlayers().get((indLastP + 1) % 4));
         getCurrentPlayer().getCurrentAdventurer().beginTurn();
-        
         setCurrentAction(InGameAction.MOVE);
         deselectPlayers();
     }

@@ -235,7 +235,6 @@ public class TilePanel extends JLayeredPane {
      * 
      * @param b
      * 
-     * 
      * @see javax.swing.AbstractButton#setEnabled(boolean)
      */
     @Override

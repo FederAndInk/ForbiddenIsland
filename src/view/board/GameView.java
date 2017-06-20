@@ -132,6 +132,25 @@ public class GameView extends JFrame {
         newGame.setActionCommand(NEW_GAME);
         quit.setActionCommand(QUIT);
         
+        setJMenuBar(bar);
+        bar.add(option);
+        option.add(newGame);
+        option.add(gameOpt);
+        gameOpt.add(board);
+        board.add(defaultB);
+        board.add(hardTestB);
+        grpBoard.add(defaultB);
+        grpBoard.add(hardTestB);
+        defaultB.setSelected(true);
+        gameOpt.add(playerSelect);
+        playerSelect.add(randomP);
+        grpPlayer.add(randomP);
+        randomP.setSelected(true);
+        option.add(quit);
+        
+        newGame.setActionCommand(NEW_GAME);
+        quit.setActionCommand(QUIT);
+        
         getContentPane().add(mainPane);
         mainPane.add(eastPane, BorderLayout.EAST);
         mainPane.add(messages, BorderLayout.NORTH);
@@ -238,6 +257,7 @@ public class GameView extends JFrame {
         useCapacityBtn.setEnabled(act.contains(InGameAction.USE_CAPACITY));
         moveBtn.setEnabled(act.contains(InGameAction.MOVE));
         shoreUpBtn.setEnabled(act.contains(InGameAction.SHORE_UP_TILE));
+        endTurnBtn.setEnabled(act.contains(InGameAction.END_TURN));
     }
     
     
@@ -380,7 +400,6 @@ public class GameView extends JFrame {
                 notifyObservers(new MainMessage(MainAction.BEGIN_GAME, getBoard()));
                 clearChanged();
                 break;
-            
             default:
                 break;
             }// end switch

@@ -78,8 +78,8 @@ public enum AdventurerType {
     
     
     // réccupérer le logo du joueur en train de jouer
-    public String getPathUser() {
-        return Parameters.LOGO + getClassName() + "_AdventurerUser_Ison@2x.png";
+    public String getPathSelect() {
+        return Parameters.LOGO + getClassName() + "_Adventurer_IconSelect@2x.png";
     }
     
     
@@ -89,6 +89,11 @@ public enum AdventurerType {
      */
     public String getIcon() {
         return Parameters.LOGO + "RoleTable_Icon_" + getClassName() + "@2x.png";
+    }
+    
+    
+    public String getIconSelect() {
+        return Parameters.ADVENTURER + "Player_Card_" + getClassName() + "_IconSelect@2x.png";
     }
     
     

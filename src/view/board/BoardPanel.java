@@ -43,7 +43,7 @@ public class BoardPanel extends JPanel {
         layout = new SpringLayout();
         setParentFrame(parentFrame);
         setLayout(layout);
-        setBoardSize(0.9);
+        setBoardSize(0.85);
         
         initListeners();
     }

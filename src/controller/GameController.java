@@ -96,6 +96,7 @@ public class GameController implements Observer {
         getCurrentGame().initGame(seaLevel);
         
         gameView.setBoard(getCurrentGame().getIsland().getSites(), this);
+        gameView.initPlayerState(getCurrentGame().getPawns());
         
         setSpawns();
         

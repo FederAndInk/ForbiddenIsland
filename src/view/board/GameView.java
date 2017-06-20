@@ -1,31 +1,16 @@
 package view.board;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.GraphicsEnvironment;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 
-import javax.swing.BorderFactory;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JLayeredPane;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.JTextPane;
-import javax.swing.UIManager;
+import javax.swing.*;
 
 import model.adventurers.AdventurerType;
 import model.game.Coords;
@@ -39,7 +24,7 @@ import util.message.InGameAction;
 import util.message.InGameMessage;
 import util.message.MainAction;
 import util.message.MainMessage;
-import view.player.Icone;
+import view.player.PlayerInfo;
 import view.player.playerInventory;
 
 
@@ -72,22 +57,15 @@ public class GameView extends JFrame {
     private ButtonGroup          grpPlayer;
     private JMenuItem            quit;
     
-    private JTextPane     messages;
-    private JLabel        infoPlayerC;
-    private PawnComponant currentP;
-    private JPanel        info;
+    private JTextPane messages;
+    private JLabel    infoPlayerC;
+    private JPanel    info;
     
     // player info
-    private JPanel          paneDroit;
-    private Icone           player3spe;
-    private Icone           player4spe;
-    private playerInventory inventory;
-    // private JPanel playerSpe3;
-    // private JPanel playerSpe4;
-    // private JPanel icone3;
-    // private JPanel descriptionSpe3;
-    // private JPanel icone4;
-    // private JPanel descriptionSpe4;
+    private JPanel                paneDroit;
+    private ArrayList<PlayerInfo> pawns;
+    private playerInventory       inventory;
+    
     private JPanel flood;
     
     private JButton endTurnBtn;
@@ -100,12 +78,11 @@ public class GameView extends JFrame {
     
     public GameView() {
         super();
-        
+        pawns = new ArrayList<>();
         initComponents();
         setScreen();
         Parameters.appSize = getSize();
         
-        initPlayerState();
         initPlayerInventory();
         initListeners();
         
@@ -151,7 +128,6 @@ public class GameView extends JFrame {
         
         messages = new JTextPane();
         infoPlayerC = new JLabel("Joueur ");
-        currentP = new PawnComponant(AdventurerType.DIVER);
         info = new JPanel(new GridLayout(2, 1));
         
         setJMenuBar(bar);
@@ -193,45 +169,68 @@ public class GameView extends JFrame {
         westPane.add(info, BorderLayout.NORTH);
         messages.setEditable(false);
         info.add(infoPlayerC);
-        info.add(currentP);
-        
     }
     
     
-    private void initPlayerState() {
-        player3spe = new Icone();
-        player4spe = new Icone();
+    public void initPlayerState(ArrayList<AdventurerType> advs) {
+        boolean left;
+        JPanel pane;
+        String contraint;
+        for (AdventurerType adventurerType : advs) {
+            
+            switch (pawns.size()) {
+            case 0:
+                pane = westPane;
+                left = true;
+                contraint = BorderLayout.NORTH;
+                break;
+            case 1:
+                pane = eastPane;
+                left = false;
+                contraint = BorderLayout.NORTH;
+                break;
+            case 2:
+                pane = westPane;
+                left = true;
+                contraint = BorderLayout.SOUTH;
+                break;
+            
+            default:
+                pane = eastPane;
+                left = false;
+                contraint = BorderLayout.SOUTH;
+                break;
+            }// end switch
+            pawns.add(new PlayerInfo(adventurerType, left));
+            pane.add(pawns.get(pawns.size() - 1), contraint);
+            
+        } // end for
+        
         paneDroit = new JPanel(new GridLayout(2, 1));
         flood = new JPanel();
-        // icone3 = new JPanel(new BorderLayout());
-        
-        // descriptionSpe3 = new JPanel(new BorderLayout());
-        // icone4 = new JPanel(new BorderLayout());
-        // playerSpe4 = new JPanel(new GridLayout(1, 2));
-        // descriptionSpe4 = new JPanel(ne BorderLayout());
-        //
-        // icone3.setBackground(Color.green);
-        // descriptionSpe3.setBackground(Color.PINK);
-        //
-        //
-        // descriptionSpe4.setBackground(Color.PINK);
-        //
-        // eastPane.add(paneDroit, BorderLayout.CENTER);
         eastPane.setBackground(Color.RED);
-        eastPane.add(player3spe, BorderLayout.NORTH);
-        eastPane.add(player4spe, BorderLayout.SOUTH);
         eastPane.add(paneDroit, BorderLayout.CENTER);
-        
-        // eastPane.add(playerSpe4, BorderLayout.SOUTH) ;
-        
-        // playerSpe4.add(descriptionSpe4);
-        // playerSpe4.add(icone4);
         flood.setBackground(Color.BLUE);
         flood.add(new JLabel("   "));
         paneDroit.add(actionCommands);
         paneDroit.add(flood);
         //
     }
+    
+    
+    /**
+     * @author nihil
+     *
+     * @param adv
+     * @return the icone of the adventurer or null if not found
+     */
+    public PlayerInfo getIcon(AdventurerType adv) {
+        Iterator<PlayerInfo> it = pawns.iterator();
+        PlayerInfo p = null;
+        while (it.hasNext() && (p = it.next()).getPawn() != adv) {
+        } // end while
+        return p == null ? null : p.getPawn() == adv ? p : null;
+    }// end initIcon
     
     
     /**
@@ -248,9 +247,11 @@ public class GameView extends JFrame {
      * the currentP to set
      */
     public void setCurrentP(AdventurerType currentP) {
-        info.remove(this.currentP);
-        this.currentP = new PawnComponant(currentP);
-        info.add(this.currentP);
+        for (PlayerInfo pInfo : pawns) {
+            if (pInfo.getPawn().equals(currentP)) {
+                
+            } // end if
+        } // end for
     }
     
     
@@ -277,7 +278,7 @@ public class GameView extends JFrame {
     
     /**
      * @author nihil
-     *
+     * pawn = new ;
      */
     private void initListeners() {
         setListObs(new ListenerAction());

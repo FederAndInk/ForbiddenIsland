@@ -410,10 +410,4 @@ public abstract class Adventurer {
         getInventory().addCard(card);
         
     }
-    
-    
-    public void drawCard(Deck deck) throws CardException {
-        Parameters.printLog("le joueur " + getPlayer() + " pioche la carte " + deck.draw(getPlayer()), LogType.INFO);
-    }
-    
 }

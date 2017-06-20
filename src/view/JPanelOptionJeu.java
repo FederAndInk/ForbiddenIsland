@@ -179,7 +179,7 @@ public class JPanelOptionJeu extends JPanel {
                     nomJoueur4.setVisible(true);
                     hero3.setVisible(true);
                     hero4.setVisible(true);
-                    System.out.println("nya :3");
+                    Parameters.printLog("4 players", LogType.INFO);
                     
                 }
                 repaint();

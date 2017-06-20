@@ -10,9 +10,9 @@ import javax.swing.JPanel;
 
 public class MainView extends JFrame {
     
-    JPanel                   main;
-    JPanelPicture            picture;
-    JPanelMenu               option;
+    private JPanel           main;
+    private JPanelPicture    picture;
+    private JPanelMenu       mainMenu;
     private JPanelSelectHero selectHero;
     
     private JPanel card;
@@ -21,10 +21,11 @@ public class MainView extends JFrame {
     public MainView() {
         main = new JPanel(new GridLayout(1, 2));
         picture = new JPanelPicture();
-        option = new JPanelMenu();
+        mainMenu = new JPanelMenu();
         card = new JPanel();
         
         card.setLayout(new CardLayout());
+        selectHero = new JPanelSelectHero(this);
         
         // les layout
         
@@ -32,13 +33,11 @@ public class MainView extends JFrame {
         card.add(picture, "picture");
         
         // la selection de hero
-        selectHero = new JPanelSelectHero(this);
         card.add(selectHero, "heroSelection");
         
         getContentPane().add(main);
-        main.add(option);
-        
-        main.add(picture);
+        main.add(mainMenu);
+        main.add(card);
         
     }
     

@@ -2,6 +2,7 @@ package view.pause;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,6 +21,7 @@ import util.message.MainMessage;
 public class PausePanel extends JPanel {
     
     private JPanel  mainPanel;
+    private JPanel  optionPanel;
     private JButton resume;
     private JButton save;
     private JButton load;
@@ -36,7 +38,10 @@ public class PausePanel extends JPanel {
     
     public void initComponent() {
         setLayout(new BorderLayout());
+        setBackground(Color.pink);
         mainPanel = new JPanel(new GridLayout(6, 1));
+        optionPanel = new JPanel(new BorderLayout());
+        optionPanel.setBackground(Color.CYAN);
         resume = new JButton("Resume");
         save = new JButton("Save");
         load = new JButton("load");
@@ -45,10 +50,16 @@ public class PausePanel extends JPanel {
         quitter = new JButton("Quitter");
         recommencer = new JButton("Recommencer");
         
-        add(mainPanel, BorderLayout.CENTER);
+        add(optionPanel);
         add(new JPanel(), BorderLayout.NORTH);
         add(new JPanel(), BorderLayout.EAST);
         add(new JPanel(), BorderLayout.WEST);
+        
+        optionPanel.add(mainPanel, BorderLayout.CENTER);
+        optionPanel.add(new JPanel(), BorderLayout.NORTH);
+        optionPanel.add(new JPanel(), BorderLayout.EAST);
+        optionPanel.add(new JPanel(), BorderLayout.WEST);
+        optionPanel.add(new JPanel(), BorderLayout.SOUTH);
         add(quitter, BorderLayout.SOUTH);
         quitter.setActionCommand("quit");
         

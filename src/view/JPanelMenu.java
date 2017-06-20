@@ -22,7 +22,7 @@ public class JPanelMenu extends JPanel {
     private JButton         score;
     private JButton         tuto;
     private JButton         option;
-    private JPanel          optionPanel;
+    private JPanelOption    optionPanel;
     private JPanel          scorePanel;
     private JPanelOptionJeu jeu;
     private JLabel          titreLabel;
@@ -66,7 +66,7 @@ public class JPanelMenu extends JPanel {
         grid.add(tuto);
         
         // les options
-        optionPanel = new JPanel();
+        optionPanel = new JPanelOption();
         card.add(optionPanel, "option");
         
         // les scores

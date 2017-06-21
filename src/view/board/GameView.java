@@ -1,14 +1,14 @@
 package view.board;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.GraphicsEnvironment;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.*;
 
 import javax.swing.*;
 
@@ -59,14 +59,10 @@ public class GameView extends JFrame {
     private ButtonGroup          grpPlayer;
     private JMenuItem            quit;
     
-    private JTextPane messages;
-    private JLabel    infoPlayerC;
-    private JPanel    info;
-    
     // player info
-    private JPanel                paneDroit;
-    private ArrayList<PlayerInfo> pawns;
-    private playerInventory       inventory;
+    private JPanel                                   paneDroit;
+    private ArrayList<PlayerInfo>                    pawns;
+    private HashMap<AdventurerType, playerInventory> inventories;
     
     // Decks
     private DeckComponant treasureDeck;
@@ -74,6 +70,10 @@ public class GameView extends JFrame {
     private JPanel        decksPane;
     
     private JPanel flood;
+    
+    // Inventory
+    private JPanel north;
+    private JPanel south;
     
     private JButton endTurnBtn;
     private JButton moveBtn;
@@ -86,20 +86,14 @@ public class GameView extends JFrame {
     public GameView() {
         super();
         pawns = new ArrayList<>();
+        inventories = new HashMap<>();
         initComponents();
         initDecks();
         setScreen();
         Parameters.appSize = getSize();
         
-        initPlayerInventory();
         initListeners();
         
-    }
-    
-    
-    private void initPlayerInventory() {
-        inventory = new playerInventory();
-        mainPane.add(inventory, BorderLayout.NORTH);
     }
     
     
@@ -133,10 +127,6 @@ public class GameView extends JFrame {
         moveBtn = new JButton("Se déplacer");
         shoreUpBtn = new JButton("Assécher un endroit");
         useCapacityBtn = new JButton("Utiliser sa capacité");
-        
-        messages = new JTextPane();
-        infoPlayerC = new JLabel("Joueur ");
-        info = new JPanel(new GridLayout(2, 1));
         
         setJMenuBar(bar);
         bar.add(option);
@@ -193,9 +183,6 @@ public class GameView extends JFrame {
         actionCommands.add(shoreUpBtn);
         actionCommands.add(useCapacityBtn);
         
-        westPane.add(info, BorderLayout.NORTH);
-        messages.setEditable(false);
-        info.add(infoPlayerC);
     }
     
     
@@ -235,14 +222,51 @@ public class GameView extends JFrame {
         
         paneDroit = new JPanel(new GridLayout(2, 1));
         flood = new JPanel();
-        eastPane.setBackground(Color.RED);
         eastPane.add(paneDroit, BorderLayout.CENTER);
-        flood.setBackground(Color.BLUE);
-        flood.add(new JLabel("   "));
         paneDroit.add(actionCommands);
         paneDroit.add(flood);
-        //
+        initInventory(advs);
     }
+    
+    
+    // Inventory
+    public void initInventory(ArrayList<AdventurerType> advs) {
+        north = new JPanel(new BorderLayout());
+        south = new JPanel(new BorderLayout());
+        mainPane.add(north, BorderLayout.NORTH);
+        mainPane.add(south, BorderLayout.SOUTH);
+        boolean top;
+        JPanel pane;
+        String contraint;
+        for (AdventurerType adv : advs) {
+            
+            switch (inventories.size()) {
+            case 0:
+                pane = north;
+                top = true;
+                contraint = BorderLayout.WEST;
+                break;
+            case 1:
+                pane = north;
+                top = true;
+                contraint = BorderLayout.EAST;
+                break;
+            case 2:
+                pane = south;
+                top = false;
+                contraint = BorderLayout.WEST;
+                break;
+            
+            default:
+                pane = south;
+                top = false;
+                contraint = BorderLayout.EAST;
+                break;
+            }// end switch
+            inventories.put(adv, new playerInventory(adv, top));
+            pane.add(inventories.get(adv), contraint);
+        }
+    }// end initInventory
     
     
     /***
@@ -279,7 +303,6 @@ public class GameView extends JFrame {
      *
      */
     public void setCPlayer(String str, int act) {
-        infoPlayerC.setText("Joueur " + str + " Reste " + act + " actions");
     }
     
     
@@ -290,7 +313,9 @@ public class GameView extends JFrame {
     public void setCurrentP(AdventurerType currentP) {
         for (PlayerInfo pInfo : pawns) {
             if (pInfo.getPawn().equals(currentP)) {
-                
+                pInfo.setEnabled(true);
+            } else {
+                pInfo.setEnabled(false);
             } // end if
         } // end for
     }
@@ -301,19 +326,7 @@ public class GameView extends JFrame {
      *
      */
     public void notifyPlayers(String msg) {
-        messages.setText(messages.getText() + "\n" + msg);
-        Runnable test = () -> {
-            try {
-                String txt = messages.getText();
-                Thread.sleep(3000);
-                messages.setText(messages.getText().replaceFirst(txt, ""));
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        };// end Runnable
-        
-        Thread t = new Thread(test);
-        t.start();
+        // FIXME to notify
     }
     
     
@@ -336,6 +349,9 @@ public class GameView extends JFrame {
     
     
     /**
+     * .getSize() * 0.8)));
+     * if (left) {
+     * 
      * @author nihil
      *
      */
@@ -376,10 +392,6 @@ public class GameView extends JFrame {
             setUndecorated(false);
             GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().setFullScreenWindow(null);
         } // end if
-        
-        // FIXME to remove
-        messages.setPreferredSize(
-                new Dimension((int) (getSize().getWidth() * 0.10), (int) (getSize().getHeight() * 0.08)));
     }
     
     

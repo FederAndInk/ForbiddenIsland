@@ -3,6 +3,7 @@
  */
 package model.card;
 
+import model.game.TreasureType;
 import util.Parameters;
 
 
@@ -12,11 +13,15 @@ import util.Parameters;
  *
  */
 public enum CardType {
-    TREASURE_CARD(getSubTreasures(), false),
-    FLOOD_CARD(getSubFlood(), false),
-    HELICOPTER_CARD(getSubTreasures(), true),
-    SANDBAG_CARD(getSubTreasures(), true),
-    WATERSRISE_CARD(getSubTreasures(), false);
+    TREASURE_CARD("treasure", getSubTreasures(), false, null),
+    EARTH_STONE_CARD("Earth_Stone", getSubTreasures(), false, TreasureType.EARTH_STONE),
+    STATUE_OF_THE_WIND_CARD("Statue_of_the_Wind", getSubTreasures(), false, TreasureType.STATUE_OF_THE_WIND),
+    OCEANS_CHALICE_CARD("Ocean's_Chalice", getSubTreasures(), false, TreasureType.OCEANS_CHALICE),
+    CRYSTAL_OF_FIRE_CARD("Cristal_of_Fire", getSubTreasures(), false, TreasureType.CRYSTAL_OF_FIRE),
+    FLOOD_CARD("flood", getSubFlood(), false, null),
+    HELICOPTER_CARD("Helicopter", getSubTreasures(), true, null),
+    SANDBAG_CARD("Sand_Bag", getSubTreasures(), true, null),
+    WATERSRISE_CARD("Waters_Rise", getSubTreasures(), false, null);
     /**
      * @category Treasures
      */
@@ -25,13 +30,17 @@ public enum CardType {
      * @category Floods
      */
     private static final String SUB_FLOOD     = "Flood Deck";
+    private String              name;
     private String              subType;
     private boolean             usable;
+    private TreasureType        treasureType;
     
     
-    private CardType(String subType, boolean usable) {
+    private CardType(String name, String subType, boolean usable, TreasureType treasureType) {
+        this.name = name;
         this.subType = subType;
         this.usable = usable;
+        this.treasureType = treasureType;
     }
     
     
@@ -49,8 +58,19 @@ public enum CardType {
      *
      * @return
      */
+    
     public String getBackSelect() {
         return Parameters.CARDS + (subType.equals(SUB_FLOOD) ? "Flood_" : "") + "Card_BackSelect@2x.png";
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     * @return name of the card's file
+     */
+    public String getPathCard() {
+        return Parameters.CARDS + "Card_" + name + "@2x.png";
     }
     
     

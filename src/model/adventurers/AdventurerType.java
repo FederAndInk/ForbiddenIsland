@@ -74,6 +74,14 @@ public enum AdventurerType {
     
     
     /**
+     * @return the description
+     */
+    public String getDescription() {
+        return "<html>" + description + "</html>";
+    }// end name
+    
+    
+    /**
      * @author nihil
      *
      */

@@ -2,15 +2,13 @@ package view.player;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics;
+import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
-import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 import model.adventurers.AdventurerType;
 import util.Parameters;
@@ -19,7 +17,7 @@ import util.Parameters;
 
 public class PlayerInfo extends JPanel {
     private PlayerIcon     icone;
-    private JPanel         descr;
+    private JLabel         descr;
     private AdventurerType pawn;
     
     
@@ -28,7 +26,8 @@ public class PlayerInfo extends JPanel {
         
         setLayout(new GridLayout(1, 2));
         icone = new PlayerIcon(pawn);
-        descr = new JPanel();
+        descr = new JLabel(pawn.getDescription(), SwingConstants.CENTER);
+        descr.setFont(new Font(getFont().getFontName(), getFont().getStyle(), (int) (getFont().getSize() * 0.9)));
         if (left) {
             add(icone);
             add(descr);
@@ -37,20 +36,13 @@ public class PlayerInfo extends JPanel {
             add(icone);
         } // end if
         setBorder(BorderFactory.createLineBorder(Color.red));
-        
     }
     
     
-    public void setCurrent(boolean current) {
-        Graphics g;
-        if (current = true) {
-            
-            try {
-                BufferedImage bImage = ImageIO.read(new File(pawn.getIconSelect()));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        icone.setEnabled(enabled);
     }// end name
     
     

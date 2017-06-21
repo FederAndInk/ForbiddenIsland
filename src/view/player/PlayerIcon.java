@@ -41,7 +41,7 @@ public class PlayerIcon extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         try {
-            BufferedImage bImage = ImageIO.read(new File(pawn.getIcon()));
+            BufferedImage bImage = ImageIO.read(new File(isEnabled() ? pawn.getIconSelect() : pawn.getIcon()));
             g.drawImage(bImage, 2, 2, (int) getSize().getWidth(), (int) getSize().getHeight(), this);
         } catch (IOException e) {
             // TODO Auto-generated catch block

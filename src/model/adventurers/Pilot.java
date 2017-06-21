@@ -31,22 +31,18 @@ public class Pilot extends Adventurer {
     
     
     @Override
-    public void useCapacity(Object o) throws MoveException, ActionException, InadequateUseOfCapacityException {
-        if (o instanceof Tile) {
-            Tile tile = (Tile) o;
-            if (getPotentialUse().contains(tile) && getActionPoints() > 0) {
-                setCurrentTile(tile);
-                setHeliUsed(true);
-                setActionPoints(getActionPoints() - 1);
-            } else {
-                if (getActionPoints() < 1) {
-                    throw new ActionException(getActionPoints());
-                } else {
-                    throw new MoveException(tile);
-                } // end if
-            } // end if
+    public void useCapacity(Tile tileDest, Object applied)
+            throws MoveException, ActionException, InadequateUseOfCapacityException {
+        if (getPotentialUse(null).contains(tileDest) && getActionPoints() > 0) {
+            setCurrentTile(tileDest);
+            setHeliUsed(true);
+            setActionPoints(getActionPoints() - 1);
         } else {
-            throw new IllegalArgumentException("not a Tile !");
+            if (getActionPoints() < 1) {
+                throw new ActionException(getActionPoints());
+            } else {
+                throw new MoveException(tileDest);
+            } // end if
         } // end if
     }// end useCapacity
     
@@ -59,7 +55,7 @@ public class Pilot extends Adventurer {
      * @see {@link #getReachableTiles()} and use removeAll to get only the tile where the pilot can go exclusively with their helicopter
      */
     @Override
-    public ArrayList<Object> getPotentialUse() throws InadequateUseOfCapacityException {
+    public ArrayList<Object> getPotentialUse(Object applied) throws InadequateUseOfCapacityException {
         
         ArrayList<Object> reachable = new ArrayList<>();
         

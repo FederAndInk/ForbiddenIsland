@@ -127,6 +127,12 @@ public abstract class Adventurer {
     }
     
     
+    public ArrayList<Tile> getReachableTiles() {
+        ArrayList<Tile> reachable = getReachableTiles(getCurrentTile());
+        return reachable;
+    }
+    
+    
     /**
      * get the adjacent tiles<br>
      * .*.<br>
@@ -137,10 +143,10 @@ public abstract class Adventurer {
      *
      * @return
      */
-    public ArrayList<Tile> getReachableTiles() {
+    protected ArrayList<Tile> getReachableTiles(Tile tile) {
         
         ArrayList<Tile> reachable = new ArrayList<>();
-        Coords coords = getCurrentTile().getCoords();
+        Coords coords = tile.getCoords();
         
         Island island = getPlayer().getCurrentGame().getIsland();
         Tile tileTmp;
@@ -159,6 +165,23 @@ public abstract class Adventurer {
         } // end for
         return reachable;
         
+    }
+    
+    
+    protected ArrayList<Tile> getReachableTiles(int nbHit) {
+        int i = 1;
+        ArrayList<Tile> reachable = new ArrayList<>();
+        ArrayList<Tile> reachableTmp = new ArrayList<>();
+        reachable = getReachableTiles(getCurrentTile());
+        while (i <= nbHit) {
+            for (Tile tile : reachable) {
+                reachableTmp.addAll(getReachableTiles(tile));
+                reachable.remove(tile);
+            }
+            i++;
+        }
+        reachable.addAll(reachableTmp);
+        return reachable;
     }
     
     
@@ -233,7 +256,8 @@ public abstract class Adventurer {
      * @throws MoveException
      * @throws ActionException
      */
-    public void useCapacity(Object o) throws InadequateUseOfCapacityException, MoveException, ActionException {
+    public void useCapacity(Tile tileDest, Object applied)
+            throws InadequateUseOfCapacityException, MoveException, ActionException {
         throw new InadequateUseOfCapacityException();
     }// end useCapacity
     
@@ -244,7 +268,7 @@ public abstract class Adventurer {
      * @return the objects where a capacity can be applied
      * @throws InadequateUseOfCapacityException
      */
-    public ArrayList<Object> getPotentialUse() throws InadequateUseOfCapacityException {
+    public ArrayList<Object> getPotentialUse(Object applied) throws InadequateUseOfCapacityException {
         throw new InadequateUseOfCapacityException();
     }
     

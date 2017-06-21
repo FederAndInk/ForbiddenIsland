@@ -1,8 +1,10 @@
 package model.adventurers;
 
 import java.util.ArrayList;
+import model.game.Tile;
 
 import model.player.Player;
+import util.exception.InadequateUseOfCapacityException;
 import util.message.InGameAction;
 
 
@@ -20,9 +22,37 @@ public class Navigator extends Adventurer {
     }
     
     
-    public void movePlayer() {
-        // TODO - implement Navigater.movePlayer
-        throw new UnsupportedOperationException();
+    @Override
+    public void useCapacity(Tile destTile, Object applied) {
+        if (applied instanceof Player) {
+            Player player = (Player) applied;
+            if (player.getCurrentAdventurer().getCurrentTile() == this.getCurrentTile()) {
+                ArrayList<Tile> reachable = new ArrayList<>();
+                switch (player.getCurrentAdventurer().getADVENTURER_TYPE()) {
+                case DIVER:
+                    reachable = getReachableTiles(2);
+                    break;
+                case NAVIGATOR:
+                    // TODO add new exception navigator cannot move himself
+                default:
+                    reachable = getReachableTiles(2);
+                    break;
+                }
+            } else {
+                // TODO add new exception for player not in the same tile
+            }
+        }
+        
+    }
+    
+    
+    @Override
+    public ArrayList<Object> getPotentialUse(Object applied) throws InadequateUseOfCapacityException {
+        if (applied instanceof Player) {
+            Player player = (Player) applied;
+            return new ArrayList<Object>(player.getCurrentAdventurer().getReachableTiles(2));
+        }
+        throw new IllegalArgumentException("Not a player");
     }
     
     

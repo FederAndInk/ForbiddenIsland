@@ -1,9 +1,6 @@
 package model.adventurers;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import model.card.Card;
 import model.card.TreasureCard;
@@ -393,6 +390,7 @@ public abstract class Adventurer {
      * the currentTile to set
      */
     public void setCurrentTile(Tile currentTile) {
+        Parameters.printLog("move " + getADVENTURER_TYPE() + " to " + currentTile, LogType.INFO);
         this.currentTile = currentTile;
     }
     

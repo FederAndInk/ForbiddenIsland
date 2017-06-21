@@ -24,6 +24,7 @@ public class Navigator extends Adventurer {
     }
     
     
+    // FIXME to decrease action and verify action
     @Override
     public void useCapacity(Tile destTile, Object applied) throws NavigatorCannotMoveHimselfException, MoveException {
         if (applied instanceof Player) {
@@ -41,7 +42,7 @@ public class Navigator extends Adventurer {
             case NAVIGATOR:
                 throw new NavigatorCannotMoveHimselfException(player.getCurrentAdventurer().getADVENTURER_TYPE());
             default:
-                reachable = getReachableTiles(2);
+                reachable = player.getCurrentAdventurer().getReachableTiles(2);
                 if (reachable.contains(destTile)) {
                     player.getCurrentAdventurer().setCurrentTile(destTile);
                 } else {

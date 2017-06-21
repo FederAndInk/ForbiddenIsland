@@ -218,17 +218,19 @@ public class Game {
     public void drawEndTurnCard(CardType type)
             throws EndGameException, IllegalAccessException, MoveException, TileException {
         Card card;
-        if (type == TreasureDeck.getType()) {
+        if (type.equals(CardType.TREASURE_CARD)) {
             card = getTreasureDeck().draw();
             if (card.getType().isCanAddToInventory()) {
                 getCurrentPlayer().getCurrentAdventurer().getInventory().addCard(card);
             } else {
                 card.applyAction(null, this);
             }
-        } else {
+        } else if (type.equals(CardType.FLOOD_CARD)) {
             card = getFloodDeck().draw();
             card.applyAction(null, this);
             verifyTreasure();
+        } else {
+            throw new IllegalArgumentException("not a valid deck");
         }
     }
     

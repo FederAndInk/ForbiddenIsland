@@ -1,10 +1,11 @@
 package model.adventurers;
 
 import java.util.ArrayList;
-import model.game.Tile;
 
+import model.game.Tile;
 import model.player.Player;
 import util.exception.InadequateUseOfCapacityException;
+import util.exception.NavigatorCannotMoveHimselfException;
 import util.message.InGameAction;
 
 
@@ -23,29 +24,32 @@ public class Navigator extends Adventurer {
     
     
     @Override
-    public void useCapacity(Tile destTile, Object applied) {
+    public void useCapacity(Tile destTile, Object applied) throws NavigatorCannotMoveHimselfException {
         if (applied instanceof Player) {
             Player player = (Player) applied;
-            if (player.getCurrentAdventurer().getCurrentTile() == this.getCurrentTile()) {
-                ArrayList<Tile> reachable = new ArrayList<>();
-                switch (player.getCurrentAdventurer().getADVENTURER_TYPE()) {
-                case DIVER:
-                    reachable = getReachableTiles(2);
-                    break;
-                case NAVIGATOR:
-                    // TODO add new exception navigator cannot move himself
-                default:
-                    reachable = getReachableTiles(2);
-                    break;
-                }
-            } else {
-                // TODO add new exception for player not in the same tile
+            ArrayList<Tile> reachable = new ArrayList<>();
+            switch (player.getCurrentAdventurer().getADVENTURER_TYPE()) {
+            case DIVER:
+                reachable = getReachableTiles(2);
+                break;
+            case NAVIGATOR:
+                throw new NavigatorCannotMoveHimselfException(player.getCurrentAdventurer().getADVENTURER_TYPE());
+            default:
+                reachable = getReachableTiles(2);
+                break;
             }
         }
         
     }
     
     
+    /**
+     * 
+     * @param applied
+     * the player to move
+     * @return
+     * @throws InadequateUseOfCapacityException
+     */
     @Override
     public ArrayList<Object> getPotentialUse(Object applied) throws InadequateUseOfCapacityException {
         if (applied instanceof Player) {

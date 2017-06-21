@@ -25,8 +25,8 @@ public enum AdventurerType {
     PILOT("Pilot", Site.FOOLS_LANDING),
     RANDOM("Random", null);
     
-    private String className;
-    private Site   spawn;
+    public final String className;
+    private Site        spawn;
     
     
     /**

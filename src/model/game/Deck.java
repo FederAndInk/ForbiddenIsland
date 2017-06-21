@@ -7,7 +7,6 @@ import java.util.Stack;
 import org.w3c.dom.events.EventException;
 
 import model.card.Card;
-import model.player.Player;
 
 
 
@@ -17,16 +16,16 @@ public abstract class Deck {
     private Stack<Card>     deck;
     
     
-    public Deck() {
+    public Deck(Island island) {
         discard = new ArrayList<>();
         deck = new Stack<>();
         
-        initDeck();
+        initDeck(island);
         Collections.shuffle(deck);
     }
     
     
-    public abstract void initDeck();
+    public abstract void initDeck(Island island);
     
     
     /**

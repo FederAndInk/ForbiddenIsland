@@ -1,20 +1,23 @@
 package model.game;
 
+import model.card.FloodCard;
+
+
+
 public class FloodDeck extends Deck {
-    private static final int NB_TREASURE_CARD = 5;
-    private static final int NB_WATERS_RISE   = 3;
-    private static final int NB_HELICOP_CARD  = 3;
-    private static final int NB_SANDBAGS_CARD = 2;
     
-    
-    public FloodDeck() {
-        super();
+    public FloodDeck(Island island) {
+        super(island);
     }
     
     
     @Override
-    public void initDeck() {
-        
+    public void initDeck(Island island) {
+        for (Tile[] i : island.getGrid()) {
+            for (Tile tile : i) {
+                addCardToDeck(new FloodCard(tile));
+            }
+        }
     }
     
 }

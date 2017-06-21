@@ -22,7 +22,7 @@ public class Diver extends Adventurer {
     }
     
     
-    private ArrayList<Tile> getReachableTiles(Tile tile, ArrayList<Tile> tilesAlreadyRead) {
+    private ArrayList<Tile> getReachableTiles(Tile tile, ArrayList<Tile> tilesAlreadyRead, boolean deep) {
         
         Island island = getPlayer().getCurrentGame().getIsland();
         Coords coords = tile.getCoords();
@@ -40,7 +40,9 @@ public class Diver extends Adventurer {
                     tilesAlreadyRead.add(tileTmp);
                 } else if (tileTmp != null && tileTmp.getState().equals(TileState.SINKED)) {
                     tilesAlreadyRead.add(tileTmp);
-                    getReachableTiles(tileTmp, tilesAlreadyRead);
+                    if (deep) {
+                        getReachableTiles(tileTmp, tilesAlreadyRead, deep);
+                    }
                 }
             }
             j--;
@@ -54,7 +56,7 @@ public class Diver extends Adventurer {
         ArrayList<Tile> reachableTiles = new ArrayList<>();
         Tile current = getCurrentTile();
         
-        reachableTiles = getReachableTiles(current, reachableTiles);
+        reachableTiles = getReachableTiles(current, reachableTiles, true);
         
         Tile tile;
         for (int i = 0; i < reachableTiles.size(); i++) {
@@ -86,6 +88,7 @@ public class Diver extends Adventurer {
             tileTmp = island.getTile(coords.getCol() + effI, coords.getRow() + effJ);
             if ((tileTmp != null)) {
                 reachable.add(tileTmp);
+                
             }
             j--;
         } // end for
@@ -93,30 +96,55 @@ public class Diver extends Adventurer {
     }
     
     
+    private ArrayList<Tile> getReachableTiles(ArrayList<Tile> tilesToReach, ArrayList<Tile> tilesAlreadyRead,
+            int deep) {
+        ArrayList<Tile> children = new ArrayList<>();
+        for (int d = 1; d < deep; d++) {
+            for (Tile tToReach : tilesToReach) {
+                Island island = getPlayer().getCurrentGame().getIsland();
+                Coords coords = tToReach.getCoords();
+                
+                int j = 2;
+                int effI;
+                int effJ;
+                Tile tileTmp;
+                for (int i = -1; i <= 2; i += 1) {
+                    effI = i % 2;
+                    effJ = j % 2;
+                    tileTmp = island.getTile(coords.getCol() + effI, coords.getRow() + effJ);
+                    if (!tilesAlreadyRead.contains(tileTmp)) { // if the tile is not already treated
+                        if (tileTmp != null) {
+                            tilesAlreadyRead.add(tileTmp);
+                            children.add(tileTmp);
+                        }
+                    }
+                    j--;
+                }
+            }
+            tilesToReach.clear();
+            tilesToReach.addAll(children);
+            children.clear();
+        }
+        return tilesAlreadyRead;
+    }
+    
+    
     @Override
     public ArrayList<Tile> getReachableTiles(int nbHit) {
-        int i = 1;
-        ArrayList<Tile> reachable = new ArrayList<>();
-        ArrayList<Tile> reachableTmp = new ArrayList<>();
-        reachable = getReachableTiles(getCurrentTile());
-        while (i <= nbHit) {
-            for (int j = 0; j < reachable.size(); j++) {
-                reachableTmp.addAll(getReachableTiles(reachable.get(j)));
-                reachable.remove(j);
-                j--; // when a tile have been removed i must be decrement to treat all the tiles because of the list offset
-            }
-        }
-        i++;
-        reachable.addAll(reachableTmp);
+        ArrayList<Tile> reachableAll = new ArrayList<>(getReachableTiles(getCurrentTile()));
+        ArrayList<Tile> reachable = new ArrayList<>(getReachableTiles(getCurrentTile()));
+        
+        getReachableTiles(reachable, reachableAll, nbHit);
+        
         Tile tile;
-        for (int j = 0; j < reachable.size(); j++) {
-            tile = reachable.get(j);
+        for (int j = 0; j < reachableAll.size(); j++) {
+            tile = reachableAll.get(j);
             if (tile.getState().equals(TileState.SINKED) || getCurrentTile().equals(tile)) {
-                reachable.remove(j);
-                j--; // when a tile have been removed i must be decrement to treat all the tiles because of the list offset
+                reachableAll.remove(j);
+                j--;
             }
         }
-        return reachable;
+        return reachableAll;
     }
     
     

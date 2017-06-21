@@ -12,6 +12,7 @@ import java.util.Observer;
 import javax.swing.*;
 
 import model.adventurers.AdventurerType;
+import model.card.CardType;
 import model.game.Coords;
 import model.game.Island;
 import model.game.Site;
@@ -23,6 +24,7 @@ import util.message.InGameAction;
 import util.message.InGameMessage;
 import util.message.MainAction;
 import util.message.MainMessage;
+import view.Cards.DeckComponant;
 
 
 
@@ -59,6 +61,11 @@ public class GameView extends JFrame {
     private PawnComponant currentP;
     private JPanel        info;
     
+    // Decks
+    private DeckComponant treasureDeck;
+    private DeckComponant floodDeck;
+    private JPanel        decksPane;
+    
     private JButton endTurnBtn;
     private JButton moveBtn;
     private JButton shoreUpBtn;
@@ -71,6 +78,7 @@ public class GameView extends JFrame {
         super();
         
         initComponents();
+        initDecks();
         initListeners();
         setScreen();
         
@@ -132,6 +140,25 @@ public class GameView extends JFrame {
         newGame.setActionCommand(NEW_GAME);
         quit.setActionCommand(QUIT);
         
+        setJMenuBar(bar);
+        bar.add(option);
+        option.add(newGame);
+        option.add(gameOpt);
+        gameOpt.add(board);
+        board.add(defaultB);
+        board.add(hardTestB);
+        grpBoard.add(defaultB);
+        grpBoard.add(hardTestB);
+        defaultB.setSelected(true);
+        gameOpt.add(playerSelect);
+        playerSelect.add(randomP);
+        grpPlayer.add(randomP);
+        randomP.setSelected(true);
+        option.add(quit);
+        
+        newGame.setActionCommand(NEW_GAME);
+        quit.setActionCommand(QUIT);
+        
         getContentPane().add(mainPane);
         mainPane.add(eastPane, BorderLayout.EAST);
         mainPane.add(messages, BorderLayout.NORTH);
@@ -155,6 +182,20 @@ public class GameView extends JFrame {
         info.add(infoPlayerC);
         info.add(currentP);
         
+    }
+    
+    
+    /***
+     * @author nihil
+     */
+    private void initDecks() {
+        treasureDeck = new DeckComponant(CardType.TREASURE_CARD);
+        floodDeck = new DeckComponant(CardType.FLOOD_CARD);
+        decksPane = new JPanel(new GridLayout(2, 1));
+        
+        westPane.add(decksPane, BorderLayout.CENTER);
+        decksPane.add(treasureDeck);
+        decksPane.add(floodDeck);
     }
     
     
@@ -238,6 +279,9 @@ public class GameView extends JFrame {
         useCapacityBtn.setEnabled(act.contains(InGameAction.USE_CAPACITY));
         moveBtn.setEnabled(act.contains(InGameAction.MOVE));
         shoreUpBtn.setEnabled(act.contains(InGameAction.SHORE_UP_TILE));
+        endTurnBtn.setEnabled(act.contains(InGameAction.END_TURN));
+        treasureDeck.setEnabled(act.contains(InGameAction.DRAW_TREASURE));
+        floodDeck.setEnabled(act.contains(InGameAction.DRAW_FLOOD));
     }
     
     
@@ -380,7 +424,6 @@ public class GameView extends JFrame {
                 notifyObservers(new MainMessage(MainAction.BEGIN_GAME, getBoard()));
                 clearChanged();
                 break;
-            
             default:
                 break;
             }// end switch
@@ -483,5 +526,7 @@ public class GameView extends JFrame {
      */
     public void addObs(Observer observer) {
         listObs.addObserver(observer);
+        treasureDeck.addObs(observer);
+        floodDeck.addObs(observer);
     }
 }

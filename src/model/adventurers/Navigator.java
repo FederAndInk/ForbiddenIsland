@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import model.game.Tile;
 import model.player.Player;
 import util.exception.InadequateUseOfCapacityException;
+import util.exception.MoveException;
 import util.exception.NavigatorCannotMoveHimselfException;
 import util.message.InGameAction;
 
@@ -24,18 +25,28 @@ public class Navigator extends Adventurer {
     
     
     @Override
-    public void useCapacity(Tile destTile, Object applied) throws NavigatorCannotMoveHimselfException {
+    public void useCapacity(Tile destTile, Object applied) throws NavigatorCannotMoveHimselfException, MoveException {
         if (applied instanceof Player) {
             Player player = (Player) applied;
             ArrayList<Tile> reachable = new ArrayList<>();
             switch (player.getCurrentAdventurer().getADVENTURER_TYPE()) {
             case DIVER:
                 reachable = getReachableTiles(2);
+                if (reachable.contains(destTile)) {
+                    player.getCurrentAdventurer().setCurrentTile(destTile);
+                } else {
+                    throw new MoveException(destTile);
+                }
                 break;
             case NAVIGATOR:
                 throw new NavigatorCannotMoveHimselfException(player.getCurrentAdventurer().getADVENTURER_TYPE());
             default:
                 reachable = getReachableTiles(2);
+                if (reachable.contains(destTile)) {
+                    player.getCurrentAdventurer().setCurrentTile(destTile);
+                } else {
+                    throw new MoveException(destTile);
+                }
                 break;
             }
         }

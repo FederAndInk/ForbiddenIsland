@@ -13,6 +13,7 @@ import java.util.Observer;
 import javax.swing.*;
 
 import model.adventurers.AdventurerType;
+import model.card.CardType;
 import model.game.Coords;
 import model.game.Island;
 import model.game.Site;
@@ -24,6 +25,7 @@ import util.message.InGameAction;
 import util.message.InGameMessage;
 import util.message.MainAction;
 import util.message.MainMessage;
+import view.Cards.DeckComponant;
 import view.player.PlayerInfo;
 import view.player.playerInventory;
 
@@ -66,6 +68,11 @@ public class GameView extends JFrame {
     private ArrayList<PlayerInfo> pawns;
     private playerInventory       inventory;
     
+    // Decks
+    private DeckComponant treasureDeck;
+    private DeckComponant floodDeck;
+    private JPanel        decksPane;
+    
     private JPanel flood;
     
     private JButton endTurnBtn;
@@ -80,6 +87,7 @@ public class GameView extends JFrame {
         super();
         pawns = new ArrayList<>();
         initComponents();
+        initDecks();
         setScreen();
         Parameters.appSize = getSize();
         
@@ -129,6 +137,25 @@ public class GameView extends JFrame {
         messages = new JTextPane();
         infoPlayerC = new JLabel("Joueur ");
         info = new JPanel(new GridLayout(2, 1));
+        
+        setJMenuBar(bar);
+        bar.add(option);
+        option.add(newGame);
+        option.add(gameOpt);
+        gameOpt.add(board);
+        board.add(defaultB);
+        board.add(hardTestB);
+        grpBoard.add(defaultB);
+        grpBoard.add(hardTestB);
+        defaultB.setSelected(true);
+        gameOpt.add(playerSelect);
+        playerSelect.add(randomP);
+        grpPlayer.add(randomP);
+        randomP.setSelected(true);
+        option.add(quit);
+        
+        newGame.setActionCommand(NEW_GAME);
+        quit.setActionCommand(QUIT);
         
         setJMenuBar(bar);
         bar.add(option);
@@ -215,6 +242,20 @@ public class GameView extends JFrame {
         paneDroit.add(actionCommands);
         paneDroit.add(flood);
         //
+    }
+    
+    
+    /***
+     * @author nihil
+     */
+    private void initDecks() {
+        treasureDeck = new DeckComponant(CardType.TREASURE_CARD);
+        floodDeck = new DeckComponant(CardType.FLOOD_CARD);
+        decksPane = new JPanel(new GridLayout(2, 1));
+        
+        westPane.add(decksPane, BorderLayout.CENTER);
+        decksPane.add(treasureDeck);
+        decksPane.add(floodDeck);
     }
     
     
@@ -315,6 +356,9 @@ public class GameView extends JFrame {
         useCapacityBtn.setEnabled(act.contains(InGameAction.USE_CAPACITY));
         moveBtn.setEnabled(act.contains(InGameAction.MOVE));
         shoreUpBtn.setEnabled(act.contains(InGameAction.SHORE_UP_TILE));
+        endTurnBtn.setEnabled(act.contains(InGameAction.END_TURN));
+        treasureDeck.setEnabled(act.contains(InGameAction.DRAW_TREASURE));
+        floodDeck.setEnabled(act.contains(InGameAction.DRAW_FLOOD));
     }
     
     
@@ -378,6 +422,26 @@ public class GameView extends JFrame {
     
     
     /**
+     * @author nihil
+     *
+     * @param toggleSelectionPlayer
+     * @param adventurer_TYPE
+     */
+    public void setSelectPawn(boolean selected, AdventurerType advType, Coords location) {
+        ((TilePanel) getTileG(location)).getPlayerPanel().setSelected(selected, advType);
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     */
+    public void setActivePawn(boolean selected, AdventurerType advType, Coords location) {
+        ((TilePanel) getTileG(location)).getPlayerPanel().setEnable(selected, advType);
+    }
+    
+    
+    /**
      * to set the board of the view (create components ...)
      * 
      * @author nihil
@@ -437,7 +501,6 @@ public class GameView extends JFrame {
                 notifyObservers(new MainMessage(MainAction.BEGIN_GAME, getBoard()));
                 clearChanged();
                 break;
-            
             default:
                 break;
             }// end switch
@@ -540,5 +603,7 @@ public class GameView extends JFrame {
      */
     public void addObs(Observer observer) {
         listObs.addObserver(observer);
+        treasureDeck.addObs(observer);
+        floodDeck.addObs(observer);
     }
 }

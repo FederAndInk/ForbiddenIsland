@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package util;
 
 import java.awt.Dimension;
@@ -17,25 +12,27 @@ import java.util.Calendar;
 
 
 
-/**
- *
- * @author Eric
- */
 public class Parameters {
     
     // ====================================================================================
     // Paramètres NF
-    public static final Boolean LOGS      = true;   // Afficher des traces par System.out.println()
-    public static final boolean SHORT_LOG = true;
-    public static final Boolean ALEAS     = true;   // Attribuer les aventuriers aléatoirement ou non, mélanger les défausses et les pioches
-    public static Lang          LANG      = Lang.EN;
-    public static final boolean debug     = true;
+    public static final Boolean LOGS        = true;
+    public static final boolean SHORT_LOG   = true;
+    public static Lang          LANG        = Lang.EN;
+    public static final boolean debug       = true;
+    /**
+     * when an action is done with debugMode
+     */
+    public static boolean       debugAction = false;
     // Fonts
     public static Font DEFAULT_FONT = initFont();
     // screen
     public static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     public static Dimension appSize;
     public static Boolean   fullscreen = true;
+    // Game settings
+    public static int NB_CARDS = 2;
+    
     // path
     public static final String RESOURCES  = "./resources/";
     public static final String CARDS      = RESOURCES + "cards/";

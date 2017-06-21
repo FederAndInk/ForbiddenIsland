@@ -3,13 +3,15 @@
  */
 package view.board;
 
-import java.awt.Component;
+import java.awt.FlowLayout;
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Observer;
 
 import javax.swing.JPanel;
 
 import model.adventurers.AdventurerType;
+import util.FIGraphics;
 import util.LogType;
 import util.Parameters;
 
@@ -21,6 +23,7 @@ import util.Parameters;
  */
 public class PlayerPanel extends JPanel {
     private ArrayList<AdventurerType> pawns;
+    private ArrayList<Observer>       obs;
     
     
     /**
@@ -29,9 +32,11 @@ public class PlayerPanel extends JPanel {
      */
     public PlayerPanel() {
         super();
+        setLayout(new FlowLayout(FlowLayout.CENTER, 20, -1));
         // to see the background
         setOpaque(false);
         pawns = new ArrayList<>();
+        obs = new ArrayList<>();
         init();
     }
     
@@ -69,13 +74,13 @@ public class PlayerPanel extends JPanel {
     
     /**
      * @author nihil
-     * @param size
+     * @param pawn
      *
      */
     protected void addPawn(AdventurerType pawn) {
         Parameters.printLog("Add " + pawn + " n°" + pawns.size() + " to " + ((TilePanel) getParent()).getPos(),
                 LogType.INFO);
-        PawnComponant pComponant = new PawnComponant(pawn);
+        PawnComponant pComponant = FIGraphics.getPawn(pawn);
         add(pComponant);
         pawns.add(pawn);
         doLayout();
@@ -95,14 +100,40 @@ public class PlayerPanel extends JPanel {
         } else {
             Parameters.printLog("Remove " + pawn + " from " + ((TilePanel) getParent()).getPos(), LogType.INFO);
             pawns.remove(pawn);
-            for (Component comp : getComponents()) {
-                PawnComponant paw = (PawnComponant) comp;
-                if (paw.getPawn().equals(pawn)) {
-                    remove(paw);
-                } // end if
-            } // end for
+            remove(FIGraphics.getPawn(pawn));
         }
         doLayout();
     }
     
+    
+    /**
+     * @author nihil
+     *
+     * @param selected
+     * @param advType
+     */
+    protected void setEnable(boolean enable, AdventurerType advType) {
+        FIGraphics.getPawn(advType).setEnabled(enable);
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     * @param selected
+     * @param advType
+     */
+    public void setSelected(boolean selected, AdventurerType advType) {
+        FIGraphics.getPawn(advType).setSelected(selected);
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     * @param observer
+     */
+    public void addObs(Observer observer) {
+        obs.add(observer);
+    }
 }

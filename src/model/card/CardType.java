@@ -3,6 +3,10 @@
  */
 package model.card;
 
+import util.Parameters;
+
+
+
 /**
  * @author nihil
  *
@@ -12,15 +16,15 @@ public enum CardType {
     FLOOD_CARD(getSubFlood(), false),
     HELICOPTER_CARD(getSubTreasures(), true),
     SANDBAG_CARD(getSubTreasures(), true),
-    WATERSRISE_CARD(getSubFlood(), false);
+    WATERSRISE_CARD(getSubTreasures(), false);
     /**
      * @category Treasures
      */
-    private static final String SUB_TREASURES = "Treasure_Deck";
+    private static final String SUB_TREASURES = "Treasure Deck";
     /**
      * @category Floods
      */
-    private static final String SUB_FLOOD     = "Flood_Deck";
+    private static final String SUB_FLOOD     = "Flood Deck";
     private String              subType;
     private boolean             usable;
     
@@ -28,6 +32,25 @@ public enum CardType {
     private CardType(String subType, boolean usable) {
         this.subType = subType;
         this.usable = usable;
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     */
+    public String getBack() {
+        return Parameters.CARDS + (subType.equals(SUB_FLOOD) ? "Flood_" : "") + "Card_Back@2x.png";
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     * @return
+     */
+    public String getBackSelect() {
+        return Parameters.CARDS + (subType.equals(SUB_FLOOD) ? "Flood_" : "") + "Card_BackSelect@2x.png";
     }
     
     

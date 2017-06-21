@@ -4,7 +4,7 @@
 package util.exception;
 
 import model.adventurers.AdventurerType;
-
+import model.card.Card;
 
 
 /**
@@ -19,7 +19,7 @@ public class CardException extends ForbiddenIslandException {
      * @author nihil
      *
      */
-    public CardException(int noCard, AdventurerType adv) {
-        super("You are trying to add a " + noCard + "th card to " + adv + " inventory", ExceptionType.TOO_MANY_CARD);
+    public CardException(Card noCard, AdventurerType adv) {
+        super("You are trying to add the " + noCard + " card to " + adv + " inventory", ExceptionType.TOO_MANY_CARD);
     }
 }

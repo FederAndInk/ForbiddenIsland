@@ -8,6 +8,7 @@ import org.w3c.dom.events.EventException;
 
 import model.card.Card;
 import model.player.Player;
+import util.exception.CardException;
 
 
 
@@ -38,7 +39,7 @@ public abstract class Deck {
     private void deckGestion() throws EventException {
         if (deck.isEmpty()) {
             // TODO: send message to controller
-            deck.addAll(discard);
+            shuffleDeck();
         } // end if
         if (deck.isEmpty() && discard.isEmpty()) {
             throw new EventException((short) 0, "Not enough card in both discard and deck");
@@ -46,8 +47,15 @@ public abstract class Deck {
     }// end deckGestion
     
     
-    public Card draw(Player p) {
+    
+    public void shuffleDeck() {
+        deck.addAll(discard);
+        Collections.shuffle(deck);
+    }
+    
+    public Card draw(Player p) throws CardException {
         Card c = deck.pop();
+        p.getCurrentAdventurer().getInventory().addCard(c);
         deckGestion();
         return c;
     }// end draw

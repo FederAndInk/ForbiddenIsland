@@ -1,6 +1,8 @@
 package model.adventurers;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import model.card.Card;
 import model.card.TreasureCard;
@@ -70,7 +72,11 @@ public abstract class Adventurer {
     
     public void shoreUp(Tile tile) throws ActionException, TileException {
         if (getActionPoints() >= 1 && getShoreUpTiles().contains(tile)) {
-            tile.setState(TileState.DRIED);
+            try {
+                tile.setState(TileState.DRIED);
+            } catch (EndGameException ex) {
+                
+            }
             finishAction();
         } else {
             if (getActionPoints() < 1) {
@@ -369,7 +375,8 @@ public abstract class Adventurer {
     public AdventurerType getADVENTURER_TYPE() {
         return ADVENTURER_TYPE;
     }
-  
+    
+    
     public void giveCard(TreasureCard card, Player player) {
         if (card.getTreasureType().equals(getCurrentTile().getSite().geTreasureType())) {
             if (player.getCurrentAdventurer().getCurrentTile().equals(getCurrentTile())) {

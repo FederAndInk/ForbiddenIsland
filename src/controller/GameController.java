@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JLayeredPane;
 
@@ -279,6 +281,8 @@ public class GameController implements Observer {
             for (Player player : currentGame.getPlayersOnTile(tile)) {
                 setSwim(player);
             } // end for
+        } catch (EndGameException ex) {
+            // TODO set action to end game
         }
         defaultAction();
     }

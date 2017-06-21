@@ -58,6 +58,43 @@ public class Island {
     }
     
     
+    public Tile[] tileTreasure(TreasureType treasure) {
+        Tile[] tiles = new Tile[2];
+        int i = 0;
+        for (Tile[] tiles1 : getGrid()) {
+            for (Tile tile : tiles1) {
+                if (tile.getSite().geTreasureType() == treasure) {
+                    tiles[i] = tile;
+                    i++;
+                }
+            }
+        }
+        return tiles;
+    }
+    
+    
+    public boolean isTreasureAllSinked(TreasureType treasure) {
+        Tile[] tiles = tileTreasure(treasure);
+        int nbSinked = 0;
+        for (Tile tile : tiles) {
+            if (!tile.notSinked()) {
+                nbSinked = nbSinked + 1;
+            }
+        }
+        if (nbSinked == 2) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    
+    public boolean isHeliportSinked() {
+        Tile tile = getTile(Site.FOOLS_LANDING);
+        return tile.getState() == TileState.SINKED;
+    }
+    
+    
     /**
      * @return the grid
      */

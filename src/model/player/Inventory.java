@@ -42,7 +42,7 @@ public class Inventory {
      */
     public boolean hasCardUsable() {
         for (Card card : cards) {
-            if (card.getType().isUsable()) {
+            if (card.getType().isActivable()) {
                 return true;
             } // end if
         } // end for

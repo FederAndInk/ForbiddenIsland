@@ -8,11 +8,11 @@ package model.card;
  *
  */
 public enum CardType {
-    TREASURE_CARD(getSubTreasures(), false),
-    FLOOD_CARD(getSubFlood(), false),
-    HELICOPTER_CARD(getSubTreasures(), true),
-    SANDBAG_CARD(getSubTreasures(), true),
-    WATERSRISE_CARD(getSubFlood(), false);
+    TREASURE_CARD(getSubTreasures(), false, true),
+    FLOOD_CARD(getSubFlood(), true, false),
+    HELICOPTER_CARD(getSubTreasures(), true, true),
+    SANDBAG_CARD(getSubTreasures(), true, true),
+    WATERSRISE_CARD(getSubFlood(), false, false);
     /**
      * @category Treasures
      */
@@ -22,20 +22,22 @@ public enum CardType {
      */
     private static final String SUB_FLOOD     = "Flood_Deck";
     private String              subType;
-    private boolean             usable;
+    private boolean             activable;
+    private boolean             canAddToInventory;
     
     
-    private CardType(String subType, boolean usable) {
+    private CardType(String subType, boolean usable, boolean canAdd) {
         this.subType = subType;
-        this.usable = usable;
+        this.activable = usable;
+        this.canAddToInventory = canAdd;
     }
     
     
     /**
-     * @return the usable
+     * @return the activable
      */
-    public boolean isUsable() {
-        return usable;
+    public boolean isActivable() {
+        return activable;
     }
     
     
@@ -60,5 +62,12 @@ public enum CardType {
      */
     public static String getSubTreasures() {
         return SUB_TREASURES;
+    }
+
+    /**
+     * @return the canAddToInventory
+     */
+    public boolean isCanAddToInventory() {
+        return canAddToInventory;
     }
 }

@@ -52,7 +52,7 @@ public abstract class Deck {
     }
     
     
-    public Card draw(Player p) {
+    public Card draw() {
         Card c = deck.pop();
         deckGestion();
         return c;

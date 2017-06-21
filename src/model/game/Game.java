@@ -4,12 +4,16 @@ import java.util.*;
 
 import model.adventurers.Adventurer;
 import model.adventurers.AdventurerType;
+import model.card.Card;
+import model.card.CardType;
 import model.player.Player;
 import util.BoardType;
 import util.LogType;
 import util.Parameters;
 import util.exception.EndGameException;
+import util.exception.MoveException;
 import util.exception.PlayerOutOfIslandException;
+import util.exception.TileException;
 import util.message.InGameAction;
 
 
@@ -71,8 +75,25 @@ public class Game {
         Collections.shuffle(players);
         setCurrentPlayer(players.get(0));
         setCurrentAction(InGameAction.MOVE);
+        initCards();
         started = true;
     }// end name
+    
+    
+    public void initCards() {
+        for (Player player : players) {
+            for (int i = 0; i < Parameters.NB_CARD_BEGIN; i++) {
+                Card card = getTreasureDeck().draw();
+                while (card.getType() == CardType.WATERSRISE_CARD) {
+                    getTreasureDeck().discard(card);
+                    getTreasureDeck().shuffleDeck();
+                    card = getTreasureDeck().draw();
+                }
+                player.getCurrentAdventurer().getInventory().addCard(card);
+            }
+        }
+        
+    }
     
     
     /**
@@ -160,12 +181,56 @@ public class Game {
     }
     
     
-    public void setTileState(Tile tile, TileState state) throws PlayerOutOfIslandException {
+    /**
+     * 
+     * @param tile
+     * @param state
+     * @throws PlayerOutOfIslandException
+     * if a player get drown
+     * @throws EndGameException
+     */
+    public void setTileState(Tile tile, TileState state) throws PlayerOutOfIslandException, EndGameException {
         tile.setState(state);
         if (state.equals(TileState.SINKED) && !getPlayersOnTile(tile).isEmpty()) {
             throw new PlayerOutOfIslandException();
         } // end if
+        verifyTreasure();
     }// end setTileState
+    
+    
+    public void verifyTreasure() throws EndGameException {
+        if (!getTreasures().isEmpty()) {
+            for (Treasure treasure : getTreasures()) {
+                if (getIsland().isTreasureAllSinked((treasure.getName()))) {
+                    throw new EndGameException();
+                }
+            }
+        }
+    }
+    
+    
+    /**
+     *
+     * @param type
+     * = {@link CardType.TREASURE_CARD} for {@link TreasureDeck} <br>
+     * or {@link CardType.FLOOD_CARD} for {@link FloodDeck}
+     */
+    public void drawEndTurnCard(CardType type)
+            throws EndGameException, IllegalAccessException, MoveException, TileException {
+        Card card;
+        if (type == TreasureDeck.getType()) {
+            card = getTreasureDeck().draw();
+            if (card.getType().isCanAddToInventory()) {
+                getCurrentPlayer().getCurrentAdventurer().getInventory().addCard(card);
+            } else {
+                card.applyAction(null, this);
+            }
+        } else {
+            card = getFloodDeck().draw();
+            card.applyAction(null, this);
+            verifyTreasure();
+        }
+    }
     
     
     /**

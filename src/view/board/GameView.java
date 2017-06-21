@@ -280,6 +280,8 @@ public class GameView extends JFrame {
         moveBtn.setEnabled(act.contains(InGameAction.MOVE));
         shoreUpBtn.setEnabled(act.contains(InGameAction.SHORE_UP_TILE));
         endTurnBtn.setEnabled(act.contains(InGameAction.END_TURN));
+        treasureDeck.setEnabled(act.contains(InGameAction.DRAW_TREASURE));
+        floodDeck.setEnabled(act.contains(InGameAction.DRAW_FLOOD));
     }
     
     
@@ -524,5 +526,7 @@ public class GameView extends JFrame {
      */
     public void addObs(Observer observer) {
         listObs.addObserver(observer);
+        treasureDeck.addObs(observer);
+        floodDeck.addObs(observer);
     }
 }

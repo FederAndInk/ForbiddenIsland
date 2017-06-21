@@ -45,6 +45,16 @@ public enum CardType {
     
     
     /**
+     * @author nihil
+     *
+     * @return
+     */
+    public String getBackSelect() {
+        return Parameters.CARDS + (subType.equals(SUB_FLOOD) ? "Flood_" : "") + "Card_BackSelect@2x.png";
+    }
+    
+    
+    /**
      * @return the usable
      */
     public boolean isUsable() {

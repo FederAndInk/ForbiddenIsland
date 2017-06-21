@@ -4,6 +4,7 @@
 package view.Cards;
 
 import java.awt.GridLayout;
+import java.util.Observer;
 
 import javax.swing.JPanel;
 
@@ -33,6 +34,16 @@ public class DeckComponant extends JPanel {
     
     
     /**
+     * @see javax.swing.JComponent#setEnabled(boolean)
+     */
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        cards.setEnabled(enabled);
+    }
+    
+    
+    /**
      * @author nihil
      *
      */
@@ -47,6 +58,16 @@ public class DeckComponant extends JPanel {
             add(discard);
             add(cards);
         } // end if
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     * @param observer
+     */
+    public void addObs(Observer observer) {
+        cards.addObs(observer);
     }
     
 }

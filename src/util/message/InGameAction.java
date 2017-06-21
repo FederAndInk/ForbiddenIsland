@@ -40,6 +40,7 @@ public enum InGameAction {
     USE_CARD_SAND_BAG,
     USE_CARD_HELICOPTER,
     DISCARD,
+    DRAW,
     DRAW_FLOOD,
     DRAW_TREASURE,
     /**

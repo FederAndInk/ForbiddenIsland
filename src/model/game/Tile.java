@@ -21,7 +21,6 @@ public class Tile {
         try {
             setState(TileState.DRIED);
         } catch (EndGameException ex) {
-            
         }
     }
     

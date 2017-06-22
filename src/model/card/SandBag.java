@@ -1,8 +1,6 @@
 package model.card;
 
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import model.game.Island;
 import model.game.Tile;
@@ -44,7 +42,6 @@ public class SandBag extends Card {
             try {
                 destTile.setState(TileState.DRIED);
             } catch (EndGameException ex) {
-                
             }
         } else {
             throw new TileException(destTile, TileState.DRIED);

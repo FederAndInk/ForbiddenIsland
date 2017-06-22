@@ -6,6 +6,7 @@ import model.game.Island;
 import model.game.Tile;
 import util.exception.EndGameException;
 import util.exception.MoveException;
+import util.exception.PlayerOutOfIslandException;
 import util.exception.TileException;
 
 
@@ -29,7 +30,7 @@ public abstract class Card {
     
     
     public void applyAction(Tile destTile, Object applied)
-            throws IllegalAccessException, EndGameException, MoveException, TileException {
+            throws IllegalAccessException, EndGameException, MoveException, TileException, PlayerOutOfIslandException {
         throw new IllegalAccessException();
     }
     

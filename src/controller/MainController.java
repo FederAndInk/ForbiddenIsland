@@ -136,7 +136,6 @@ public class MainController implements Observer, Serializable {
                 }
                 break;
             case SELECT_ADVENTURER:
-                Parameters.printLog("YOLOOOOOOOOOOO", LogType.INFO);
                 if (m.getContent() == null) {
                     Parameters.printLog("YOLOOOOOOOOOOO", LogType.INFO);
                     view.getMainMenu().getjeu().setBaseColor();

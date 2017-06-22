@@ -5,6 +5,7 @@ import model.game.Site;
 import model.game.Tile;
 import model.game.TileState;
 import util.exception.EndGameException;
+import util.exception.PlayerOutOfIslandException;
 import util.exception.TileException;
 
 
@@ -35,29 +36,32 @@ public class FloodCard extends Card {
      * 
      * @param applied
      * = {@link Game}
+     * @throws PlayerOutOfIslandException
      * @see model.card.Card#applyAction(model.game.Tile, java.lang.Object)
      */
     @Override
-    public void applyAction(Tile destTile, Object applied) throws TileException, EndGameException {
-        switch (appliedTile.getState()) {
-        case DRIED:
-            if (applied instanceof Game) {
-                Game game = (Game) applied;
+    public void applyAction(Tile destTile, Object applied)
+            throws TileException, EndGameException, PlayerOutOfIslandException {
+        if (applied instanceof Game) {
+            Game game = (Game) applied;
+            switch (appliedTile.getState()) {
+            case DRIED:
                 appliedTile.setState(TileState.FLOODED);
                 game.getFloodDeck().discard(this);
                 game.getFloodDeck().discard(this);
-            } else {
-                throw new IllegalArgumentException("Not a game");
-            } // end if
-            break;
-        
-        case FLOODED:
-            appliedTile.setState(TileState.SINKED);
-            break;
-        
-        case SINKED:
-            throw new TileException(appliedTile, TileState.SINKED);
-        }
+                break;
+            
+            case FLOODED:
+                appliedTile.setState(TileState.SINKED);
+                game.verifyDrawn(appliedTile);
+                break;
+            
+            case SINKED:
+                throw new TileException(appliedTile, TileState.SINKED);
+            }
+        } else {
+            throw new IllegalArgumentException("Not a game");
+        } // end if
     }
     
     

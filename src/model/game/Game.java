@@ -240,11 +240,21 @@ public class Game {
      */
     public void setTileState(Tile tile, TileState state) throws PlayerOutOfIslandException, EndGameException {
         tile.setState(state);
-        if (state.equals(TileState.SINKED) && !getPlayersOnTile(tile).isEmpty()) {
-            throw new PlayerOutOfIslandException();
-        } // end if
+        verifyDrawn(tile);
         verifyTreasure();
     }// end setTileState
+    
+    
+    /**
+     * @author nihil
+     * @throws PlayerOutOfIslandException
+     *
+     */
+    public void verifyDrawn(Tile tile) throws PlayerOutOfIslandException {
+        if (tile.getState().equals(TileState.SINKED) && !getPlayersOnTile(tile).isEmpty()) {
+            throw new PlayerOutOfIslandException(tile);
+        } // end if
+    }
     
     
     public void verifyTreasure() throws EndGameException {
@@ -266,9 +276,10 @@ public class Game {
      * or {@link CardType.FLOOD_CARD} for {@link FloodDeck}
      * @return
      * @throws CardException
+     * @throws PlayerOutOfIslandException
      */
-    public Card drawEndTurnCard(InGameAction type)
-            throws EndGameException, IllegalAccessException, MoveException, TileException, CardException {
+    public Card drawEndTurnCard(InGameAction type) throws EndGameException, IllegalAccessException, MoveException,
+            TileException, CardException, PlayerOutOfIslandException {
         Card card;
         // For actions
         if (cardsDrawn < getNbCards(InGameAction.DRAW_TREASURE)) {

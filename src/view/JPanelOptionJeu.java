@@ -5,26 +5,10 @@ import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.*;
 
-import javax.swing.AbstractButton;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JSlider;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
-import javax.swing.event.CaretEvent;
+import javax.swing.*;
 import javax.swing.event.CaretListener;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import model.adventurers.AdventurerType;
 import model.game.SeaLevel;
@@ -86,6 +70,7 @@ public class JPanelOptionJeu extends JPanel {
      */
     public JPanelOptionJeu(JPanelMenu card) {
         this.card = card;
+        setSeaLevel(SeaLevel.LEVEL1);
         
         initComponent();
         dynamicPlayer();
@@ -223,29 +208,25 @@ public class JPanelOptionJeu extends JPanel {
         trois.addActionListener(listener);
         quatre.addActionListener(listener);
         
-        sealvlbar.addChangeListener(new ChangeListener() {
-            
-            @Override
-            public void stateChanged(ChangeEvent arg0) {
-                switch (sealvlbar.getValue()) {
-                case 1:
-                    setSeaLevel(SeaLevel.LEVEL1);
-                    break;
-                case 2:
-                    setSeaLevel(SeaLevel.LEVEL2);
-                    break;
-                case 3:
-                    setSeaLevel(SeaLevel.LEVEL3);
-                    break;
-                case 4:
-                    setSeaLevel(SeaLevel.LEVEL4);
-                    break;
-                default:
-                    setSeaLevel(SeaLevel.LEVEL1);
-                    break;
-                }
-                Parameters.printLog(getSeaLevel(), LogType.INFO);
+        sealvlbar.addChangeListener(arg0 -> {
+            switch (sealvlbar.getValue()) {
+            case 1:
+                setSeaLevel(SeaLevel.LEVEL1);
+                break;
+            case 2:
+                setSeaLevel(SeaLevel.LEVEL2);
+                break;
+            case 3:
+                setSeaLevel(SeaLevel.LEVEL3);
+                break;
+            case 4:
+                setSeaLevel(SeaLevel.LEVEL4);
+                break;
+            default:
+                setSeaLevel(SeaLevel.LEVEL1);
+                break;
             }
+            Parameters.printLog(getSeaLevel(), LogType.INFO);
         });
     }
     
@@ -267,42 +248,24 @@ public class JPanelOptionJeu extends JPanel {
      * 
      */
     public void listener() {
-        selectionMap.addActionListener(new ActionListener() {
-            
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // toutdoux frame selection map a faire
-            }
+        selectionMap.addActionListener(e -> {
+            // toutdoux frame selection map a faire
         });
         
-        annuler.addActionListener(new ActionListener() {
-            
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ((CardLayout) (card.getCard().getLayout())).show(card.getCard(), JPanelMenu.MAIN);
-            }
-        });
+        annuler.addActionListener(
+                e -> ((CardLayout) (card.getCard().getLayout())).show(card.getCard(), JPanelMenu.MAIN));
         
-        CaretListener champtextevide = new CaretListener() {
-            
-            @Override
-            public void caretUpdate(CaretEvent e) {
-                if (((JTextField) e.getSource()).getText().isEmpty()) {
-                    Runnable run = new Runnable() {
-                        public void run() {
-                            jouer.setEnabled(false);
-                        }
-                    };
-                    SwingUtilities.invokeLater(run);
-                } else {
-                    Runnable run = new Runnable() {
-                        public void run() {
-                            jouer.setEnabled(true);
-                        }
-                    };
-                    SwingUtilities.invokeLater(run);
-                }
-            }
+        CaretListener champtextevide = e -> {
+            TreeSet<String> strTest = new TreeSet<String>();
+            strTest.add(joueur1.getText());
+            strTest.add(joueur2.getText());
+            strTest.add(joueur3.getText());
+            strTest.add(joueur4.getText());
+            Runnable run2 = () -> {
+                jouer.setEnabled(strTest.size() == 4 && !strTest.contains(""));
+                jouer.setToolTipText(strTest.size() != 4 ? "Deux joueurs ou plus on le meme nom" : null);
+            };
+            SwingUtilities.invokeLater(run2);
         };
         joueur1.addCaretListener(champtextevide);
         joueur2.addCaretListener(champtextevide);
@@ -348,6 +311,7 @@ public class JPanelOptionJeu extends JPanel {
                 joueur3.setVisible(true);
                 nomJoueur3.setVisible(true);
                 hero3.setVisible(true);
+                joueur4.setText("joueur 4");
                 if (!playerMap.containsKey("J4")) {
                     playerMap.put("J3", AdventurerType.RANDOM);
                 }
@@ -370,6 +334,8 @@ public class JPanelOptionJeu extends JPanel {
             } else if (deux.isSelected()) {
                 playerMap.remove("J3");
                 playerMap.remove("J4");
+                joueur4.setText("joueur 4");
+                joueur3.setText("joueur 3");
             }
             notifyObservers((new MainMessage(MainAction.SELECT_ADVENTURER)));
             repaint();

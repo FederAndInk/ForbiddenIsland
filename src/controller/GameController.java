@@ -11,9 +11,7 @@ import java.util.Stack;
 import javax.swing.JLayeredPane;
 
 import model.adventurers.*;
-import model.card.CardType;
-import model.card.Helicopter;
-import model.card.SandBag;
+import model.card.*;
 import model.game.*;
 import model.player.Player;
 import util.FIGraphics;
@@ -112,6 +110,7 @@ public class GameController implements Observer {
         
         gameView.setBoard(getCurrentGame().getIsland().getSites(), this);
         gameView.initPlayerState(getCurrentGame().getPawns());
+        gameView.getFloodCursor().moveCursor(seaLevel);
         
         setSpawns();
         
@@ -179,8 +178,7 @@ public class GameController implements Observer {
         } catch (MoveException | ActionException e) {
             e.printStackTrace();
         } catch (EndGameException e) {
-            e.printStackTrace();
-            // FIXME : endGame
+            mainController.getView().switchToEnd(e.getEndType());
         } finally {
             unChainPlayer();
             defaultAction();
@@ -274,8 +272,10 @@ public class GameController implements Observer {
                 Adventurer adv = player.getCurrentAdventurer();
                 gameView.movePawn(adv.getADVENTURER_TYPE(), current, adv.getCurrentTile().getCoords());
             } // end for
-        } catch (IllegalAccessException | EndGameException | MoveException | TileException e) {
+        } catch (IllegalAccessException | MoveException | TileException e) {
             e.printStackTrace();
+        } catch (EndGameException e) {
+            mainController.getView().switchToEnd(e.getEndType());
         } finally {
             getCurrentGame().deselectPlayers();
             defaultAction();
@@ -320,7 +320,7 @@ public class GameController implements Observer {
             chainPlayers(getCurrentGame().getPlayersOnTile(tile));
             setSwim();
         } catch (EndGameException ex) {
-            // TODO set action to end game
+            mainController.getView().switchToEnd(ex.getEndType());
         }
         defaultAction();
     }
@@ -333,8 +333,7 @@ public class GameController implements Observer {
         try {
             refreshBoard(p.getCurrentAdventurer().getSwimmableTiles(), InGameAction.SWIM);
         } catch (EndGameException e) {
-            e.printStackTrace();
-            // FIXME : do something : end of game
+            mainController.getView().switchToEnd(e.getEndType());
         }
     }// end swim
     
@@ -599,13 +598,14 @@ public class GameController implements Observer {
      */
     private void turnGestion() {
         verifyEndTurn();
-        gameView.setCPlayer(getCurrentGame().getCurrentPlayer().getName(),
-                getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getActionPoints());
-        gameView.setCurrentP(getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getADVENTURER_TYPE());
+        Player pl = getCurrentGame().getCurrentPlayer();
+        gameView.setCurrentP(pl.getCurrentAdventurer().getADVENTURER_TYPE(), pl.getName(),
+                pl.getCurrentAdventurer().getActionPoints());
         ArrayList<InGameAction> acts = getCurrentGame().getPossibleActions();
         InGameAction act = getCurrentGame().getCurrentAction();
         gameView.setActions(acts);
-    }// end turnGestion
+    }// end
+     // turnGestion
     
     
     /**
@@ -812,9 +812,18 @@ public class GameController implements Observer {
                 break;
             case DRAW:
                 try {
-                    getCurrentGame().drawEndTurnCard((InGameAction) m.getContent());
-                } catch (EndGameException | IllegalAccessException | MoveException | TileException | CardException e1) {
+                    Card card = getCurrentGame().drawEndTurnCard((InGameAction) m.getContent());
+                    if (card instanceof WatersRise) {
+                        gameView.getFloodCursor().moveCursor(getCurrentGame().getSeaLevel());
+                    } // end if
+                } catch (IllegalAccessException | MoveException | TileException | CardException e1) {
                     e1.printStackTrace();
+                } catch (EndGameException e) {
+                    mainController.getView().switchToEnd(e.getEndType());
+                    
+                } catch (PlayerOutOfIslandException e) {
+                    chainPlayers(getCurrentGame().getPlayersOnTile(e.getTile()));
+                    setSwim();
                 }
                 break;
             case END_TURN:

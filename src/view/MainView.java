@@ -1,6 +1,9 @@
 package view;
 
 import java.awt.*;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.JFrame;
@@ -9,6 +12,8 @@ import javax.swing.JPanel;
 import controller.MainController;
 import util.Parameters;
 import util.exception.ExceptionType;
+import util.message.MainAction;
+import util.message.MainMessage;
 import view.board.GameView;
 import view.pause.PausePanel;
 
@@ -26,8 +31,8 @@ public class MainView extends JFrame {
     private MainController   controller;
     private JPanelChoixMap   choixMap;
     private JPanelFin        fin;
-    private ExceptionType    exceptionType;
     private PausePanel       pausePanel;
+    private WList            wList;
     
     private JPanel card;
     
@@ -42,10 +47,12 @@ public class MainView extends JFrame {
         main = new JPanel(new CardLayout());
         tutoPanel = new JPanelTuto();
         choixMap = new JPanelChoixMap();
-        exceptionType = ExceptionType.END_GAME;
-        fin = new JPanelFin(exceptionType);
+        fin = new JPanelFin(ExceptionType.END_GAME);
         pausePanel = new PausePanel();
         getContentPane().add(main);
+        
+        wList = new WList();
+        addWindowListener(wList);
         
         card.setLayout(new CardLayout());
         selectHero = new JPanelSelectHero(mainMenu.getjeu());
@@ -61,21 +68,21 @@ public class MainView extends JFrame {
         // la selection de la map
         card.add(choixMap, "choixMap");
         
-        // la fin
-        card.add(fin, "fin");
-        
         main.add(lesBoutons, "lesBoutons");
         lesBoutons.add(mainMenu);
         lesBoutons.add(card);
         
         // Game
         gameView.setName("game");
-        main.add(gameView, "game");
+        main.add(gameView, gameView.getName());
         
         // le tuto
         main.add(tutoPanel, "tutoPanel");
         // la pause
         main.add(pausePanel, "pause");
+        // la fin
+        fin.setName("fin");
+        main.add(fin, fin.getName());
         
         initSize();
         
@@ -86,6 +93,7 @@ public class MainView extends JFrame {
         mainMenu.addObs(observer);
         selectHero.addObs(observer);
         choixMap.addObs(observer);
+        wList.addObserver(observer);
     }
     
     
@@ -98,7 +106,7 @@ public class MainView extends JFrame {
                     (int) ((Parameters.screenSize.getHeight() - Parameters.appSize.getHeight()) / 2));
             setUndecorated(false);
             GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().setFullScreenWindow(null);
-            setExtendedState(NORMAL);
+            setExtendedState(MAXIMIZED_BOTH);
             setVisible(true);
         } else {
             dispose();
@@ -138,12 +146,80 @@ public class MainView extends JFrame {
     }
     
     
+    /**
+     * @author nihil
+     *
+     */
+    public void switchToEnd(ExceptionType type) {
+        fin.setExceptionType(type);
+        ((CardLayout) main.getLayout()).show(main, fin.getName());
+    }
+    
+    
     public JPanelMenu getMainMenu() {
         return mainMenu;
     }
     
-    
-    public void setExceptionType(ExceptionType exceptionType) {
-        this.exceptionType = exceptionType;
+    public class WList extends Observable implements WindowListener {
+        
+        /**
+         * @see java.awt.event.WindowListener#windowOpened(java.awt.event.WindowEvent)
+         */
+        @Override
+        public void windowOpened(WindowEvent e) {
+        }
+        
+        
+        /**
+         * @see java.awt.event.WindowListener#windowClosing(java.awt.event.WindowEvent)
+         */
+        @Override
+        public void windowClosing(WindowEvent e) {
+            setChanged();
+            notifyObservers(new MainMessage(MainAction.QUIT));
+            clearChanged();
+        }
+        
+        
+        /**
+         * @see java.awt.event.WindowListener#windowClosed(java.awt.event.WindowEvent)
+         */
+        @Override
+        public void windowClosed(WindowEvent e) {
+            
+        }
+        
+        
+        /**
+         * @see java.awt.event.WindowListener#windowIconified(java.awt.event.WindowEvent)
+         */
+        @Override
+        public void windowIconified(WindowEvent e) {
+        }
+        
+        
+        /**
+         * @see java.awt.event.WindowListener#windowDeiconified(java.awt.event.WindowEvent)
+         */
+        @Override
+        public void windowDeiconified(WindowEvent e) {
+        }
+        
+        
+        /**
+         * @see java.awt.event.WindowListener#windowActivated(java.awt.event.WindowEvent)
+         */
+        @Override
+        public void windowActivated(WindowEvent e) {
+        }
+        
+        
+        /**
+         * @see java.awt.event.WindowListener#windowDeactivated(java.awt.event.WindowEvent)
+         */
+        @Override
+        public void windowDeactivated(WindowEvent e) {
+        }
+        
     }
 }

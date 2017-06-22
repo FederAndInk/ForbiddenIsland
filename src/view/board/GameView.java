@@ -98,7 +98,7 @@ public class GameView extends JLayeredPane {
         shoreUpBtn = new JButton("Assécher un endroit");
         useCapacityBtn = new JButton("Utiliser sa capacité");
         
-        floodCursor = new WaterRise(2);
+        floodCursor = new WaterRise();
         
         add(eastPane, BorderLayout.EAST);
         
@@ -236,18 +236,13 @@ public class GameView extends JLayeredPane {
     
     
     /**
-     * @author nihil
-     *
-     */
-    public void setCPlayer(String str, int act) {
-    }
-    
-    
-    /**
      * @param currentP
      * the currentP to set
+     * @param name
+     * @param actions
      */
-    public void setCurrentP(AdventurerType currentP) {
+    public void setCurrentP(AdventurerType currentP, String name, int actions) {
+        
         for (PlayerInfo pInfo : pawns) {
             if (pInfo.getPawn().equals(currentP)) {
                 pInfo.setEnabled(true);

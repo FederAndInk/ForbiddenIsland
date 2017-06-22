@@ -11,6 +11,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
+import model.game.SeaLevel;
 import util.Parameters;
 
 
@@ -20,7 +21,7 @@ import util.Parameters;
  *
  */
 public class WaterRise extends JPanel {
-    private int        level;
+    private SeaLevel   level = SeaLevel.LEVEL2;
     private static int locationLevel = 0;
     private static int levelUp       = 0;
     
@@ -29,9 +30,8 @@ public class WaterRise extends JPanel {
      * @author nihil
      *
      */
-    public WaterRise(int level) {
-        super();
-        setLevel(level);
+    public WaterRise() {
+        setLevel(SeaLevel.LEVEL2);
     }
     
     
@@ -39,8 +39,16 @@ public class WaterRise extends JPanel {
      * @param level
      * the level to set
      */
-    private void setLevel(int level) {
-        this.level = level - 1;
+    private void setLevel(SeaLevel level) {
+        this.level = level;
+    }
+    
+    
+    /**
+     * @return the level
+     */
+    public int getLevelInt() {
+        return level.getLevel() - 1;
     }
     
     
@@ -48,7 +56,7 @@ public class WaterRise extends JPanel {
      * @author nihil
      *
      */
-    public void moveCursor(int level) {
+    public void moveCursor(SeaLevel level) {
         setLevel(level);
         repaint();
     }
@@ -59,15 +67,15 @@ public class WaterRise extends JPanel {
      *
      */
     private double getScale() {
-        if (level < 2) {
+        if (getLevelInt() < 2) {
             return 0.082;
-        } else if (level < 5) {
+        } else if (getLevelInt() < 5) {
             return 0.085;
-        } else if (level < 7) {
+        } else if (getLevelInt() < 7) {
             return 0.084589;
-        } else if (level < 8) {
+        } else if (getLevelInt() < 8) {
             return 0.083289;
-        } else if (level < 9) {
+        } else if (getLevelInt() < 9) {
             return 0.084;
         } else {
             return 0.084;
@@ -87,7 +95,7 @@ public class WaterRise extends JPanel {
             BufferedImage bImage = ImageIO.read(new File(Parameters.RESOURCES + "Niveau.png"));
             g.drawImage(bImage, 2, 2, (int) getSize().getWidth(), (int) getSize().getHeight(), this);
             BufferedImage bImageS = ImageIO.read(new File(Parameters.RESOURCES + "stick.png"));
-            g.drawImage(bImageS, 0, locationLevel - levelUp * level, (int) (getSize().getWidth() * 0.2),
+            g.drawImage(bImageS, 0, locationLevel - levelUp * getLevelInt(), (int) (getSize().getWidth() * 0.2),
                     (int) ((getSize().getWidth() * 0.2) * bImageS.getHeight() / bImageS.getWidth()), this);
             
         } catch (IOException e) {

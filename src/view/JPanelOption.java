@@ -105,14 +105,15 @@ public class JPanelOption extends JPanel {
         });
         valider.addActionListener(e -> {
             Parameters.printLog("valider", LogType.INFO);
-            if (fullscreen.isSelected()) {
+            if (fullscreen.isSelected() && !Parameters.fullscreen) {
                 Parameters.printLog("fullscreen", LogType.INFO);
                 Parameters.fullscreen = true;
-            } else {
+                ((MainView) getRootPane().getParent()).initSize();
+            } else if (windowed.isSelected() && Parameters.fullscreen) {
                 Parameters.printLog("windowed", LogType.INFO);
                 Parameters.fullscreen = false;
+                ((MainView) getRootPane().getParent()).initSize();
             }
-            ((MainView) getRootPane().getParent()).initSize();
             Parameters.debug = debugOk.isSelected();
             repaint();
             Parameters.printLog("valider", LogType.INFO);

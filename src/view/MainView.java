@@ -9,6 +9,7 @@ import javax.swing.JPanel;
 
 import controller.MainController;
 import util.exception.ExceptionType;
+import view.pause.PausePanel;
 
 
 
@@ -24,6 +25,7 @@ public class MainView extends JFrame {
     private JPanelChoixMap   choixMap;
     private JPanelFin        fin;
     private ExceptionType    exceptionType;
+    private PausePanel       pausePanel;
     
     private JPanel card;
     
@@ -39,6 +41,7 @@ public class MainView extends JFrame {
         choixMap = new JPanelChoixMap();
         exceptionType = ExceptionType.END_GAME;
         fin = new JPanelFin(exceptionType);
+        pausePanel = new PausePanel();
         getContentPane().add(main);
         
         card.setLayout(new CardLayout());
@@ -62,7 +65,10 @@ public class MainView extends JFrame {
         lesBoutons.add(mainMenu);
         lesBoutons.add(card);
         
+        // le tuto
         main.add(tutoPanel, "tutoPanel");
+        // la pause
+        main.add(pausePanel, "pause");
         
         initSize();
         

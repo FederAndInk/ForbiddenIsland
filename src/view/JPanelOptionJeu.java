@@ -225,7 +225,9 @@ public class JPanelOptionJeu extends JPanel {
                     joueur3.setVisible(true);
                     nomJoueur3.setVisible(true);
                     hero3.setVisible(true);
-                    playerMap.put("J3", AdventurerType.RANDOM);
+                    if (!playerMap.containsKey("J4")) {
+                        playerMap.put("J3", AdventurerType.RANDOM);
+                    }
                     playerMap.remove("J4");
                     Parameters.printLog("3 players", LogType.INFO);
                     
@@ -236,6 +238,9 @@ public class JPanelOptionJeu extends JPanel {
                     nomJoueur4.setVisible(true);
                     hero3.setVisible(true);
                     hero4.setVisible(true);
+                    if (!getPlayerMap().containsKey("J3")) {
+                        playerMap.put("J3", AdventurerType.RANDOM);
+                    }
                     playerMap.put("J4", AdventurerType.RANDOM);
                     Parameters.printLog("4 players", LogType.INFO);
                     

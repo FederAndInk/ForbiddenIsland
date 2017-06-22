@@ -355,9 +355,9 @@ public class Game {
      */
     private int getNbCards(InGameAction type) {
         if (type == InGameAction.DRAW_TREASURE) {
-            return Parameters.NB_CARDS;
+            return Parameters.NB_CARD_BEGIN;
         } // end if
-        return Parameters.NB_CARDS + getSeaLevel().getNbCards();
+        return Parameters.NB_CARD_BEGIN + getSeaLevel().getNbCards();
     }
     
     

@@ -1,6 +1,8 @@
 package view;
 
 import java.awt.*;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.Observable;
@@ -85,7 +87,39 @@ public class MainView extends JFrame {
         main.add(fin, fin.getName());
         
         initSize();
-        
+        initListener();
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     */
+    private void initListener() {
+        addComponentListener(new ComponentListener() {
+            
+            @Override
+            public void componentShown(ComponentEvent e) {
+            }
+            
+            
+            @Override
+            public void componentResized(ComponentEvent e) {
+                if (!Parameters.fullscreen) {
+                    Size(e.getComponent().getSize());
+                } // end if
+            }
+            
+            
+            @Override
+            public void componentMoved(ComponentEvent e) {
+            }
+            
+            
+            @Override
+            public void componentHidden(ComponentEvent e) {
+            }
+        });
     }
     
     
@@ -100,8 +134,9 @@ public class MainView extends JFrame {
     public void initSize() {
         if (!Parameters.fullscreen) {
             dispose();
-            Parameters.appSize = new Dimension((int) (Parameters.screenSize.getWidth() * 0.8),
-                    (int) (Parameters.screenSize.getHeight() * 0.8));
+            Parameters.appSize = new Dimension((int) (Parameters.screenSize.getWidth() * 0.7),
+                    (int) (Parameters.screenSize.getHeight() * 0.7));
+            setMinimumSize(Parameters.appSize);
             setLocation((int) (Parameters.screenSize.getWidth() / 2 - Parameters.appSize.getWidth() / 2),
                     (int) ((Parameters.screenSize.getHeight() - Parameters.appSize.getHeight()) / 2));
             setUndecorated(false);
@@ -116,6 +151,12 @@ public class MainView extends JFrame {
             setExtendedState(MAXIMIZED_BOTH);
         } // end if
         setSize((int) (Parameters.appSize.getWidth()), (int) Parameters.appSize.getHeight());
+        
+    }
+    
+    
+    private void Size(Dimension dim) {
+        Parameters.appSize = dim;
     }
     
     

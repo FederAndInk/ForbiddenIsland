@@ -60,6 +60,10 @@ public class GameView extends JLayeredPane {
     private JButton moveBtn;
     private JButton shoreUpBtn;
     private JButton useCapacityBtn;
+    private JButton discardCard;
+    private JButton invoque;
+    private JButton giveCard;
+    private JButton useCard;
     
     private ListenerAction listObs;
     
@@ -84,19 +88,23 @@ public class GameView extends JLayeredPane {
         setLayout(new BorderLayout());
         eastPane = new JPanel(new BorderLayout());
         westPane = new JPanel(new BorderLayout());
-        actionCommands = new JPanel(new GridLayout(4, 1));
+        actionCommands = new JPanel(new GridLayout(8, 1));
         
         paneDroit = new JPanel();
         GridBagLayout layout = new GridBagLayout();
         paneDroit.setLayout(layout);
         layout.rowHeights = new int[2];
-        double[] weight = { 0.15, 0.85 };
+        double[] weight = { 0.1, 0.8 };
         layout.rowWeights = weight;
         
         endTurnBtn = new JButton("Fin de tour");
         moveBtn = new JButton("Se déplacer");
         shoreUpBtn = new JButton("Assécher un endroit");
         useCapacityBtn = new JButton("Utiliser sa capacité");
+        discardCard = new JButton("Défausser une carte");
+        invoque = new JButton("Invoquer un trésor");
+        giveCard = new JButton("Donner une carte");
+        useCard = new JButton("Utiliser une carte");
         
         floodCursor = new WaterRise();
         
@@ -119,7 +127,16 @@ public class GameView extends JLayeredPane {
         actionCommands.add(moveBtn);
         actionCommands.add(shoreUpBtn);
         actionCommands.add(useCapacityBtn);
-        
+        actionCommands.add(discardCard);
+        actionCommands.add(giveCard);
+        actionCommands.add(useCard);
+        actionCommands.add(invoque);
+        // for (Component c : actionCommands.getComponents()) {
+        // if (c != null) {
+        // c.setFont(new Font(c.getFont().getFontName(), c.getFont().getStyle(),
+        // (int) (c.getFont().getSize() * 0.7)));
+        // }
+        // }
     }
     
     

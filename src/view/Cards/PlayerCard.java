@@ -3,7 +3,6 @@
  */
 package view.Cards;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
@@ -11,7 +10,6 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
 import model.card.CardType;
@@ -30,7 +28,6 @@ public class PlayerCard extends JPanel {
     public PlayerCard(CardType cardType, int cardPlace) {
         this.card = cardType;
         this.cardPlace = cardPlace;
-        setBorder(BorderFactory.createLineBorder(Color.GREEN));
     }// end addCard
     
     

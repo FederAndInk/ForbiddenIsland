@@ -35,7 +35,7 @@ public class PlayerInfo extends JPanel {
             add(descr);
             add(icone);
         } // end if
-        setBorder(BorderFactory.createLineBorder(Color.red));
+        setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
     }
     
     

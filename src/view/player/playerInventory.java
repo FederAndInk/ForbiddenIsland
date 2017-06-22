@@ -8,7 +8,6 @@ import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
-import javax.swing.border.BevelBorder;
 
 import model.adventurers.AdventurerType;
 import model.card.CardType;
@@ -34,7 +33,7 @@ public class playerInventory extends JPanel {
         cards = new ArrayList<>();
         this.left = left;
         this.top = top;
-        setBorder(BorderFactory.createLineBorder(Color.red));
+        setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
         
         initLayout();
         initTreasures();
@@ -61,7 +60,6 @@ public class playerInventory extends JPanel {
         gLCT.weighty = 1;
         gLCT.fill = GridBagConstraints.BOTH;
         
-        treasure.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED, Color.BLUE, Color.BLACK));
         gLCC.gridx = left ? 0 : 5;
         add(treasure, gLCC);
     }

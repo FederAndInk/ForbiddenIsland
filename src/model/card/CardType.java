@@ -17,7 +17,7 @@ public enum CardType {
     EARTH_STONE_CARD("Earth_Stone", getSubTreasures(), false, true, TreasureType.EARTH_STONE),
     STATUE_OF_THE_WIND_CARD("Statue_of_the_Wind", getSubTreasures(), false, true, TreasureType.STATUE_OF_THE_WIND),
     OCEANS_CHALICE_CARD("Ocean's_Chalice", getSubTreasures(), false, true, TreasureType.OCEANS_CHALICE),
-    CRYSTAL_OF_FIRE_CARD("Cristal_of_Fire", getSubTreasures(), false, true, TreasureType.CRYSTAL_OF_FIRE),
+    CRYSTAL_OF_FIRE_CARD("Crystal_of_Fire", getSubTreasures(), false, true, TreasureType.CRYSTAL_OF_FIRE),
     FLOOD_CARD("flood", getSubFlood(), true, false, null),
     HELICOPTER_CARD("Helicopter", getSubTreasures(), true, true, null),
     SANDBAG_CARD("Sand_Bag", getSubTreasures(), true, true, null),

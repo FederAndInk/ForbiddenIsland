@@ -1,10 +1,6 @@
 package util;
 
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontFormatException;
-import java.awt.GraphicsEnvironment;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -26,7 +22,8 @@ public class Parameters {
     public static boolean       debugAction = false;
     
     // FI game
-    public static int NB_CARD_BEGIN = 2;
+    public static int NB_CARD_BEGIN     = 2;
+    public static int NB_DEFAULT_PLAYER = 4;
     
     // Fonts
     public static Font DEFAULT_FONT = initFont();
@@ -34,8 +31,6 @@ public class Parameters {
     public static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     public static Dimension appSize;
     public static Boolean   fullscreen = false;
-    // Game settings
-    public static int NB_CARDS = 2;
     
     // path
     public static final String RESOURCES  = "./resources/";

@@ -130,8 +130,6 @@ public class JPanelOptionJeu extends JPanel {
         grpjoueur.add((AbstractButton) add(deux));
         grpjoueur.add((AbstractButton) add(trois));
         grpjoueur.add((AbstractButton) add(quatre));
-        deux.setSelected(true);
-        initDefault();
         
         nbjoueur.add(joueur);
         nbjoueur.add(deux);
@@ -207,6 +205,17 @@ public class JPanelOptionJeu extends JPanel {
         deux.addActionListener(listener);
         trois.addActionListener(listener);
         quatre.addActionListener(listener);
+        
+        if (Parameters.NB_DEFAULT_PLAYER == 2) {
+            deux.setSelected(true);
+            initDefault();
+        } else if (Parameters.NB_DEFAULT_PLAYER == 3) {
+            trois.setSelected(true);
+            trois.doClick();
+        } else {
+            quatre.setSelected(true);
+            quatre.doClick();
+        } // end if
         
         sealvlbar.addChangeListener(arg0 -> {
             switch (sealvlbar.getValue()) {

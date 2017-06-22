@@ -5,7 +5,6 @@ import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
-import javax.swing.border.BevelBorder;
 
 import model.adventurers.AdventurerType;
 import model.card.CardType;
@@ -27,16 +26,18 @@ public class playerInventory extends JPanel {
     public playerInventory(AdventurerType adv, boolean left) {
         cards = new ArrayList<>();
         
-        setBorder(BorderFactory.createLineBorder(Color.red));
+        setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
         
         initLayout();
         initTreasures();
         
-        addCard(CardType.SANDBAG_CARD);
-        addCard(CardType.SANDBAG_CARD);
-        addCard(CardType.SANDBAG_CARD);
-        addCard(CardType.SANDBAG_CARD);
-        addCard(CardType.SANDBAG_CARD);
+        if (Math.random() < 0.4) {
+            addCard(CardType.CRYSTAL_OF_FIRE_CARD);
+        } else if (Math.random() < 0.5) {
+            addCard(CardType.HELICOPTER_CARD);
+        } else {
+            addCard(CardType.SANDBAG_CARD);
+        } // end if
     }
     
     
@@ -46,7 +47,6 @@ public class playerInventory extends JPanel {
      */
     private void initTreasures() {
         treasure = new JPanel(new GridLayout(2, 2));
-        treasure.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED, Color.BLUE, Color.BLACK));
         gLT.gridx = 5;
         add(treasure, gLT);
     }

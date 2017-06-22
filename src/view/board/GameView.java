@@ -1,9 +1,6 @@
 package view.board;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.GraphicsEnvironment;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
@@ -69,7 +66,7 @@ public class GameView extends JFrame {
     private DeckComponent floodDeck;
     private JPanel        decksPane;
     
-    private JPanel flood;
+    private WaterRise floodCursor;
     
     // Inventory
     private JPanel north;
@@ -123,10 +120,19 @@ public class GameView extends JFrame {
         
         quit = new JMenuItem("Quitter");
         
+        paneDroit = new JPanel();
+        GridBagLayout layout = new GridBagLayout();
+        paneDroit.setLayout(layout);
+        layout.rowHeights = new int[2];
+        double[] weight = { 0.15, 0.85 };
+        layout.rowWeights = weight;
+        
         endTurnBtn = new JButton("Fin de tour");
         moveBtn = new JButton("Se déplacer");
         shoreUpBtn = new JButton("Assécher un endroit");
         useCapacityBtn = new JButton("Utiliser sa capacité");
+        
+        floodCursor = new WaterRise(2);
         
         setJMenuBar(bar);
         bar.add(option);
@@ -178,6 +184,12 @@ public class GameView extends JFrame {
         
         getRootPane().setDefaultButton(endTurnBtn);
         
+        eastPane.add(paneDroit, BorderLayout.CENTER);
+        GridBagConstraints constraints = new GridBagConstraints();
+        paneDroit.add(actionCommands, constraints);
+        constraints.gridy = 1;
+        constraints.fill = GridBagConstraints.BOTH;
+        paneDroit.add(floodCursor, constraints);
         actionCommands.add(endTurnBtn);
         actionCommands.add(moveBtn);
         actionCommands.add(shoreUpBtn);
@@ -220,11 +232,6 @@ public class GameView extends JFrame {
             
         } // end for
         
-        paneDroit = new JPanel(new GridLayout(2, 1));
-        flood = new JPanel();
-        eastPane.add(paneDroit, BorderLayout.CENTER);
-        paneDroit.add(actionCommands);
-        paneDroit.add(flood);
         initInventory(advs);
     }
     
@@ -615,6 +622,14 @@ public class GameView extends JFrame {
      */
     public playerInventory getPInventory(AdventurerType adv) {
         return inventories.get(adv);
+    }
+    
+    
+    /**
+     * @return the floodCursor
+     */
+    public WaterRise getFloodCursor() {
+        return floodCursor;
     }
     
     

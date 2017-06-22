@@ -11,6 +11,7 @@ import model.adventurers.AdventurerType;
 import model.card.CardType;
 import util.Parameters;
 import view.Cards.PlayerCard;
+import view.board.TreasureComponent;
 
 
 
@@ -25,11 +26,14 @@ public class playerInventory extends JPanel {
     
     public playerInventory(AdventurerType adv, boolean left) {
         cards = new ArrayList<>();
+        
         setBorder(BorderFactory.createLineBorder(Color.red));
         
         initLayout();
         initTreasures();
         
+        addCard(CardType.SANDBAG_CARD);
+        addCard(CardType.SANDBAG_CARD);
         addCard(CardType.SANDBAG_CARD);
         addCard(CardType.SANDBAG_CARD);
         addCard(CardType.SANDBAG_CARD);
@@ -77,6 +81,11 @@ public class playerInventory extends JPanel {
         add(cards.get(cards.size() - 1), gLT);
     }// end
      // addCard
+    
+    
+    public void addTreasure() {
+        treasure.add(new TreasureComponent());
+    }// end name
     
     
     /**

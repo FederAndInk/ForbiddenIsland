@@ -147,15 +147,29 @@ public class MainController implements Observer, Serializable {
                 }
                 break;
             case SELECT_ADVENTURER:
-                view.getMainMenu().getjeu().setAdventurer(currentPlayer, (AdventurerType) m.getContent());
-                Parameters.printLog(view.getMainMenu().getjeu().getPlayer(currentPlayer), LogType.INFO);
-                for (AdventurerType adv : AdventurerType.values()) {
-                    if (adv != AdventurerType.RANDOM) {
-                        view.getSelectHero().setEnabled(!view.getMainMenu().getjeu().getPlayerMap().containsValue(adv),
-                                adv);
+                Parameters.printLog("YOLOOOOOOOOOOO", LogType.INFO);
+                if (m.getContent() == null) {
+                    Parameters.printLog("YOLOOOOOOOOOOO", LogType.INFO);
+                    view.getMainMenu().getjeu().setBaseColor();
+                    for (AdventurerType adv : AdventurerType.values()) {
+                        if (adv != AdventurerType.RANDOM) {
+                            view.getSelectHero()
+                                    .setEnabled(!view.getMainMenu().getjeu().getPlayerMap().containsValue(adv), adv);
+                        }
+                    }
+                } else {
+                    view.getMainMenu().getjeu().setAdventurer(currentPlayer, (AdventurerType) m.getContent());
+                    // Parameters.printLog(view.getMainMenu().getjeu().getPlayer(currentPlayer), LogType.INFO);
+                    for (AdventurerType adv : AdventurerType.values()) {
+                        if (adv != AdventurerType.RANDOM) {
+                            view.getSelectHero()
+                                    .setEnabled(!view.getMainMenu().getjeu().getPlayerMap().containsValue(adv), adv);
+                        }
                     }
                 }
-                view.getMainMenu().getjeu().changeButtonColor(currentPlayer);
+                for (String player : view.getMainMenu().getjeu().getPlayerMap().keySet()) {
+                    view.getMainMenu().getjeu().changeButtonColor(player);
+                }
                 break;
             case SELECT_MAP:
                 choixmap();

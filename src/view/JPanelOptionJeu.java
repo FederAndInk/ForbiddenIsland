@@ -78,6 +78,7 @@ public class JPanelOptionJeu extends JPanel {
     private static final String PLAY       = "jouer";
     private static final String SELECT_MAP = "select_map";
     private Listeners           listenhero;
+    private ListenerRadio       listener;
     
     
     /**
@@ -216,41 +217,7 @@ public class JPanelOptionJeu extends JPanel {
      * 
      */
     private void dynamicPlayer() {
-        ActionListener listener = new ActionListener() {
-            
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                initDefault();
-                if (trois.isSelected()) {
-                    joueur3.setVisible(true);
-                    nomJoueur3.setVisible(true);
-                    hero3.setVisible(true);
-                    if (!playerMap.containsKey("J4")) {
-                        playerMap.put("J3", AdventurerType.RANDOM);
-                    }
-                    playerMap.remove("J4");
-                    Parameters.printLog("3 players", LogType.INFO);
-                    
-                } else if (quatre.isSelected()) {
-                    joueur3.setVisible(true);
-                    nomJoueur3.setVisible(true);
-                    joueur4.setVisible(true);
-                    nomJoueur4.setVisible(true);
-                    hero3.setVisible(true);
-                    hero4.setVisible(true);
-                    if (!getPlayerMap().containsKey("J3")) {
-                        playerMap.put("J3", AdventurerType.RANDOM);
-                    }
-                    playerMap.put("J4", AdventurerType.RANDOM);
-                    Parameters.printLog("4 players", LogType.INFO);
-                    
-                } else if (deux.isSelected()) {
-                    playerMap.remove("J3");
-                    playerMap.remove("J4");
-                }
-                repaint();
-            }
-        };
+        listener = new ListenerRadio();
         
         deux.addActionListener(listener);
         trois.addActionListener(listener);
@@ -371,6 +338,46 @@ public class JPanelOptionJeu extends JPanel {
         hero4.setVisible(false);
     }
     
+    private class ListenerRadio extends Observable implements ActionListener {
+        
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            setChanged();
+            initDefault();
+            if (trois.isSelected()) {
+                joueur3.setVisible(true);
+                nomJoueur3.setVisible(true);
+                hero3.setVisible(true);
+                if (!playerMap.containsKey("J4")) {
+                    playerMap.put("J3", AdventurerType.RANDOM);
+                }
+                playerMap.remove("J4");
+                Parameters.printLog("3 players", LogType.INFO);
+                
+            } else if (quatre.isSelected()) {
+                joueur3.setVisible(true);
+                nomJoueur3.setVisible(true);
+                joueur4.setVisible(true);
+                nomJoueur4.setVisible(true);
+                hero3.setVisible(true);
+                hero4.setVisible(true);
+                if (!getPlayerMap().containsKey("J3")) {
+                    playerMap.put("J3", AdventurerType.RANDOM);
+                }
+                playerMap.put("J4", AdventurerType.RANDOM);
+                Parameters.printLog("4 players", LogType.INFO);
+                
+            } else if (deux.isSelected()) {
+                playerMap.remove("J3");
+                playerMap.remove("J4");
+            }
+            notifyObservers((new MainMessage(MainAction.SELECT_ADVENTURER)));
+            repaint();
+            clearChanged();
+        }
+        
+    }
+    
     private class Listeners extends Observable implements ActionListener {
         
         @Override
@@ -443,6 +450,7 @@ public class JPanelOptionJeu extends JPanel {
     
     public void addObs(Observer observer) {
         listenhero.addObserver(observer);
+        listener.addObserver(observer);
     }
     
     
@@ -517,7 +525,7 @@ public class JPanelOptionJeu extends JPanel {
             
             break;
         case RANDOM:
-            button.setBackground(Color.gray);
+            button.setBackground(null);
             button.setForeground(Color.BLACK);
             
             break;

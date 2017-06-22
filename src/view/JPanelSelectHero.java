@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -29,9 +30,11 @@ public class JPanelSelectHero extends JPanel {
     // private JButtonAdventurer navigator;
     // private JButtonAdventurer pilot;
     // private JButtonAdventurer random;
-    private JButton annuler;
-    private JPanel  main;
-    // private MainView mainView;
+    private JButton         annuler;
+    private JPanel          main;
+    private Listeners       heroListeners;
+    private String          hero;
+    private JPanelOptionJeu optionJeu;
     
     private static final String DIVER     = "Diver";
     private static final String EXPLORER  = "Explorer";
@@ -42,8 +45,8 @@ public class JPanelSelectHero extends JPanel {
     private static final String NAVIGATOR = "Navigator";
     
     
-    public JPanelSelectHero() {
-        // mainView = view;
+    public JPanelSelectHero(JPanelOptionJeu opt) {
+        this.optionJeu = opt;
         initComponent();
         listener();
     }
@@ -54,6 +57,7 @@ public class JPanelSelectHero extends JPanel {
         main = new JPanel();
         main.setLayout(new GridLayout(3, 3));
         adventurers = new HashMap<>();
+        heroListeners = new Listeners();
         
         for (AdventurerType adv : AdventurerType.values()) {
             adventurers.put(adv, new JButtonAdventurer(adv));
@@ -106,10 +110,10 @@ public class JPanelSelectHero extends JPanel {
     
     
     private void listener() {
-        Listeners heroListerners = new Listeners();
+        heroListeners = new Listeners();
         
         for (JButtonAdventurer btn : adventurers.values()) {
-            btn.addActionListener(heroListerners);
+            btn.addActionListener(heroListeners);
         }
         
         // diver.addActionListener(heroListerners);
@@ -142,42 +146,55 @@ public class JPanelSelectHero extends JPanel {
         public void actionPerformed(ActionEvent e) {
             
             setChanged();
-            
             switch (e.getActionCommand()) {
             case DIVER:
                 Parameters.printLog(DIVER, LogType.INFO);
                 notifyObservers(new MainMessage(MainAction.SELECT_ADVENTURER, AdventurerType.DIVER));
+                setEnabled(false, AdventurerType.DIVER);
                 break;
             case EXPLORER:
                 Parameters.printLog(EXPLORER, LogType.INFO);
                 notifyObservers(new MainMessage(MainAction.SELECT_ADVENTURER, AdventurerType.EXPLORER));
+                setEnabled(false, AdventurerType.EXPLORER);
                 break;
             case ENGINEER:
                 Parameters.printLog(ENGINEER, LogType.INFO);
                 notifyObservers(new MainMessage(MainAction.SELECT_ADVENTURER, AdventurerType.ENGINEER));
+                // setEnabled(false, AdventurerType.ENGINEER);
                 break;
             case MESSENGER:
                 Parameters.printLog(MESSENGER, LogType.INFO);
                 notifyObservers(new MainMessage(MainAction.SELECT_ADVENTURER, AdventurerType.MESSENGER));
+                // setEnabled(false, AdventurerType.MESSENGER);
                 break;
             case NAVIGATOR:
                 Parameters.printLog(NAVIGATOR, LogType.INFO);
                 notifyObservers(new MainMessage(MainAction.SELECT_ADVENTURER, AdventurerType.NAVIGATOR));
+                // setEnabled(false, AdventurerType.NAVIGATOR);
                 break;
             case PILOT:
                 Parameters.printLog(PILOT, LogType.INFO);
                 notifyObservers(new MainMessage(MainAction.SELECT_ADVENTURER, AdventurerType.PILOT));
+                // setEnabled(false, AdventurerType.PILOT);
                 break;
             case RANDOM:
+                
                 Parameters.printLog(RANDOM, LogType.INFO);
                 notifyObservers(new MainMessage(MainAction.SELECT_ADVENTURER, AdventurerType.RANDOM));
                 break;
             default:
                 notifyObservers(new MainMessage(MainAction.SELECT_ADVENTURER, AdventurerType.RANDOM));
+                setEnabled(true, AdventurerType.RANDOM);
                 break;
             }
             clearChanged();
+            ((CardLayout) getParent().getLayout()).show(getParent(), "picture");
         }
         
+    }
+    
+    
+    public void addObs(Observer observer) {
+        heroListeners.addObserver(observer);
     }
 }

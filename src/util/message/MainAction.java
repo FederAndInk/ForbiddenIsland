@@ -19,7 +19,11 @@ public enum MainAction {
      * @give the player wich select an adventurer
      */
     SELECT_PLAYER,
-    
+    SELECT_MAP,
+    /**
+     * @give type map selected
+     */
+    MAP_SELECTED,
     /**
      * use for basic UI
      */

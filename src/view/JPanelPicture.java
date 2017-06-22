@@ -23,7 +23,7 @@ public class JPanelPicture extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        Parameters.printLog("Paint Main picture", LogType.INFO);
+        Parameters.printLog("Paint Main picture", LogType.GRAPHICS);
         try {
             BufferedImage bImage = ImageIO.read(new File(Parameters.RESOURCES + "background.jpg"));
             g.drawImage(bImage, 2, 2, (int) getSize().getWidth(), (int) getSize().getHeight(), this);

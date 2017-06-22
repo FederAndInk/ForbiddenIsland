@@ -2,9 +2,12 @@ package view;
 
 import java.awt.CardLayout;
 import java.awt.GridLayout;
+import java.util.Observer;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+
+import controller.MainController;
 
 
 
@@ -16,6 +19,8 @@ public class MainView extends JFrame {
     private JPanelMenu       mainMenu;
     private JPanelSelectHero selectHero;
     private JPanelTuto       tutoPanel;
+    private MainController   controller;
+    private JPanelChoixMap   choixMap;
     
     private JPanel card;
     
@@ -28,10 +33,11 @@ public class MainView extends JFrame {
         card = new JPanel();
         main = new JPanel(new CardLayout());
         tutoPanel = new JPanelTuto();
+        choixMap = new JPanelChoixMap();
         getContentPane().add(main);
         
         card.setLayout(new CardLayout());
-        selectHero = new JPanelSelectHero();
+        selectHero = new JPanelSelectHero(mainMenu.getjeu());
         
         // les cardlayout
         
@@ -41,12 +47,43 @@ public class MainView extends JFrame {
         // la selection de hero
         card.add(selectHero, "heroSelection");
         
+        // la selection de la map
+        card.add(choixMap, "choixMap");
+        
         main.add(lesBoutons, "lesBoutons");
         lesBoutons.add(mainMenu);
         lesBoutons.add(card);
         
         main.add(tutoPanel, "tutoPanel");
         
+        initSize();
+        
     }
     
+    
+    public void AddObs(Observer observer) {
+        mainMenu.addObs(observer);
+        selectHero.addObs(observer);
+        choixMap.addObs(observer);
+    }
+    
+    
+    private void initSize() {
+        setSize(750, 500);
+    }
+    
+    
+    public JPanel getCard() {
+        return card;
+    }
+    
+    
+    public JPanelSelectHero getSelectHero() {
+        return selectHero;
+    }
+    
+    
+    public JPanelMenu getMainMenu() {
+        return mainMenu;
+    }
 }

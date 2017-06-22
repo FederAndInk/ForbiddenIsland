@@ -1,9 +1,5 @@
 package model.game;
 
-import util.exception.EndGameException;
-
-
-
 public enum SeaLevel {
     /**
      * Easy
@@ -52,6 +48,11 @@ public enum SeaLevel {
     
     public String getDifficulty() {
         return difficulty;
+    }
+    
+    
+    public int getLevel() {
+        return Integer.parseInt(getLevelName().replace("Level ", ""));
     }
     
     

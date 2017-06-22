@@ -28,6 +28,13 @@ public class MainMessage extends Message {
     }
     
     
+    @Override
+    public Object getContent() {
+        // TODO Auto-generated method stub
+        return super.getContent();
+    }
+    
+    
     /**
      * @see util.message.Message#getType()
      */

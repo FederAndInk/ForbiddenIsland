@@ -10,17 +10,32 @@ import java.util.Stack;
 
 import javax.swing.JLayeredPane;
 
-import model.adventurers.*;
+import model.adventurers.Adventurer;
+import model.adventurers.AdventurerType;
+import model.adventurers.Diver;
+import model.adventurers.Engineer;
+import model.adventurers.Explorer;
+import model.adventurers.Pilot;
 import model.card.CardType;
 import model.card.Helicopter;
 import model.card.SandBag;
-import model.game.*;
+import model.game.Coords;
+import model.game.Game;
+import model.game.Island;
+import model.game.SeaLevel;
+import model.game.Tile;
+import model.game.TileState;
 import model.player.Player;
 import util.FIGraphics;
 import util.LogType;
 import util.Parameters;
 import util.Temporary;
-import util.exception.*;
+import util.exception.ActionException;
+import util.exception.EndGameException;
+import util.exception.InadequateUseOfCapacityException;
+import util.exception.MoveException;
+import util.exception.PlayerOutOfIslandException;
+import util.exception.TileException;
 import util.message.InGameAction;
 import util.message.InGameMessage;
 import util.message.MainMessage;
@@ -49,6 +64,7 @@ public class GameController implements Observer {
     public GameController(MainController mainController) {
         this.mainController = mainController;
         gameView = new GameView();
+        gameView.setVisible(false);
         gameView.addObs(this);
         gameView.addObs(getMainController());
         
@@ -95,7 +111,7 @@ public class GameController implements Observer {
      *
      */
     public void StartGame(SeaLevel seaLevel) {
-        tmpGameStart();
+        // tmpGameStart();
         getCurrentGame().initGame(seaLevel);
         FIGraphics.init(this);
         

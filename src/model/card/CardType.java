@@ -3,39 +3,74 @@
  */
 package model.card;
 
+import util.Parameters;
+
+
+
 /**
  * @author nihil
  *
  */
 public enum CardType {
-    TREASURE_CARD(getSubTreasures(), false),
-    FLOOD_CARD(getSubFlood(), false),
-    HELICOPTER_CARD(getSubTreasures(), true),
-    SANDBAG_CARD(getSubTreasures(), true),
-    WATERSRISE_CARD(getSubFlood(), false);
+    TREASURE_CARD(getSubTreasures(), false, true),
+    FLOOD_CARD(getSubFlood(), true, false),
+    HELICOPTER_CARD(getSubTreasures(), true, true),
+    SANDBAG_CARD(getSubTreasures(), true, true),
+    WATERSRISE_CARD(getSubTreasures(),false, false);
     /**
      * @category Treasures
      */
-    private static final String SUB_TREASURES = "Treasure_Deck";
+    private static final String SUB_TREASURES = "Treasure Deck";
     /**
      * @category Floods
      */
-    private static final String SUB_FLOOD     = "Flood_Deck";
+    private static final String SUB_FLOOD     = "Flood Deck";
     private String              subType;
-    private boolean             usable;
+    private boolean             activable;
+    private boolean             canAddToInventory;
     
     
-    private CardType(String subType, boolean usable) {
+    private CardType(String subType, boolean usable, boolean canAdd) {
         this.subType = subType;
-        this.usable = usable;
+        this.activable = usable;
+        this.canAddToInventory = canAdd;
     }
     
     
     /**
-     * @return the usable
+     * @author nihil
+     *
      */
-    public boolean isUsable() {
-        return usable;
+    public String getBack() {
+        return Parameters.CARDS + (subType.equals(SUB_FLOOD) ? "Flood_" : "") + "Card_Back@2x.png";
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     * @return
+     */
+    public String getBackSelect() {
+        return Parameters.CARDS + (subType.equals(SUB_FLOOD) ? "Flood_" : "") + "Card_BackSelect@2x.png";
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     * @return
+     */
+    public String getBackHover() {
+        return Parameters.CARDS + (subType.equals(SUB_FLOOD) ? "Flood_" : "") + "Card_BackSelectHover@2x.png";
+    }
+    
+    
+    /**
+     * @return true if the card is activable
+     */
+    public boolean isActivable() {
+        return activable;
     }
     
     
@@ -60,5 +95,12 @@ public enum CardType {
      */
     public static String getSubTreasures() {
         return SUB_TREASURES;
+    }
+
+    /**
+     * @return the canAddToInventory
+     */
+    public boolean isCanAddToInventory() {
+        return canAddToInventory;
     }
 }

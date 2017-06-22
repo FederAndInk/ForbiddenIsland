@@ -1,10 +1,13 @@
 package model.card;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import model.game.Island;
 import model.game.Tile;
 import model.game.TileState;
+import util.exception.EndGameException;
 import util.exception.TileException;
 
 
@@ -38,7 +41,11 @@ public class SandBag extends Card {
     @Override
     public void applyAction(Tile destTile, Object applied) throws TileException {
         if (destTile.getState() == TileState.FLOODED) {
-            destTile.setState(TileState.DRIED);
+            try {
+                destTile.setState(TileState.DRIED);
+            } catch (EndGameException ex) {
+                
+            }
         } else {
             throw new TileException(destTile, TileState.DRIED);
         }

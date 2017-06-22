@@ -1,11 +1,14 @@
 package model.adventurers;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import model.game.Tile;
 import model.game.TileState;
 import model.player.Player;
 import util.exception.ActionException;
+import util.exception.EndGameException;
 import util.exception.MoveException;
 import util.exception.TileException;
 import util.message.InGameAction;
@@ -65,10 +68,18 @@ public class Engineer extends Adventurer {
     public void shoreUp(Tile tile) throws ActionException, TileException {
         if (getShoreUpTiles().contains(tile)) {
             if (isContinueShoreUp()) {
-                tile.setState(TileState.DRIED);
+                try {
+                    tile.setState(TileState.DRIED);
+                } catch (EndGameException ex) {
+                    
+                }
                 finishAction();
             } else if (getActionPoints() > 0) {
-                tile.setState(TileState.DRIED);
+                try {
+                    tile.setState(TileState.DRIED);
+                } catch (EndGameException ex) {
+                    
+                }
                 // test for remain tiles to shore
                 if (!getShoreUpTiles().isEmpty()) {
                     setContinueShoreUp(true);

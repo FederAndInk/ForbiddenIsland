@@ -1,6 +1,9 @@
 package model.game;
 
 import util.BoardGeneration;
+import util.LogType;
+import util.Parameters;
+import util.exception.EndGameException;
 
 
 
@@ -14,7 +17,11 @@ public class Tile {
     public Tile(Coords coords, Site site) {
         setCoords(coords);
         setSite(site);
-        setState(TileState.DRIED);
+        try {
+            setState(TileState.DRIED);
+        } catch (EndGameException ex) {
+            
+        }
     }
     
     
@@ -77,9 +84,14 @@ public class Tile {
      * 
      * @param state
      * the state to set
+     * @throws util.exception.EndGameException
      */
-    public void setState(TileState state) {
+    public void setState(TileState state) throws EndGameException {
+        Parameters.printLog("The tile " + site + " change in " + state, LogType.INFO);
         this.state = state;
+        if (getSite() == Site.FOOLS_LANDING && this.state == TileState.SINKED) {
+            throw new EndGameException();
+        }
     }
     
     

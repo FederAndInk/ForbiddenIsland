@@ -8,12 +8,15 @@ package util;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import model.adventurers.AdventurerType;
 import model.game.Coords;
 import model.game.Site;
 import model.game.Tile;
 import model.game.TileState;
+import util.exception.EndGameException;
 
 
 
@@ -64,10 +67,15 @@ public class BoardGeneration {
                     tiles[j][i] = new Tile(new Coords(j, i), l.remove(l.size() - 1));
                     if (!AdventurerType.getSpawns().contains(tiles[j][i].getSite())) {
                         double rand = Math.random();
-                        if (rand < 0.3) {
-                            tiles[j][i].setState(TileState.FLOODED);
-                        } else if (rand < 0.4) {
-                            tiles[j][i].setState(TileState.SINKED);
+                        try {
+                            
+                            if (rand < 0.3) {
+                                tiles[j][i].setState(TileState.FLOODED);
+                                
+                            } else if (rand < 0.4 && tiles[j][i].getSite() != Site.FOOLS_LANDING) {
+                                tiles[j][i].setState(TileState.SINKED);
+                            }
+                        } catch (EndGameException ex) {
                         }
                     } // end if
                 } // end if

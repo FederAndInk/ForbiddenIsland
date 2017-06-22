@@ -3,6 +3,7 @@
  */
 package view.board;
 
+import java.awt.FlowLayout;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Observer;
@@ -31,6 +32,7 @@ public class PlayerPanel extends JPanel {
      */
     public PlayerPanel() {
         super();
+        setLayout(new FlowLayout(FlowLayout.CENTER, 20, -1));
         // to see the background
         setOpaque(false);
         pawns = new ArrayList<>();

@@ -9,6 +9,8 @@ import java.util.LinkedList;
 
 import model.adventurers.Adventurer;
 import model.adventurers.AdventurerType;
+import model.card.Card;
+import model.card.CardType;
 import model.player.Player;
 import util.BoardType;
 import util.LogType;
@@ -16,6 +18,7 @@ import util.Parameters;
 import util.exception.EndGameException;
 import util.exception.ExceptionType;
 import util.exception.PlayerOutOfIslandException;
+import util.exception.*;
 import util.message.InGameAction;
 
 
@@ -27,9 +30,10 @@ public class Game {
     private SeaLevel             seaLevel;
     private Island               island;
     private LinkedList<Player>   players;
-    private Deck                 treasureDeck;
-    private Deck                 floodDeck;
+    private TreasureDeck         treasureDeck;
+    private FloodDeck            floodDeck;
     private Player               currentPlayer;
+    private int                  cardsDrawn;
     private boolean              started;
     
     private ArrayList<Player> SelectedPlayers;
@@ -43,11 +47,12 @@ public class Game {
     public Game(BoardType bType) {
         started = false;
         island = new Island(bType);
-        treasureDeck = new TreasureDeck();
-        floodDeck = new FloodDeck();
+        treasureDeck = new TreasureDeck(island);
+        floodDeck = new FloodDeck(island);
         players = new LinkedList<>();
         treasures = new ArrayList<>();
         SelectedPlayers = new ArrayList<>();
+        cardsDrawn = 0;
     }
     
     
@@ -77,8 +82,30 @@ public class Game {
         Collections.shuffle(players);
         setCurrentPlayer(players.get(0));
         setCurrentAction(InGameAction.MOVE);
+        initCards();
         started = true;
     }// end name
+    
+    
+    public void initCards() {
+        for (Player player : players) {
+            for (int i = 0; i < Parameters.NB_CARD_BEGIN; i++) {
+                Card card = getTreasureDeck().draw();
+                while (card.getType() == CardType.WATERSRISE_CARD) {
+                    getTreasureDeck().discard(card);
+                    getTreasureDeck().shuffleDeck();
+                    card = getTreasureDeck().draw();
+                }
+                try {
+                    player.getCurrentAdventurer().getInventory().addCard(card);
+                } catch (CardException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        }
+        
+    }
     
     
     /**
@@ -140,12 +167,48 @@ public class Game {
     
     
     /**
+     * Add treasure to the inventory of player
+     * 
+     * @param treasure
+     * @throws util.exception.ActionException
+     * @throws util.exception.NotEnoughCardsException
+     * @throws util.exception.WrongTileTreasureException
+     */
+    public void addTreasureToPlayer(Treasure treasure)
+            throws ActionException, NotEnoughCardsException, WrongTileTreasureException {
+        Player player = getCurrentPlayer();
+        if (treasures.contains(treasure)) {
+            try {
+                for (Card card : player.getCurrentAdventurer().createTreasure(treasure)) {
+                    getTreasureDeck().discard(card);
+                }
+                treasures.remove(treasure);
+            } catch (Exception e) {
+                throw e;
+            }
+        }
+    }
+    
+    
+    /**
      * @return the possibleActions
      */
     public ArrayList<InGameAction> getPossibleActions() {
         ArrayList<InGameAction> list = new ArrayList<>();
-        list.addAll(currentPlayer.getCurrentAdventurer().getPossibleActions());
-        
+        switch (getCurrentAction()) {
+        case DRAW_TREASURE:
+            list.add(InGameAction.DRAW_TREASURE);
+            break;
+        case DRAW_FLOOD:
+            list.add(InGameAction.DRAW_FLOOD);
+            break;
+        case END_TURN:
+            list.add(InGameAction.END_TURN);
+            break;
+        default:
+            list.addAll(currentPlayer.getCurrentAdventurer().getPossibleActions());
+            break;
+        }// end switch
         return list;
     }
     
@@ -155,23 +218,89 @@ public class Game {
      *
      */
     public void endTurn() {
-        getCurrentPlayer().getCurrentAdventurer().endTurn();
-        
-        int indLastP = getPlayers().indexOf(getCurrentPlayer());
-        setCurrentPlayer(getPlayers().get((indLastP + 1) % 4));
-        getCurrentPlayer().getCurrentAdventurer().beginTurn();
-        
-        setCurrentAction(InGameAction.MOVE);
-        deselectPlayers();
+        if (currentAction == InGameAction.END_TURN) {
+            cardsDrawn = 0;
+            getCurrentPlayer().getCurrentAdventurer().endTurn();
+            
+            int indLastP = getPlayers().indexOf(getCurrentPlayer());
+            setCurrentPlayer(getPlayers().get((indLastP + 1) % 4));
+            getCurrentPlayer().getCurrentAdventurer().beginTurn();
+            setCurrentAction(InGameAction.MOVE);
+            deselectPlayers();
+        } else {
+            
+            setCurrentAction(InGameAction.DRAW_TREASURE);
+        } // end if
     }
     
     
-    public void setTileState(Tile tile, TileState state) throws PlayerOutOfIslandException {
+    /**
+     * 
+     * @param tile
+     * @param state
+     * @throws PlayerOutOfIslandException
+     * if a player get drown
+     * @throws EndGameException
+     */
+    public void setTileState(Tile tile, TileState state) throws PlayerOutOfIslandException, EndGameException {
         tile.setState(state);
         if (state.equals(TileState.SINKED) && !getPlayersOnTile(tile).isEmpty()) {
             throw new PlayerOutOfIslandException();
         } // end if
+        verifyTreasure();
     }// end setTileState
+    
+    
+    public void verifyTreasure() throws EndGameException {
+        if (!getTreasures().isEmpty()) {
+            for (Treasure treasure : getTreasures()) {
+                if (getIsland().isTreasureAllSinked((treasure.getName()))) {
+                    throw new EndGameException();
+                }
+            }
+        }
+    }
+    
+    
+    /**
+     *
+     * @param type
+     * = {@link CardType.TREASURE_CARD} for {@link TreasureDeck} <br>
+     * or {@link CardType.FLOOD_CARD} for {@link FloodDeck}
+     * @return
+     * @throws CardException
+     */
+    public Card drawEndTurnCard(InGameAction type)
+            throws EndGameException, IllegalAccessException, MoveException, TileException, CardException {
+        Card card;
+        // For actions
+        if (cardsDrawn < getNbCards(InGameAction.DRAW_TREASURE)) {
+            setCurrentAction(InGameAction.DRAW_TREASURE);
+        } else if (cardsDrawn < getNbCards(InGameAction.DRAW_FLOOD)) {
+            setCurrentAction(InGameAction.DRAW_FLOOD);
+        } else {
+            setCurrentAction(InGameAction.END_TURN);
+        } // end if
+        cardsDrawn++;
+        
+        // Draw
+        if (type.equals(InGameAction.DRAW_TREASURE)) {
+            card = getTreasureDeck().draw();
+            if (card.getType().isCanAddToInventory()) {
+                getCurrentPlayer().getCurrentAdventurer().getInventory().addCard(card);
+            } else {
+                card.applyAction(null, this);
+            }
+        } else if (type.equals(InGameAction.DRAW_FLOOD)) {
+            card = getFloodDeck().draw();
+            card.applyAction(null, this);
+            verifyTreasure();
+        } else {
+            throw new IllegalArgumentException("not a valid deck");
+        }
+        Parameters.printLog("Draw card " + card, LogType.INFO);
+        return card;
+    }
     
     
     /**
@@ -192,14 +321,35 @@ public class Game {
     
     public void increaseSeaLevel() throws EndGameException {
         seaLevel = seaLevel.next();
+        Parameters.printLog("The sealeavel has reach the level " + seaLevel, LogType.INFO);
         if (seaLevel.isLast()) {
             throw new EndGameException(ExceptionType.END_GAME_WATER);
         }
     }
     
     
+    /**
+     * @return the seaLevel
+     */
+    public SeaLevel getSeaLevel() {
+        return seaLevel;
+    }
+    
+    
     public boolean isStarted() {
         return started;
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     */
+    private int getNbCards(InGameAction type) {
+        if (type == InGameAction.DRAW_TREASURE) {
+            return Parameters.NB_CARDS;
+        } // end if
+        return Parameters.NB_CARDS + getSeaLevel().getNbCards();
     }
     
     

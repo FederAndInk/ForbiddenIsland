@@ -1,17 +1,26 @@
 package model.player;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
+import model.adventurers.Adventurer;
 import model.card.Card;
+import model.card.CardType;
 import model.card.TreasureCard;
 import model.game.Treasure;
+import model.game.TreasureType;
+import util.LogType;
+import util.Parameters;
+import util.exception.CardException;
+import util.exception.MissingCardException;
 
 
 
 public class Inventory {
     
     private ArrayList<Card>     cards;
-    private ArrayList<Treasure> tresures;
+    private ArrayList<Treasure> treasures;
+    private Adventurer          adventurer;
     private static final int    MAX_CARD = 5;
     
     
@@ -19,19 +28,10 @@ public class Inventory {
      * @author nihil
      *
      */
-    public Inventory() {
+    public Inventory(Adventurer adventurer) {
         cards = new ArrayList<>();
-        tresures = new ArrayList<>();
-    }
-    
-    
-    /**
-     * 
-     * @param card
-     */
-    public void discard(Card card) {
-        // TODO - implement Inventory.discard
-        throw new UnsupportedOperationException();
+        treasures = new ArrayList<>();
+        this.adventurer = adventurer;
     }
     
     
@@ -41,12 +41,12 @@ public class Inventory {
      * @return true if the inventory has a card standalone usable
      */
     public boolean hasCardUsable() {
-        for (Card card : cards) {
-            if (card.getType().isUsable()) {
-                return true;
-            } // end if
-        } // end for
-        return false;
+        boolean b = false;
+        Iterator<Card> it = cards.iterator();
+        while (it.hasNext() && !b) {
+            b = it.next().getType().isActivable();
+        } // end while
+        return b;
     }
     
     
@@ -55,13 +55,79 @@ public class Inventory {
     }
     
     
-    public void addCard(Card card) {
-        cards.add(card);
+    public void addCard(Card card) throws CardException {
+        if (!(getAdventurer().getPlayer().getCurrentAdventurer().getInventory().isFull())) {
+            cards.add(card);
+        } else {
+            Parameters.printLog("l'inventaire est plein", LogType.INFO);
+            throw new CardException(card, getAdventurer().getADVENTURER_TYPE());
+        }
     }
     
     
-    public boolean removeCard(TreasureCard card) {
+    public void addTreasure(Treasure treasure) {
+        treasures.add(treasure);
+    }
+    
+    
+    public boolean removeCard(Card card) {
         return cards.remove(card);
     }
     
+    
+    public Card removeTreasureCard(TreasureType type) {
+        int i = 0;
+        Card card = cards.get(i);
+        while (!card.getType().equals(CardType.TREASURE_CARD) || ((TreasureCard) card).getTreasureType() != type) {
+            i++;
+            card = cards.get(i);
+        }
+        cards.remove(card);
+        return card;
+    }
+    
+    
+    public int howManyCards(TreasureType type) {
+        int nbCards = 0;
+        for (Card card : cards) {
+            if (card.getType().equals(CardType.TREASURE_CARD)) {
+                TreasureCard tCard = (TreasureCard) card;
+                if (tCard.getTreasureType() == type) {
+                    nbCards = nbCards + 1;
+                }
+            }
+        }
+        return nbCards;
+    }
+    
+    
+    public Adventurer getAdventurer() {
+        return adventurer;
+    }
+    
+    
+    /**
+     * @param treasureType
+     * @return the specified card or exception
+     * @throws MissingCardException
+     */
+    public Card getCard(TreasureType treasureType) throws MissingCardException {
+        for (Card i : cards) {
+            if (i.getType().equals(CardType.TREASURE_CARD)
+                    && ((TreasureCard) i).getTreasureType().equals(treasureType)) {
+                return i;
+            }
+        }
+        throw new MissingCardException(treasureType, getAdventurer());
+    }
+    
+    
+    public Card getCard(CardType cardType) {
+        for (Card card : cards) {
+            if (card.getType().equals(cardType)) {
+                return card;
+            }
+        }
+        return null;
+    }
 }

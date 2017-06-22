@@ -4,10 +4,7 @@ import java.util.ArrayList;
 
 import model.card.Card;
 import model.card.TreasureCard;
-import model.game.Coords;
-import model.game.Island;
-import model.game.Tile;
-import model.game.TileState;
+import model.game.*;
 import model.player.Inventory;
 import model.player.Player;
 import util.LogType;
@@ -49,7 +46,7 @@ public abstract class Adventurer {
         setActionPoints(MAX_ACTION_POINTS);
         setPlayer(player);
         player.setCurrentAdventurer(this);
-        setInventory(new Inventory());
+        setInventory(new Inventory(this));
     }
     
     
@@ -75,7 +72,11 @@ public abstract class Adventurer {
     
     public void shoreUp(Tile tile) throws ActionException, TileException {
         if (getActionPoints() >= 1 && getShoreUpTiles().contains(tile)) {
-            tile.setState(TileState.DRIED);
+            try {
+                tile.setState(TileState.DRIED);
+            } catch (EndGameException ex) {
+                
+            }
             finishAction();
         } else {
             if (getActionPoints() < 1) {
@@ -126,6 +127,12 @@ public abstract class Adventurer {
     }
     
     
+    public ArrayList<Tile> getReachableTiles() {
+        ArrayList<Tile> reachable = getReachableTiles(getCurrentTile());
+        return reachable;
+    }
+    
+    
     /**
      * get the adjacent tiles<br>
      * .*.<br>
@@ -136,10 +143,10 @@ public abstract class Adventurer {
      *
      * @return
      */
-    public ArrayList<Tile> getReachableTiles() {
+    protected ArrayList<Tile> getReachableTiles(Tile tile) {
         
         ArrayList<Tile> reachable = new ArrayList<>();
-        Coords coords = getCurrentTile().getCoords();
+        Coords coords = tile.getCoords();
         
         Island island = getPlayer().getCurrentGame().getIsland();
         Tile tileTmp;
@@ -151,12 +158,69 @@ public abstract class Adventurer {
             effI = i % 2;
             effJ = j % 2;
             tileTmp = island.getTile(coords.getCol() + effI, coords.getRow() + effJ);
-            if ((tileTmp != null) && (tileTmp.getState() != TileState.SINKED)) {
+            if (isReachableTmp(tileTmp)) {
                 reachable.add(tileTmp);
             }
             j--;
         } // end for
         return reachable;
+        
+    }
+    
+    
+    protected boolean isReachableTmp(Tile tileTmp) {
+        return tileTmp != null && tileTmp.getState() != TileState.SINKED;
+    }
+    
+    
+    protected ArrayList<Tile> getReachableTiles(ArrayList<Tile> tilesToReach, ArrayList<Tile> tilesAlreadyRead,
+            int deep) {
+        ArrayList<Tile> children = new ArrayList<>();
+        for (int d = 1; d < deep; d++) {
+            for (Tile tToReach : tilesToReach) {
+                Island island = getPlayer().getCurrentGame().getIsland();
+                Coords coords = tToReach.getCoords();
+                
+                int j = 2;
+                int effI;
+                int effJ;
+                Tile tileTmp;
+                for (int i = -1; i <= 2; i += 1) {
+                    effI = i % 2;
+                    effJ = j % 2;
+                    tileTmp = island.getTile(coords.getCol() + effI, coords.getRow() + effJ);
+                    if (!tilesAlreadyRead.contains(tileTmp)) { // if the tile is not already treated
+                        if (isReachableTmp(tileTmp)) {
+                            tilesAlreadyRead.add(tileTmp);
+                            children.add(tileTmp);
+                        }
+                    }
+                    j--;
+                }
+            }
+            tilesToReach.clear();
+            tilesToReach.addAll(children);
+            children.clear();
+        }
+        return tilesAlreadyRead;
+    }
+    
+    
+    protected ArrayList<Tile> getReachableTiles(int nbHit) {
+        ArrayList<Tile> reachableAll = new ArrayList<>(getReachableTiles(getCurrentTile()));
+        ArrayList<Tile> reachable = new ArrayList<>(getReachableTiles(getCurrentTile()));
+        
+        getReachableTiles(reachable, reachableAll, nbHit);
+        
+        Tile tile;
+        for (int j = 0; j < reachableAll.size(); j++) {
+            tile = reachableAll.get(j);
+            if (tile.getState() == TileState.SINKED || getCurrentTile().equals(tile)) {
+                reachableAll.remove(j);
+                j--;
+            }
+        }
+        return reachableAll;
         
     }
     
@@ -169,10 +233,15 @@ public abstract class Adventurer {
      * @param tile
      * @throws MoveException
      * @throws ActionException
+     * @throws EndGameException
      */
-    public void swim(Tile tile) throws MoveException, ActionException {
-        setActionPoints(1);
-        move(tile);
+    public void swim(Tile tile) throws MoveException, ActionException, EndGameException {
+        if (getSwimmableTiles().contains(tile)) {
+            setActionPoints(1);
+            move(tile);
+        } else {
+            throw new MoveException(tile);
+        } // end if
     }
     
     
@@ -190,6 +259,31 @@ public abstract class Adventurer {
             throw new EndGameException(ExceptionType.END_GAME_DEATH);
         } // end if
         return getReachableTiles();
+    }
+    
+    
+    public ArrayList<Card> createTreasure(Treasure treasure)
+            throws ActionException, NotEnoughCardsException, WrongTileTreasureException {
+        Tile tile = getCurrentTile();
+        ArrayList<Card> removedCards = new ArrayList<>();
+        if (tile.getSite().getTreasureType() != null) {
+            if (inventory.howManyCards(tile.getSite().getTreasureType()) == 4
+                    && treasure.getName() == tile.getSite().getTreasureType()) {
+                if (getActionPoints() >= 1) {
+                    inventory.addTreasure(treasure);
+                    for (int i = 0; i <= 3; i++) {
+                        removedCards.add(inventory.removeTreasureCard(tile.getSite().getTreasureType()));
+                    }
+                    return removedCards;
+                } else {
+                    throw new ActionException(getActionPoints());
+                }
+            } else {
+                throw new NotEnoughCardsException(inventory.howManyCards(tile.getSite().getTreasureType()));
+            }
+        } else {
+            throw new WrongTileTreasureException(tile, tile.getSite().getTreasureType().toString());
+        }
     }
     
     
@@ -217,6 +311,7 @@ public abstract class Adventurer {
             } // end if
         } // end if
           // no action required
+        list.add(InGameAction.END_TURN);
         if (inventory.hasCardUsable()) {
             list.add(InGameAction.USE_CARD);
         } // end if
@@ -232,7 +327,8 @@ public abstract class Adventurer {
      * @throws MoveException
      * @throws ActionException
      */
-    public void useCapacity(Object o) throws InadequateUseOfCapacityException, MoveException, ActionException {
+    public void useCapacity(Tile tileDest, Object applied) throws InadequateUseOfCapacityException, MoveException,
+            ActionException, NavigatorCannotMoveHimselfException {
         throw new InadequateUseOfCapacityException();
     }// end useCapacity
     
@@ -243,7 +339,7 @@ public abstract class Adventurer {
      * @return the objects where a capacity can be applied
      * @throws InadequateUseOfCapacityException
      */
-    public ArrayList<Object> getPotentialUse() throws InadequateUseOfCapacityException {
+    public ArrayList<Object> getPotentialUse(Object applied) throws InadequateUseOfCapacityException {
         throw new InadequateUseOfCapacityException();
     }
     
@@ -339,6 +435,7 @@ public abstract class Adventurer {
      * the currentTile to set
      */
     public void setCurrentTile(Tile currentTile) {
+        Parameters.printLog("move " + getADVENTURER_TYPE() + " to " + currentTile, LogType.INFO);
         this.currentTile = currentTile;
     }
     
@@ -376,29 +473,48 @@ public abstract class Adventurer {
     }
     
     
-    public void giveCard(TreasureCard card, Player player) {
-        if (card.getTreasureType().equals(getCurrentTile().getSite().geTreasureType())) {
-            if (player.getCurrentAdventurer().getCurrentTile().equals(getCurrentTile())) {
-                if (player.getCurrentAdventurer().getInventory().isFull()) {
-                    if (getInventory().removeCard(card)) {
-                        player.getCurrentAdventurer().recieveCard(card);
-                    } else {
-                        // FIXME : add throws
-                        Parameters.printLog("il a pas la carte " + card + " dans l'inventaire de " + this,
-                                LogType.ACCESS);
-                    }
+    public void giveCard(Player player) throws CardException, GiveCardException, MissingCardException {
+        TreasureCard card = (TreasureCard) getInventory().getCard(getCurrentTile().getSite().getTreasureType());
+        if (isExchangePossibleHere(card.getTreasureType())) {
+            if (reachableExchangePlayer(player)) {
+                if (getInventory().removeCard(card)) {
+                    Parameters.printLog("\nle joueur " + getPlayer() + " donne la carte " + card, LogType.INFO);
+                    player.getCurrentAdventurer().recieveCard(card);
+                } else {
+                    Parameters.printLog("il n'y a pas la carte " + card + " dans l'inventaire de " + this,
+                            LogType.ERROR);
+                    throw new MissingCardException(card.getTreasureType(), this);
                 }
+            } else {
+                Parameters.printLog("les joueurs ne sont pas sur la même case", LogType.ERROR);
+                throw new GiveCardException(this, player.getCurrentAdventurer());
             }
+            
+        } else {
+            Parameters.printLog("le type de carte ne correspond pas", LogType.ERROR);
+            throw new GiveCardException(card.getTreasureType(), this);
         }
     }
     
     
-    public void recieveCard(Card card) {
-        getInventory().addCard(card);
+    protected boolean reachableExchangePlayer(Player player) {
+        return (player.getCurrentAdventurer().getCurrentTile().equals(getCurrentTile()));
     }
     
     
-    public void drawCard() {
+    /**
+     * @author nihil
+     * @return true if the exchange of card is possible on the {@link #getCurrentTile()}
+     *
+     */
+    protected boolean isExchangePossibleHere(TreasureType type) {
+        return type.equals(getCurrentTile().getSite().getTreasureType());
+    }
+    
+    
+    public void recieveCard(TreasureCard card) throws CardException {
+        Parameters.printLog("\nle joueur " + getPlayer() + " reçois la carte " + card, LogType.INFO);
+        getInventory().addCard(card);
         
     }
 }

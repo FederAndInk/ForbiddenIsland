@@ -3,15 +3,8 @@ package view;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
+import javax.swing.*;
 
 import util.LogType;
 import util.Parameters;
@@ -71,7 +64,11 @@ public class JPanelOption extends JPanel {
         
         fullscreen = new JRadioButton("plein ecran");
         screen.add(fullscreen);
-        fullscreen.setSelected(true);
+        if (Parameters.fullscreen) {
+            fullscreen.setSelected(true);
+        } else {
+            windowed.setSelected(true);
+        } // end if
         
         screenoption.add(fullscreen);
         screenoption.add(windowed);
@@ -90,7 +87,11 @@ public class JPanelOption extends JPanel {
         
         debugOk = new JRadioButton("oui");
         debugPanel.add(debugOk);
-        debugNo.setSelected(true);
+        if (Parameters.debug) {
+            debugOk.setSelected(true);
+        } else {
+            debugNo.setSelected(true);
+        } // end if
         
         debugButtonGroup.add(debugNo);
         debugButtonGroup.add(debugOk);
@@ -98,31 +99,24 @@ public class JPanelOption extends JPanel {
     
     
     public void listener() {
-        annuler.addActionListener(new ActionListener() {
-            
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Parameters.printLog("annuler", LogType.INFO);
-                ((CardLayout) getParent().getLayout()).show(getParent(), "main");
-            }
+        annuler.addActionListener(e -> {
+            Parameters.printLog("annuler", LogType.INFO);
+            ((CardLayout) getParent().getLayout()).show(getParent(), "main");
         });
-        valider.addActionListener(new ActionListener() {
-            
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Parameters.printLog("valider", LogType.INFO);
-                if (fullscreen.isSelected()) {
-                    Parameters.printLog("fullscreen", LogType.INFO);
-                    // FIXME fullscreen
-                } else {
-                    Parameters.printLog("windowed", LogType.INFO);
-                    // FIXME windowed
-                }
-                Parameters.debug = debugOk.isSelected();
-                repaint();
-                Parameters.printLog("valider", LogType.INFO);
-                ((CardLayout) getParent().getLayout()).show(getParent(), "main");
+        valider.addActionListener(e -> {
+            Parameters.printLog("valider", LogType.INFO);
+            if (fullscreen.isSelected()) {
+                Parameters.printLog("fullscreen", LogType.INFO);
+                Parameters.fullscreen = true;
+            } else {
+                Parameters.printLog("windowed", LogType.INFO);
+                Parameters.fullscreen = false;
             }
+            ((MainView) getRootPane().getParent()).initSize();
+            Parameters.debug = debugOk.isSelected();
+            repaint();
+            Parameters.printLog("valider", LogType.INFO);
+            ((CardLayout) getParent().getLayout()).show(getParent(), "main");
         });
     }
 }

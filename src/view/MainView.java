@@ -1,13 +1,13 @@
 package view;
 
-import java.awt.CardLayout;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.util.Observer;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import controller.MainController;
+import util.Parameters;
 import util.exception.ExceptionType;
 import view.pause.PausePanel;
 
@@ -82,8 +82,24 @@ public class MainView extends JFrame {
     }
     
     
-    private void initSize() {
-        setSize(750, 500);
+    public void initSize() {
+        if (!Parameters.fullscreen) {
+            dispose();
+            Parameters.appSize = new Dimension(650, 500);
+            setLocation((int) (Parameters.screenSize.getWidth() / 2 - Parameters.appSize.getWidth() / 2),
+                    (int) ((Parameters.screenSize.getHeight() - Parameters.appSize.getHeight()) / 2));
+            setUndecorated(false);
+            GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().setFullScreenWindow(null);
+            setExtendedState(NORMAL);
+            setVisible(true);
+        } else {
+            dispose();
+            Parameters.appSize = Toolkit.getDefaultToolkit().getScreenSize();
+            setUndecorated(true);
+            GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().setFullScreenWindow(this);
+            setExtendedState(MAXIMIZED_BOTH);
+        } // end if
+        setSize((int) (Parameters.appSize.getWidth()), (int) Parameters.appSize.getHeight());
     }
     
     

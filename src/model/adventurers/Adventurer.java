@@ -257,6 +257,17 @@ public abstract class Adventurer {
     }
     
     
+    /**
+     * @author nihil
+     * @return
+     *
+     */
+    private boolean canGetTreasure() {
+        return getActionPoints() > 0 && getCurrentTile().getSite().getTreasureType() != null
+                && inventory.howManyCards(getCurrentTile().getSite().getTreasureType()) == 4;
+    }
+    
+    
     public ArrayList<Card> createTreasure(Treasure treasure)
             throws ActionException, NotEnoughCardsException, WrongTileTreasureException {
         Tile tile = getCurrentTile();
@@ -299,14 +310,19 @@ public abstract class Adventurer {
         
         // action required
         if (getActionPoints() > 0) {
-            list.add(InGameAction.GIVE_CARD);
             list.add(InGameAction.MOVE);
             if (!getShoreUpTiles().isEmpty()) {
                 list.add(InGameAction.SHORE_UP_TILE);
             } // end if
+            if (canGetTreasure()) {
+                list.add(InGameAction.GET_TREASURE);
+            } // end if
         } // end if
           // no action required
         list.add(InGameAction.END_TURN);
+        if (inventory.hasCard()) {
+            list.add(InGameAction.DISCARD);
+        } // end if
         if (inventory.hasCardUsable()) {
             list.add(InGameAction.USE_CARD);
         } // end if
@@ -470,7 +486,7 @@ public abstract class Adventurer {
     
     public void giveCard(Player player) throws CardException, GiveCardException, MissingCardException {
         TreasureCard card = (TreasureCard) getInventory().getCard(getCurrentTile().getSite().getTreasureType());
-        if (isExchangePossibleHere(card.getTreasureType())) {
+        if (isExchangePossibleHere()) {
             if (reachableExchangePlayer(player)) {
                 if (getInventory().removeCard(card)) {
                     Parameters.printLog("\nle joueur " + getPlayer() + " donne la carte " + card, LogType.INFO);
@@ -502,8 +518,8 @@ public abstract class Adventurer {
      * @return true if the exchange of card is possible on the {@link #getCurrentTile()}
      *
      */
-    protected boolean isExchangePossibleHere(TreasureType type) {
-        return type.equals(getCurrentTile().getSite().getTreasureType());
+    public boolean isExchangePossibleHere() {
+        return getCurrentTile().getSite().getTreasureType().equals(getCurrentTile().getSite().getTreasureType());
     }
     
     

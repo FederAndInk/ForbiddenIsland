@@ -199,6 +199,10 @@ public class Game {
             break;
         default:
             list.addAll(currentPlayer.getCurrentAdventurer().getPossibleActions());
+            if (!list.contains(InGameAction.GIVE_CARD) && !getIsland().getNearPlayer(this).isEmpty()
+                    && currentPlayer.getCurrentAdventurer().isExchangePossibleHere()) {
+                list.add(InGameAction.GIVE_CARD);
+            } // end if
             break;
         }// end switch
         return list;

@@ -1,10 +1,6 @@
 package util;
 
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontFormatException;
-import java.awt.GraphicsEnvironment;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -19,7 +15,7 @@ public class Parameters {
     public static final Boolean LOGS        = true;
     public static final boolean SHORT_LOG   = true;
     public static Lang          LANG        = Lang.EN;
-    public static boolean       debug       = true;
+    public static boolean       debug       = false;
     /**
      * when an action is done with debugMode
      */
@@ -32,7 +28,8 @@ public class Parameters {
     public static Font DEFAULT_FONT = initFont();
     // screen
     public static Dimension appSize    = Toolkit.getDefaultToolkit().getScreenSize();
-    public static Boolean   fullscreen = true;
+    public static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    public static Boolean   fullscreen = false;
     // Game settings
     public static int NB_CARDS = 2;
     

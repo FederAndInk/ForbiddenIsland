@@ -18,6 +18,7 @@ import java.util.Observer;
 import javax.imageio.ImageIO;
 import javax.swing.JLayeredPane;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
 import model.adventurers.AdventurerType;
@@ -62,6 +63,7 @@ public class TilePanel extends JLayeredPane {
     private JMenuItem           heli2;
     private static final String DEBUG_HELICOPTER  = "helicopter";
     private static final String DEBUG_HELICOPTER2 = "helicopter2";
+    private JPanel              tPane;
     
     
     /**
@@ -92,6 +94,13 @@ public class TilePanel extends JLayeredPane {
         setState(TileState.DRIED);
         add(text, BorderLayout.SOUTH);
         add(playerPanel, BorderLayout.CENTER);
+        if (site.getTreasureType() != null) {
+            TreasureComponent treasure = new TreasureComponent(site.getTreasureType(), true);
+            tPane = new JPanel(new BorderLayout());
+            tPane.add(treasure, BorderLayout.NORTH);
+            tPane.setOpaque(false);
+            add(tPane, BorderLayout.EAST);
+        } // end if
         
         if (Parameters.debug) {
             debug = new JPopupMenu();
@@ -157,10 +166,16 @@ public class TilePanel extends JLayeredPane {
             BufferedImage bi = ImageIO.read(new File(site.getFile(state)));
             if (state.equals(TileState.SINKED)) {
                 remove(text);
+                if (site.getTreasureType() != null) {
+                    remove(tPane);
+                } // end if
                 g.drawImage(bi, 0, 0, (int) getSize().getWidth(), (int) (getSize().getHeight()), this);
             } else {
                 if (getIndexOf(text) == -1) {
                     add(text, BorderLayout.SOUTH);
+                }
+                if (getIndexOf(tPane) == -1 && site.getTreasureType() != null) {
+                    add(tPane, BorderLayout.EAST);
                 }
                 
                 if (site.isDoubleLigned()) {

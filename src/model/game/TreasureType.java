@@ -33,6 +33,11 @@ public enum TreasureType {
     }
     
     
+    public String getLogo() {
+        return Parameters.LOGO + "Treasure_Icon_" + label.replace(" ", "_") + "@2x.png";
+    }// end getLogo
+    
+    
     @Override
     public String toString() {
         return label;

@@ -75,7 +75,7 @@ public class Parameters {
                         type.getColor() + format1.format(cal.getTime()) + " : " + text.toString() + type.getReset());
                 
             } else {
-                if (type.equals(LogType.INFO)) {
+                if (type.equals(LogType.INFO) || type.equals(LogType.ERROR)) {
                     System.out.println(type.getColor() + format1.format(cal.getTime()) + " : " + text.toString()
                             + type.getReset());
                 } // end if

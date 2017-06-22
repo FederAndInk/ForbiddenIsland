@@ -65,7 +65,7 @@ public class Island {
         int i = 0;
         for (Tile[] tiles1 : getGrid()) {
             for (Tile tile : tiles1) {
-                if (tile.getSite().getTreasureType() == treasure) {
+                if (tile != null && tile.getSite().getTreasureType() == treasure) {
                     tiles[i] = tile;
                     i++;
                 }

@@ -251,6 +251,7 @@ public class Game {
         if (!getTreasures().isEmpty()) {
             for (Treasure treasure : getTreasures()) {
                 if (getIsland().isTreasureAllSinked((treasure.getName()))) {
+                    Parameters.printLog("End, treasure not retrievable", LogType.ERROR);
                     throw new EndGameException(ExceptionType.END_GAME_TREASURE);
                 }
             }

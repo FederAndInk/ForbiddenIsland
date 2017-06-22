@@ -1,13 +1,11 @@
 package view.player;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import java.awt.*;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
+import javax.swing.border.BevelBorder;
 
 import model.adventurers.AdventurerType;
 import model.card.CardType;
@@ -22,18 +20,47 @@ public class playerInventory extends JPanel {
     private boolean               left;
     private GridBagLayout         lT;
     private GridBagConstraints    gLT;
+    private JPanel                treasure;
     
     
     public playerInventory(AdventurerType adv, boolean left) {
         cards = new ArrayList<>();
         setBorder(BorderFactory.createLineBorder(Color.red));
+        
+        initLayout();
+        initTreasures();
+        
+        addCard(CardType.SANDBAG_CARD);
+        addCard(CardType.SANDBAG_CARD);
+        addCard(CardType.SANDBAG_CARD);
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     */
+    private void initTreasures() {
+        treasure = new JPanel(new GridLayout(2, 2));
+        treasure.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED, Color.BLUE, Color.BLACK));
+        gLT.gridx = 5;
+        add(treasure, gLT);
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     */
+    private void initLayout() {
         lT = new GridBagLayout();
-        double[] nb = { 0.2, 0.2, 0.2, 0.2, 0.2 };
+        double[] nb = { 0.2, 0.2, 0.2, 0.2, 0.2, 0.4 };
         lT.columnWeights = nb;
         // to set the number of columns
-        int[] nb2 = new int[5];
+        int[] nb2 = new int[6];
         lT.columnWidths = nb2;
         gLT = new GridBagConstraints();
+        
         setLayout(lT);
         gLT.gridy = 0;
         gLT.gridheight = 1;
@@ -41,10 +68,6 @@ public class playerInventory extends JPanel {
         gLT.weighty = 1;
         
         gLT.fill = GridBagConstraints.BOTH;
-        
-        addCard(CardType.SANDBAG_CARD);
-        addCard(CardType.SANDBAG_CARD);
-        addCard(CardType.SANDBAG_CARD);
     }
     
     

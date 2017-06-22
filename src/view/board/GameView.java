@@ -25,7 +25,7 @@ import util.message.InGameAction;
 import util.message.InGameMessage;
 import util.message.MainAction;
 import util.message.MainMessage;
-import view.Cards.DeckComponant;
+import view.Cards.DeckComponent;
 import view.player.PlayerInfo;
 import view.player.playerInventory;
 
@@ -65,8 +65,8 @@ public class GameView extends JFrame {
     private HashMap<AdventurerType, playerInventory> inventories;
     
     // Decks
-    private DeckComponant treasureDeck;
-    private DeckComponant floodDeck;
+    private DeckComponent treasureDeck;
+    private DeckComponent floodDeck;
     private JPanel        decksPane;
     
     private JPanel flood;
@@ -273,8 +273,8 @@ public class GameView extends JFrame {
      * @author nihil
      */
     private void initDecks() {
-        treasureDeck = new DeckComponant(CardType.TREASURE_CARD);
-        floodDeck = new DeckComponant(CardType.FLOOD_CARD);
+        treasureDeck = new DeckComponent(CardType.TREASURE_CARD);
+        floodDeck = new DeckComponent(CardType.FLOOD_CARD);
         decksPane = new JPanel(new GridLayout(2, 1));
         
         westPane.add(decksPane, BorderLayout.CENTER);
@@ -605,6 +605,16 @@ public class GameView extends JFrame {
         public void windowDeactivated(WindowEvent e) {
         }
         
+    }
+    
+    
+    /**
+     * @author nihil
+     * @return
+     *
+     */
+    public playerInventory getPInventory(AdventurerType adv) {
+        return inventories.get(adv);
     }
     
     

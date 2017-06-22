@@ -80,8 +80,8 @@ public class PlayerPanel extends JPanel {
     protected void addPawn(AdventurerType pawn) {
         Parameters.printLog("Add " + pawn + " n°" + pawns.size() + " to " + ((TilePanel) getParent()).getPos(),
                 LogType.INFO);
-        PawnComponant pComponant = FIGraphics.getPawn(pawn);
-        add(pComponant);
+        PawnComponent pComponent = FIGraphics.getPawn(pawn);
+        add(pComponent);
         pawns.add(pawn);
         doLayout();
     }

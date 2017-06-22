@@ -66,13 +66,13 @@ public class JPanelOptionJeu extends JPanel {
     public JPanelOptionJeu(JPanelMenu card) {
         this.card = card;
         
-        initComponant();
+        initComponent();
         dynamicPlayer();
         listener();
     }
     
     
-    private void initComponant() {
+    private void initComponent() {
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
         nbjoueur = new JPanel();
         joueur = new JLabel("Nombre de joueur :");

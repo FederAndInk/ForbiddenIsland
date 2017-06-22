@@ -33,7 +33,7 @@ import util.message.InGameMessage;
  * @author nihil
  *
  */
-public class PawnComponant extends JComponent {
+public class PawnComponent extends JComponent {
     private float          pawnSize = (float) 0.4;
     private AdventurerType pawn;
     private boolean        selected;
@@ -45,7 +45,7 @@ public class PawnComponant extends JComponent {
      * give the {@link AdventurerType} and the maagic trick will do effect
      * 
      */
-    public PawnComponant(AdventurerType pawn) {
+    public PawnComponent(AdventurerType pawn) {
         this.pawn = pawn;
         setSelected(false);
         initListeners();
@@ -67,7 +67,7 @@ public class PawnComponant extends JComponent {
      * give the {@link AdventurerType} and the maagic trick will do effect
      * 
      */
-    public PawnComponant(AdventurerType pawn, Observer obs) {
+    public PawnComponent(AdventurerType pawn, Observer obs) {
         this.pawn = pawn;
         setSelected(false);
         initListeners(obs);

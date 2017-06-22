@@ -10,7 +10,7 @@ import javax.swing.BorderFactory;
 import javax.swing.border.Border;
 
 import model.adventurers.AdventurerType;
-import view.board.PawnComponant;
+import view.board.PawnComponent;
 
 
 
@@ -36,12 +36,12 @@ public class FIGraphics {
     public static final Border INACTIVE_BORDER           = BorderFactory.createLineBorder(Color.GRAY, 3, true);
     
     // Pawns
-    private static PawnComponant DIVER;
-    private static PawnComponant EXPLORER;
-    private static PawnComponant ENGINEER;
-    private static PawnComponant MESSENGER;
-    private static PawnComponant PILOT;
-    private static PawnComponant NAVIGATOR;
+    private static PawnComponent DIVER;
+    private static PawnComponent EXPLORER;
+    private static PawnComponent ENGINEER;
+    private static PawnComponent MESSENGER;
+    private static PawnComponent PILOT;
+    private static PawnComponent NAVIGATOR;
     
     
     /**
@@ -49,12 +49,12 @@ public class FIGraphics {
      *
      */
     public static void init(Observer obs) {
-        DIVER = new PawnComponant(AdventurerType.DIVER, obs);
-        EXPLORER = new PawnComponant(AdventurerType.EXPLORER, obs);
-        ENGINEER = new PawnComponant(AdventurerType.ENGINEER, obs);
-        MESSENGER = new PawnComponant(AdventurerType.MESSENGER, obs);
-        PILOT = new PawnComponant(AdventurerType.PILOT, obs);
-        NAVIGATOR = new PawnComponant(AdventurerType.NAVIGATOR, obs);
+        DIVER = new PawnComponent(AdventurerType.DIVER, obs);
+        EXPLORER = new PawnComponent(AdventurerType.EXPLORER, obs);
+        ENGINEER = new PawnComponent(AdventurerType.ENGINEER, obs);
+        MESSENGER = new PawnComponent(AdventurerType.MESSENGER, obs);
+        PILOT = new PawnComponent(AdventurerType.PILOT, obs);
+        NAVIGATOR = new PawnComponent(AdventurerType.NAVIGATOR, obs);
     }
     
     
@@ -62,7 +62,7 @@ public class FIGraphics {
      * @author nihil
      *
      */
-    public static PawnComponant getPawn(AdventurerType adv) {
+    public static PawnComponent getPawn(AdventurerType adv) {
         switch (adv) {
         case DIVER:
             return DIVER;

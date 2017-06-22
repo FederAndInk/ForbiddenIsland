@@ -114,7 +114,7 @@ public class BoardPanel extends JPanel {
             
             @Override
             public void componentResized(ComponentEvent e) {
-                Parameters.printLog("Componant " + getThis().getClass().getName() + " is resizing", LogType.GRAPHICS);
+                Parameters.printLog("Component " + getThis().getClass().getName() + " is resizing", LogType.GRAPHICS);
                 
                 // for the length of grid side (with multiplier to not take the entire space)
                 int gridBord = (int) (getBoardSize()

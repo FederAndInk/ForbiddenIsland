@@ -22,7 +22,7 @@ import model.game.Site;
  * @author nihil
  *
  */
-public class DiscardComponant extends JPanel {
+public class DiscardComponent extends JPanel {
     private CardType type;
     private Site     lastCard;
     private boolean  empty;
@@ -34,7 +34,7 @@ public class DiscardComponant extends JPanel {
      *
      * @param type
      */
-    public DiscardComponant(CardType type) {
+    public DiscardComponent(CardType type) {
         super();
         this.type = type;
         empty = true;

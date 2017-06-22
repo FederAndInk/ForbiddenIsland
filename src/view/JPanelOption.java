@@ -65,6 +65,7 @@ public class JPanelOption extends JPanel {
         
         fullscreen = new JRadioButton("plein ecran");
         screen.add(fullscreen);
+        fullscreen.setSelected(true);
         
         screenoption.add(fullscreen);
         screenoption.add(windowed);

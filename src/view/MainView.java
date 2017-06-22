@@ -21,6 +21,7 @@ public class MainView extends JFrame {
     private JPanelTuto       tutoPanel;
     private MainController   controller;
     private JPanelChoixMap   choixMap;
+    private JPanelFin        fin;
     
     private JPanel card;
     
@@ -34,6 +35,7 @@ public class MainView extends JFrame {
         main = new JPanel(new CardLayout());
         tutoPanel = new JPanelTuto();
         choixMap = new JPanelChoixMap();
+        fin = new JPanelFin();
         getContentPane().add(main);
         
         card.setLayout(new CardLayout());
@@ -49,6 +51,9 @@ public class MainView extends JFrame {
         
         // la selection de la map
         card.add(choixMap, "choixMap");
+        
+        // la fin
+        card.add(fin, "fin");
         
         main.add(lesBoutons, "lesBoutons");
         lesBoutons.add(mainMenu);

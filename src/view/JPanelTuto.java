@@ -14,8 +14,9 @@ import util.Parameters;
 
 
 public class JPanelTuto extends JPanel {
-    private JPanel  retourPanel;
-    private JButton retour;
+    private JPanel               retourPanel;
+    private JButton              retour;
+    private JPanelWorkInProgress workInProgress;
     
     
     public JPanelTuto() {
@@ -27,8 +28,11 @@ public class JPanelTuto extends JPanel {
     public void initComponnent() {
         retourPanel = new JPanel();
         retour = new JButton("retour");
+        workInProgress = new JPanelWorkInProgress();
         
         setLayout(new BorderLayout());
+        
+        add(workInProgress);
         
         add(retourPanel, BorderLayout.SOUTH);
         

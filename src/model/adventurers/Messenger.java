@@ -2,7 +2,6 @@ package model.adventurers;
 
 import java.util.ArrayList;
 
-import model.game.TreasureType;
 import model.player.Player;
 import util.message.InGameAction;
 
@@ -26,11 +25,9 @@ public class Messenger extends Adventurer {
      */
     @Override
     public ArrayList<InGameAction> getPossibleActions() {
-        ArrayList<InGameAction> list = super.getPossibleActions();
-        if (getActionPoints() > 0) {
-            list.add(InGameAction.USE_CAPACITY);
-        } // end if
-        return list;
+        ArrayList<InGameAction> actions = super.getPossibleActions();
+        actions.add(InGameAction.GIVE_CARD);
+        return actions;
     }
     
     
@@ -47,7 +44,7 @@ public class Messenger extends Adventurer {
      * @see model.adventurers.Adventurer#isExchangePossibleHere(model.game.TreasureType)
      */
     @Override
-    protected boolean isExchangePossibleHere(TreasureType type) {
+    public boolean isExchangePossibleHere() {
         return true;
     }
 }

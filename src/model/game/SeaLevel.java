@@ -51,6 +51,11 @@ public enum SeaLevel {
     }
     
     
+    public int getLevel() {
+        return Integer.parseInt(getLevelName().replace("Level ", ""));
+    }
+    
+    
     /**
      * @author nihil
      * @return true if this is the last level

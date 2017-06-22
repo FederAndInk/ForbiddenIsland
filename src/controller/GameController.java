@@ -49,6 +49,7 @@ public class GameController implements Observer {
     public GameController(MainController mainController) {
         this.mainController = mainController;
         gameView = new GameView();
+        gameView.setVisible(false);
         gameView.addObs(this);
         gameView.addObs(getMainController());
         
@@ -106,7 +107,7 @@ public class GameController implements Observer {
      *
      */
     public void StartGame(SeaLevel seaLevel) {
-        tmpGameStart();
+        // tmpGameStart();
         getCurrentGame().initGame(seaLevel);
         FIGraphics.init(this);
         

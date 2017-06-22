@@ -13,9 +13,8 @@ import util.Parameters;
 
 
 
-public class JPanelPicture extends JPanel {
-    
-    public JPanelPicture() {
+public class JPanelWorkInProgress extends JPanel {
+    public JPanelWorkInProgress() {
         super();
     }
     
@@ -25,7 +24,7 @@ public class JPanelPicture extends JPanel {
         super.paintComponent(g);
         Parameters.printLog("Paint Main picture", LogType.GRAPHICS);
         try {
-            BufferedImage bImage = ImageIO.read(new File(Parameters.RESOURCES + "background.jpg"));
+            BufferedImage bImage = ImageIO.read(new File(Parameters.RESOURCES + "Work_In_Progress.png"));
             g.drawImage(bImage, 2, 2, (int) getSize().getWidth(), (int) getSize().getHeight(), this);
         } catch (IOException e) {
             e.printStackTrace();

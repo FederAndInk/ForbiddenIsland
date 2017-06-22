@@ -4,6 +4,7 @@ import util.BoardGeneration;
 import util.LogType;
 import util.Parameters;
 import util.exception.EndGameException;
+import util.exception.ExceptionType;
 
 
 
@@ -90,7 +91,7 @@ public class Tile {
         Parameters.printLog("The tile " + site + " change in " + state, LogType.INFO);
         this.state = state;
         if (getSite() == Site.FOOLS_LANDING && this.state == TileState.SINKED) {
-            throw new EndGameException();
+            throw new EndGameException(ExceptionType.END_GAME_HELI);
         }
     }
     

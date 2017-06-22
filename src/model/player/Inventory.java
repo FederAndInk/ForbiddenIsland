@@ -50,6 +50,11 @@ public class Inventory {
     }
     
     
+    public boolean hasCard() {
+        return !cards.isEmpty();
+    }// end hasCard
+    
+    
     public boolean isFull() {
         return (cards.size() >= MAX_CARD);
     }

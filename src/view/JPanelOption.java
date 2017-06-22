@@ -3,15 +3,8 @@ package view;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
+import javax.swing.*;
 
 import util.LogType;
 import util.Parameters;
@@ -30,6 +23,10 @@ public class JPanelOption extends JPanel {
     private JPanel            langPanel;
     private String[]          itemLangue;
     private JComboBox<String> langueBox;
+    private JPanel            debugPanel;
+    private ButtonGroup       debugButtonGroup;
+    private JRadioButton      debugOk;
+    private JRadioButton      debugNo;
     
     
     public JPanelOption() {
@@ -44,7 +41,8 @@ public class JPanelOption extends JPanel {
         valan = new JPanel(new BorderLayout());
         screenoption = new ButtonGroup();
         langPanel = new JPanel();
-        mainOptionPanel = new JPanel(new GridLayout(2, 1));
+        mainOptionPanel = new JPanel(new GridLayout(3, 1));
+        debugPanel = new JPanel();
         
         annuler = new JButton("annuler");
         valider = new JButton("valider");
@@ -52,6 +50,7 @@ public class JPanelOption extends JPanel {
         add(mainOptionPanel, BorderLayout.CENTER);
         mainOptionPanel.add(screen);
         mainOptionPanel.add(langPanel);
+        mainOptionPanel.add(debugPanel);
         add(valan, BorderLayout.SOUTH);
         
         // le type de fenetre
@@ -65,6 +64,11 @@ public class JPanelOption extends JPanel {
         
         fullscreen = new JRadioButton("plein ecran");
         screen.add(fullscreen);
+        if (Parameters.fullscreen) {
+            fullscreen.setSelected(true);
+        } else {
+            windowed.setSelected(true);
+        } // end if
         
         screenoption.add(fullscreen);
         screenoption.add(windowed);
@@ -74,32 +78,45 @@ public class JPanelOption extends JPanel {
         langueBox = new JComboBox<>(itemLangue);
         langPanel.add(new JLabel("selectionnez une langue :"));
         langPanel.add(langueBox);
+        
+        // le debuger
+        debugPanel.add(new JLabel("activer le debuger?"));
+        debugButtonGroup = new ButtonGroup();
+        debugNo = new JRadioButton("non");
+        debugPanel.add(debugNo);
+        
+        debugOk = new JRadioButton("oui");
+        debugPanel.add(debugOk);
+        if (Parameters.debug) {
+            debugOk.setSelected(true);
+        } else {
+            debugNo.setSelected(true);
+        } // end if
+        
+        debugButtonGroup.add(debugNo);
+        debugButtonGroup.add(debugOk);
     }
     
     
     public void listener() {
-        annuler.addActionListener(new ActionListener() {
-            
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Parameters.printLog("annuler", LogType.INFO);
-                ((CardLayout) getParent().getLayout()).show(getParent(), "main");
-            }
+        annuler.addActionListener(e -> {
+            Parameters.printLog("annuler", LogType.INFO);
+            ((CardLayout) getParent().getLayout()).show(getParent(), "main");
         });
-        valider.addActionListener(new ActionListener() {
-            
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Parameters.printLog("valider", LogType.INFO);
-                if (fullscreen.isSelected()) {
-                    Parameters.printLog("fullscreen", LogType.INFO);
-                    // FIXME fullscreen
-                } else {
-                    Parameters.printLog("windowed", LogType.INFO);
-                    // FIXME windowed
-                }
-                repaint();
+        valider.addActionListener(e -> {
+            Parameters.printLog("valider", LogType.INFO);
+            if (fullscreen.isSelected()) {
+                Parameters.printLog("fullscreen", LogType.INFO);
+                Parameters.fullscreen = true;
+            } else {
+                Parameters.printLog("windowed", LogType.INFO);
+                Parameters.fullscreen = false;
             }
+            ((MainView) getRootPane().getParent()).initSize();
+            Parameters.debug = debugOk.isSelected();
+            repaint();
+            Parameters.printLog("valider", LogType.INFO);
+            ((CardLayout) getParent().getLayout()).show(getParent(), "main");
         });
     }
 }

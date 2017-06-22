@@ -15,7 +15,7 @@ public class Parameters {
     public static final Boolean LOGS        = true;
     public static final boolean SHORT_LOG   = true;
     public static Lang          LANG        = Lang.EN;
-    public static final boolean debug       = true;
+    public static boolean       debug       = false;
     /**
      * when an action is done with debugMode
      */
@@ -28,7 +28,8 @@ public class Parameters {
     public static Font DEFAULT_FONT = initFont();
     // screen
     public static Dimension appSize    = Toolkit.getDefaultToolkit().getScreenSize();
-    public static Boolean   fullscreen = true;
+    public static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    public static Boolean   fullscreen = false;
     // Game settings
     public static int NB_CARDS = 2;
     
@@ -74,7 +75,7 @@ public class Parameters {
                         type.getColor() + format1.format(cal.getTime()) + " : " + text.toString() + type.getReset());
                 
             } else {
-                if (type.equals(LogType.INFO)) {
+                if (type.equals(LogType.INFO) || type.equals(LogType.ERROR)) {
                     System.out.println(type.getColor() + format1.format(cal.getTime()) + " : " + text.toString()
                             + type.getReset());
                 } // end if

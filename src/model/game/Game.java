@@ -199,6 +199,10 @@ public class Game {
             break;
         default:
             list.addAll(currentPlayer.getCurrentAdventurer().getPossibleActions());
+            if (!list.contains(InGameAction.GIVE_CARD) && !getIsland().getNearPlayer(this).isEmpty()
+                    && currentPlayer.getCurrentAdventurer().isExchangePossibleHere()) {
+                list.add(InGameAction.GIVE_CARD);
+            } // end if
             break;
         }// end switch
         return list;
@@ -247,7 +251,8 @@ public class Game {
         if (!getTreasures().isEmpty()) {
             for (Treasure treasure : getTreasures()) {
                 if (getIsland().isTreasureAllSinked((treasure.getName()))) {
-                    throw new EndGameException();
+                    Parameters.printLog("End, treasure not retrievable", LogType.ERROR);
+                    throw new EndGameException(ExceptionType.END_GAME_TREASURE);
                 }
             }
         }
@@ -315,7 +320,7 @@ public class Game {
         seaLevel = seaLevel.next();
         Parameters.printLog("The sealeavel has reach the level " + seaLevel, LogType.INFO);
         if (seaLevel.isLast()) {
-            throw new EndGameException();
+            throw new EndGameException(ExceptionType.END_GAME_WATER);
         }
     }
     

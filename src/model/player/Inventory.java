@@ -44,7 +44,7 @@ public class Inventory {
         boolean b = false;
         Iterator<Card> it = cards.iterator();
         while (it.hasNext() && !b) {
-            b = it.next().getType().isUsable();
+            b = it.next().getType().isActivable();
         } // end while
         return b;
     }

@@ -7,8 +7,6 @@ import java.util.Stack;
 import org.w3c.dom.events.EventException;
 
 import model.card.Card;
-import model.player.Player;
-import util.exception.CardException;
 
 
 
@@ -18,16 +16,16 @@ public abstract class Deck {
     private Stack<Card>     deck;
     
     
-    public Deck() {
+    public Deck(Island island) {
         discard = new ArrayList<>();
         deck = new Stack<>();
         
-        initDeck();
+        initDeck(island);
         Collections.shuffle(deck);
     }
     
     
-    public abstract void initDeck();
+    public abstract void initDeck(Island island);
     
     
     /**
@@ -47,15 +45,14 @@ public abstract class Deck {
     }// end deckGestion
     
     
-    
     public void shuffleDeck() {
         deck.addAll(discard);
         Collections.shuffle(deck);
     }
     
-    public Card draw(Player p) throws CardException {
+    
+    public Card draw() {
         Card c = deck.pop();
-        p.getCurrentAdventurer().getInventory().addCard(c);
         deckGestion();
         return c;
     }// end draw

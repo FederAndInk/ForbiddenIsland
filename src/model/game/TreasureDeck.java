@@ -14,13 +14,13 @@ public class TreasureDeck extends Deck {
     private static final int NB_SANDBAGS_CARD = 2;
     
     
-    public TreasureDeck() {
-        super();
+    public TreasureDeck(Island island) {
+        super(island);
     }
     
     
     @Override
-    public void initDeck() {
+    public void initDeck(Island island) {
         for (int i = 0; i < NB_HELICOP_CARD; i++) {
             addCardToDeck(new Helicopter());
         }

@@ -67,7 +67,11 @@ public abstract class Adventurer {
     
     public void shoreUp(Tile tile) throws ActionException, TileException {
         if (getActionPoints() >= 1 && getShoreUpTiles().contains(tile)) {
-            tile.setState(TileState.DRIED);
+            try {
+                tile.setState(TileState.DRIED);
+            } catch (EndGameException ex) {
+                
+            }
             finishAction();
         } else {
             if (getActionPoints() < 1) {
@@ -118,6 +122,12 @@ public abstract class Adventurer {
     }
     
     
+    public ArrayList<Tile> getReachableTiles() {
+        ArrayList<Tile> reachable = getReachableTiles(getCurrentTile());
+        return reachable;
+    }
+    
+    
     /**
      * get the adjacent tiles<br>
      * .*.<br>
@@ -128,10 +138,10 @@ public abstract class Adventurer {
      *
      * @return
      */
-    public ArrayList<Tile> getReachableTiles() {
+    protected ArrayList<Tile> getReachableTiles(Tile tile) {
         
         ArrayList<Tile> reachable = new ArrayList<>();
-        Coords coords = getCurrentTile().getCoords();
+        Coords coords = tile.getCoords();
         
         Island island = getPlayer().getCurrentGame().getIsland();
         Tile tileTmp;
@@ -143,12 +153,69 @@ public abstract class Adventurer {
             effI = i % 2;
             effJ = j % 2;
             tileTmp = island.getTile(coords.getCol() + effI, coords.getRow() + effJ);
-            if ((tileTmp != null) && (tileTmp.getState() != TileState.SINKED)) {
+            if (isReachableTmp(tileTmp)) {
                 reachable.add(tileTmp);
             }
             j--;
         } // end for
         return reachable;
+        
+    }
+    
+    
+    protected boolean isReachableTmp(Tile tileTmp) {
+        return tileTmp != null && tileTmp.getState() != TileState.SINKED;
+    }
+    
+    
+    protected ArrayList<Tile> getReachableTiles(ArrayList<Tile> tilesToReach, ArrayList<Tile> tilesAlreadyRead,
+            int deep) {
+        ArrayList<Tile> children = new ArrayList<>();
+        for (int d = 1; d < deep; d++) {
+            for (Tile tToReach : tilesToReach) {
+                Island island = getPlayer().getCurrentGame().getIsland();
+                Coords coords = tToReach.getCoords();
+                
+                int j = 2;
+                int effI;
+                int effJ;
+                Tile tileTmp;
+                for (int i = -1; i <= 2; i += 1) {
+                    effI = i % 2;
+                    effJ = j % 2;
+                    tileTmp = island.getTile(coords.getCol() + effI, coords.getRow() + effJ);
+                    if (!tilesAlreadyRead.contains(tileTmp)) { // if the tile is not already treated
+                        if (isReachableTmp(tileTmp)) {
+                            tilesAlreadyRead.add(tileTmp);
+                            children.add(tileTmp);
+                        }
+                    }
+                    j--;
+                }
+            }
+            tilesToReach.clear();
+            tilesToReach.addAll(children);
+            children.clear();
+        }
+        return tilesAlreadyRead;
+    }
+    
+    
+    protected ArrayList<Tile> getReachableTiles(int nbHit) {
+        ArrayList<Tile> reachableAll = new ArrayList<>(getReachableTiles(getCurrentTile()));
+        ArrayList<Tile> reachable = new ArrayList<>(getReachableTiles(getCurrentTile()));
+        
+        getReachableTiles(reachable, reachableAll, nbHit);
+        
+        Tile tile;
+        for (int j = 0; j < reachableAll.size(); j++) {
+            tile = reachableAll.get(j);
+            if (tile.getState() == TileState.SINKED || getCurrentTile().equals(tile)) {
+                reachableAll.remove(j);
+                j--;
+            }
+        }
+        return reachableAll;
         
     }
     
@@ -255,7 +322,8 @@ public abstract class Adventurer {
      * @throws MoveException
      * @throws ActionException
      */
-    public void useCapacity(Object o) throws InadequateUseOfCapacityException, MoveException, ActionException {
+    public void useCapacity(Tile tileDest, Object applied) throws InadequateUseOfCapacityException, MoveException,
+            ActionException, NavigatorCannotMoveHimselfException {
         throw new InadequateUseOfCapacityException();
     }// end useCapacity
     
@@ -266,7 +334,7 @@ public abstract class Adventurer {
      * @return the objects where a capacity can be applied
      * @throws InadequateUseOfCapacityException
      */
-    public ArrayList<Object> getPotentialUse() throws InadequateUseOfCapacityException {
+    public ArrayList<Object> getPotentialUse(Object applied) throws InadequateUseOfCapacityException {
         throw new InadequateUseOfCapacityException();
     }
     
@@ -362,6 +430,7 @@ public abstract class Adventurer {
      * the currentTile to set
      */
     public void setCurrentTile(Tile currentTile) {
+        Parameters.printLog("move " + getADVENTURER_TYPE() + " to " + currentTile, LogType.INFO);
         this.currentTile = currentTile;
     }
     

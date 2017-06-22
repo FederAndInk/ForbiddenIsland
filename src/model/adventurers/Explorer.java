@@ -23,9 +23,9 @@ public class Explorer extends Adventurer {
     
     
     @Override
-    public ArrayList<Tile> getReachableTiles() {
+    public ArrayList<Tile> getReachableTiles(Tile tile) {
         ArrayList<Tile> reachable = new ArrayList<>();
-        Coords coords = getCurrentTile().getCoords();
+        Coords coords = tile.getCoords();
         
         Island island = getPlayer().getCurrentGame().getIsland();
         Tile tileTmp;

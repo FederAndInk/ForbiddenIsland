@@ -20,6 +20,10 @@ public class Parameters {
      * when an action is done with debugMode
      */
     public static boolean       debugAction = false;
+    
+    // FI game
+    public static int NB_CARD_BEGIN = 2;
+    
     // Fonts
     public static Font DEFAULT_FONT = initFont();
     // screen

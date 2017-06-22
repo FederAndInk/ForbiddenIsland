@@ -22,7 +22,7 @@ public class Diver extends Adventurer {
     }
     
     
-    private ArrayList<Tile> getReachableTiles(Tile tile, ArrayList<Tile> tilesAlreadyRead) {
+    private ArrayList<Tile> getReachableTiles(Tile tile, ArrayList<Tile> tilesAlreadyRead, boolean deep) {
         
         Island island = getPlayer().getCurrentGame().getIsland();
         Coords coords = tile.getCoords();
@@ -40,7 +40,9 @@ public class Diver extends Adventurer {
                     tilesAlreadyRead.add(tileTmp);
                 } else if (tileTmp != null && tileTmp.getState().equals(TileState.SINKED)) {
                     tilesAlreadyRead.add(tileTmp);
-                    getReachableTiles(tileTmp, tilesAlreadyRead);
+                    if (deep) {
+                        getReachableTiles(tileTmp, tilesAlreadyRead, deep);
+                    }
                 }
             }
             j--;
@@ -54,7 +56,7 @@ public class Diver extends Adventurer {
         ArrayList<Tile> reachableTiles = new ArrayList<>();
         Tile current = getCurrentTile();
         
-        reachableTiles = getReachableTiles(current, reachableTiles);
+        reachableTiles = getReachableTiles(current, reachableTiles, true);
         
         Tile tile;
         for (int i = 0; i < reachableTiles.size(); i++) {
@@ -66,6 +68,12 @@ public class Diver extends Adventurer {
         }
         
         return reachableTiles;
+    }
+    
+    
+    @Override
+    protected boolean isReachableTmp(Tile tileTmp) {
+        return tileTmp != null;
     }
     
     

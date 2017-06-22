@@ -1,9 +1,5 @@
 package model.game;
 
-import util.exception.EndGameException;
-
-
-
 public enum SeaLevel {
     /**
      * Easy

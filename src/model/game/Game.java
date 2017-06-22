@@ -39,8 +39,8 @@ public class Game {
     public Game(BoardType bType) {
         started = false;
         island = new Island(bType);
-        treasureDeck = new TreasureDeck();
-        floodDeck = new FloodDeck();
+        treasureDeck = new TreasureDeck(island);
+        floodDeck = new FloodDeck(island);
         players = new LinkedList<>();
         treasures = new ArrayList<>();
         SelectedPlayers = new ArrayList<>();
@@ -74,8 +74,30 @@ public class Game {
         Collections.shuffle(players);
         setCurrentPlayer(players.get(0));
         setCurrentAction(InGameAction.MOVE);
+        initCards();
         started = true;
     }// end name
+    
+    
+    public void initCards() {
+        for (Player player : players) {
+            for (int i = 0; i < Parameters.NB_CARD_BEGIN; i++) {
+                Card card = getTreasureDeck().draw();
+                while (card.getType() == CardType.WATERSRISE_CARD) {
+                    getTreasureDeck().discard(card);
+                    getTreasureDeck().shuffleDeck();
+                    card = getTreasureDeck().draw();
+                }
+                try {
+                    player.getCurrentAdventurer().getInventory().addCard(card);
+                } catch (CardException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        }
+        
+    }
     
     
     /**
@@ -187,25 +209,6 @@ public class Game {
      * @author nihil
      *
      */
-    private Card draw() {
-        if (cardsDrawn < getNbCards(CardType.TREASURE_CARD)) {
-            setCurrentAction(InGameAction.DRAW_TREASURE);
-            
-        } else if (cardsDrawn < getNbCards(CardType.FLOOD_CARD)) {
-            setCurrentAction(InGameAction.DRAW_FLOOD);
-            
-        } else {
-            setCurrentAction(InGameAction.END_TURN);
-            
-        } // end if
-        cardsDrawn++;
-    }
-    
-    
-    /**
-     * @author nihil
-     *
-     */
     public void endTurn() {
         if (currentAction == InGameAction.END_TURN) {
             cardsDrawn = 0;
@@ -223,12 +226,73 @@ public class Game {
     }
     
     
-    public void setTileState(Tile tile, TileState state) throws PlayerOutOfIslandException {
+    /**
+     * 
+     * @param tile
+     * @param state
+     * @throws PlayerOutOfIslandException
+     * if a player get drown
+     * @throws EndGameException
+     */
+    public void setTileState(Tile tile, TileState state) throws PlayerOutOfIslandException, EndGameException {
         tile.setState(state);
         if (state.equals(TileState.SINKED) && !getPlayersOnTile(tile).isEmpty()) {
             throw new PlayerOutOfIslandException();
         } // end if
+        verifyTreasure();
     }// end setTileState
+    
+    
+    public void verifyTreasure() throws EndGameException {
+        if (!getTreasures().isEmpty()) {
+            for (Treasure treasure : getTreasures()) {
+                if (getIsland().isTreasureAllSinked((treasure.getName()))) {
+                    throw new EndGameException();
+                }
+            }
+        }
+    }
+    
+    
+    /**
+     *
+     * @param type
+     * = {@link CardType.TREASURE_CARD} for {@link TreasureDeck} <br>
+     * or {@link CardType.FLOOD_CARD} for {@link FloodDeck}
+     * @return
+     * @throws CardException
+     */
+    public Card drawEndTurnCard(InGameAction type)
+            throws EndGameException, IllegalAccessException, MoveException, TileException, CardException {
+        Card card;
+        // For actions
+        if (cardsDrawn < getNbCards(InGameAction.DRAW_TREASURE)) {
+            setCurrentAction(InGameAction.DRAW_TREASURE);
+        } else if (cardsDrawn < getNbCards(InGameAction.DRAW_FLOOD)) {
+            setCurrentAction(InGameAction.DRAW_FLOOD);
+        } else {
+            setCurrentAction(InGameAction.END_TURN);
+        } // end if
+        cardsDrawn++;
+        
+        // Draw
+        if (type.equals(InGameAction.DRAW_TREASURE)) {
+            card = getTreasureDeck().draw();
+            if (card.getType().isCanAddToInventory()) {
+                getCurrentPlayer().getCurrentAdventurer().getInventory().addCard(card);
+            } else {
+                card.applyAction(null, this);
+            }
+        } else if (type.equals(InGameAction.DRAW_FLOOD)) {
+            card = getFloodDeck().draw();
+            card.applyAction(null, this);
+            verifyTreasure();
+        } else {
+            throw new IllegalArgumentException("not a valid deck");
+        }
+        Parameters.printLog("Draw card " + card, LogType.INFO);
+        return card;
+    }
     
     
     /**
@@ -249,6 +313,7 @@ public class Game {
     
     public void increaseSeaLevel() throws EndGameException {
         seaLevel = seaLevel.next();
+        Parameters.printLog("The sealeavel has reach the level " + seaLevel, LogType.INFO);
         if (seaLevel.isLast()) {
             throw new EndGameException();
         }
@@ -272,8 +337,8 @@ public class Game {
      * @author nihil
      *
      */
-    private int getNbCards(CardType type) {
-        if (type == CardType.TREASURE_CARD) {
+    private int getNbCards(InGameAction type) {
+        if (type == InGameAction.DRAW_TREASURE) {
             return Parameters.NB_CARDS;
         } // end if
         return Parameters.NB_CARDS + getSeaLevel().getNbCards();

@@ -1,11 +1,6 @@
 package model.game;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.*;
 
 import model.adventurers.Adventurer;
 import model.adventurers.AdventurerType;
@@ -15,14 +10,7 @@ import model.player.Player;
 import util.BoardType;
 import util.LogType;
 import util.Parameters;
-import util.exception.ActionException;
-import util.exception.CardException;
-import util.exception.EndGameException;
-import util.exception.MoveException;
-import util.exception.NotEnoughCardsException;
-import util.exception.PlayerOutOfIslandException;
-import util.exception.TileException;
-import util.exception.WrongTileTreasureException;
+import util.exception.*;
 import util.message.InGameAction;
 
 
@@ -221,25 +209,6 @@ public class Game {
      * @author nihil
      *
      */
-    private Card draw() {
-        if (cardsDrawn < getNbCards(CardType.TREASURE_CARD)) {
-            setCurrentAction(InGameAction.DRAW_TREASURE);
-            
-        } else if (cardsDrawn < getNbCards(CardType.FLOOD_CARD)) {
-            setCurrentAction(InGameAction.DRAW_FLOOD);
-            
-        } else {
-            setCurrentAction(InGameAction.END_TURN);
-            
-        } // end if
-        cardsDrawn++;
-    }
-    
-    
-    /**
-     * @author nihil
-     *
-     */
     public void endTurn() {
         if (currentAction == InGameAction.END_TURN) {
             cardsDrawn = 0;
@@ -290,25 +259,39 @@ public class Game {
      * @param type
      * = {@link CardType.TREASURE_CARD} for {@link TreasureDeck} <br>
      * or {@link CardType.FLOOD_CARD} for {@link FloodDeck}
+     * @return
      * @throws CardException
      */
-    public void drawEndTurnCard(CardType type)
+    public Card drawEndTurnCard(InGameAction type)
             throws EndGameException, IllegalAccessException, MoveException, TileException, CardException {
         Card card;
-        if (type.equals(CardType.TREASURE_CARD)) {
+        // For actions
+        if (cardsDrawn < getNbCards(InGameAction.DRAW_TREASURE)) {
+            setCurrentAction(InGameAction.DRAW_TREASURE);
+        } else if (cardsDrawn < getNbCards(InGameAction.DRAW_FLOOD)) {
+            setCurrentAction(InGameAction.DRAW_FLOOD);
+        } else {
+            setCurrentAction(InGameAction.END_TURN);
+        } // end if
+        cardsDrawn++;
+        
+        // Draw
+        if (type.equals(InGameAction.DRAW_TREASURE)) {
             card = getTreasureDeck().draw();
             if (card.getType().isCanAddToInventory()) {
                 getCurrentPlayer().getCurrentAdventurer().getInventory().addCard(card);
             } else {
                 card.applyAction(null, this);
             }
-        } else if (type.equals(CardType.FLOOD_CARD)) {
+        } else if (type.equals(InGameAction.DRAW_FLOOD)) {
             card = getFloodDeck().draw();
             card.applyAction(null, this);
             verifyTreasure();
         } else {
             throw new IllegalArgumentException("not a valid deck");
         }
+        Parameters.printLog("Draw card " + card, LogType.INFO);
+        return card;
     }
     
     
@@ -330,6 +313,7 @@ public class Game {
     
     public void increaseSeaLevel() throws EndGameException {
         seaLevel = seaLevel.next();
+        Parameters.printLog("The sealeavel has reach the level " + seaLevel, LogType.INFO);
         if (seaLevel.isLast()) {
             throw new EndGameException();
         }
@@ -353,8 +337,8 @@ public class Game {
      * @author nihil
      *
      */
-    private int getNbCards(CardType type) {
-        if (type == CardType.TREASURE_CARD) {
+    private int getNbCards(InGameAction type) {
+        if (type == InGameAction.DRAW_TREASURE) {
             return Parameters.NB_CARDS;
         } // end if
         return Parameters.NB_CARDS + getSeaLevel().getNbCards();

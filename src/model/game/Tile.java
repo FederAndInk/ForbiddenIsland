@@ -1,8 +1,8 @@
 package model.game;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import util.BoardGeneration;
+import util.LogType;
+import util.Parameters;
 import util.exception.EndGameException;
 
 
@@ -87,6 +87,7 @@ public class Tile {
      * @throws util.exception.EndGameException
      */
     public void setState(TileState state) throws EndGameException {
+        Parameters.printLog("The tile " + site + " change in " + state, LogType.INFO);
         this.state = state;
         if (getSite() == Site.FOOLS_LANDING && this.state == TileState.SINKED) {
             throw new EndGameException();

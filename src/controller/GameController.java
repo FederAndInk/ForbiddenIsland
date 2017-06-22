@@ -461,7 +461,7 @@ public class GameController implements Observer {
     private void setCapacityActionPT() {
         if (getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getActionPoints() > 0) {
             ArrayList<Player> pSelects = getCurrentGame().getSelectedPlayers();
-            
+            reInitBoard();
             if (pSelects.isEmpty()) {
                 gameView.notifyPlayers("Cliquer sur un joueur à déplacer");
                 getCurrentGame().setCurrentAction(InGameAction.USE_CAPACITY);
@@ -810,11 +810,12 @@ public class GameController implements Observer {
             case DISCARD:
                 
                 break;
-            case DRAW_FLOOD:
-                
-                break;
-            case DRAW_TREASURE:
-                
+            case DRAW:
+                try {
+                    getCurrentGame().drawEndTurnCard((InGameAction) m.getContent());
+                } catch (EndGameException | IllegalAccessException | MoveException | TileException | CardException e1) {
+                    e1.printStackTrace();
+                }
                 break;
             case END_TURN:
                 endTurn();

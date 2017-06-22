@@ -66,7 +66,7 @@ public class JPanelMenu extends JPanel {
         grid.add(option);
         score = new JButton("scores");
         grid.add(score);
-        tuto = new JButton("tutoriel/WORK IN PROGRESS");
+        tuto = new JButton("tutoriel");
         grid.add(tuto);
         
         // les options

@@ -31,7 +31,7 @@ public class MainView extends JFrame {
         getContentPane().add(main);
         
         card.setLayout(new CardLayout());
-        selectHero = new JPanelSelectHero(this);
+        selectHero = new JPanelSelectHero();
         
         // les cardlayout
         

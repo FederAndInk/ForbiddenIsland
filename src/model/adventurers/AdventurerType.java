@@ -81,8 +81,13 @@ public enum AdventurerType {
      * @author nihil
      *
      */
-    public String getIcon() {
+    public String getIconEnable() {
         return Parameters.LOGO + "RoleTable_Icon_" + getClassName() + "@2x.png";
+    }
+    
+    
+    public String getIconDisable() {
+        return Parameters.LOGO + "RoleTable_Icon_" + getClassName() + "_Disabled@2x.png";
     }
     
     

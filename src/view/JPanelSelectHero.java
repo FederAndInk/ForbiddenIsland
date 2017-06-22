@@ -1,8 +1,11 @@
 package view;
 
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
 import java.util.Observable;
 
 import javax.swing.JButton;
@@ -18,128 +21,119 @@ import util.message.MainMessage;
 
 public class JPanelSelectHero extends JPanel {
     
-    private JButton  diver;
-    private JButton  explorer;
-    private JButton  engineer;
-    private JButton  messenger;
-    private JButton  navigator;
-    private JButton  pilot;
-    private JButton  random;
-    private MainView mainView;
+    private HashMap<AdventurerType, JButtonAdventurer> adventurers;
+    // private JButtonAdventurer diver;
+    // private JButtonAdventurer explorer;
+    // private JButtonAdventurer engineer;
+    // private JButtonAdventurer messenger;
+    // private JButtonAdventurer navigator;
+    // private JButtonAdventurer pilot;
+    // private JButtonAdventurer random;
+    private JButton annuler;
+    private JPanel  main;
+    // private MainView mainView;
     
-    private static final String DIVER     = "DIVER";
-    private static final String EXPLORER  = "EXPLORER";
-    private static final String ENGINEER  = "ENGINEER";
-    private static final String MESSENGER = "MESSENGER";
-    private static final String PILOT     = "PILOT";
-    private static final String RANDOM    = "RANDOM";
-    private static final String NAVIGATOR = "NAVIGATOR";
+    private static final String DIVER     = "Diver";
+    private static final String EXPLORER  = "Explorer";
+    private static final String ENGINEER  = "Engineer";
+    private static final String MESSENGER = "Messenger";
+    private static final String PILOT     = "Pilot";
+    private static final String RANDOM    = "Random";
+    private static final String NAVIGATOR = "Navigator";
     
     
-    public JPanelSelectHero(MainView view) {
-        mainView = view;
+    public JPanelSelectHero() {
+        // mainView = view;
         initComponent();
+        listener();
     }
     
     
     private void initComponent() {
+        setLayout(new BorderLayout());
+        main = new JPanel();
+        main.setLayout(new GridLayout(3, 3));
+        adventurers = new HashMap<>();
         
-        setLayout(new GridLayout(3, 3));
+        for (AdventurerType adv : AdventurerType.values()) {
+            adventurers.put(adv, new JButtonAdventurer(adv));
+            adventurers.get(adv).setActionCommand(adv.getClassName());
+            if (adv == AdventurerType.RANDOM) {
+                main.add(new JPanel());
+                main.add(adventurers.get(adv));
+                main.add(new JPanel());
+            } else {
+                main.add(adventurers.get(adv));
+            }
+        }
         
-        diver = new JButton("plongeur");
-        diver.setName(DIVER);
-        diver.setActionCommand(diver.getName());
-        explorer = new JButton("exploreur");
-        explorer.setName(EXPLORER);
-        explorer.setActionCommand(explorer.getName());
-        engineer = new JButton("ingenieur");
-        engineer.setName(ENGINEER);
-        engineer.setActionCommand(engineer.getName());
-        messenger = new JButton("messager");
-        messenger.setName(MESSENGER);
-        messenger.setActionCommand(messenger.getName());
-        navigator = new JButton("navigateur");
-        navigator.setName(NAVIGATOR);
-        navigator.setActionCommand(navigator.getName());
-        pilot = new JButton("pilote");
-        pilot.setName(PILOT);
-        pilot.setActionCommand(pilot.getName());
-        random = new JButton("au hasard");
-        random.setName(RANDOM);
-        random.setActionCommand(random.getName());
+        // diver = new JButtonAdventurer(AdventurerType.DIVER);
+        // diver.setName(DIVER);
+        // explorer = new JButtonAdventurer(AdventurerType.EXPLORER);
+        // explorer.setName(EXPLORER);
+        // explorer.setActionCommand(explorer.getName());
+        // engineer = new JButtonAdventurer(AdventurerType.ENGINEER);
+        // engineer.setName(ENGINEER);
+        // engineer.setActionCommand(engineer.getName());
+        // messenger = new JButtonAdventurer(AdventurerType.MESSENGER);
+        // messenger.setName(MESSENGER);
+        // messenger.setActionCommand(messenger.getName());
+        // navigator = new JButtonAdventurer(AdventurerType.NAVIGATOR);
+        // navigator.setName(NAVIGATOR);
+        // navigator.setActionCommand(navigator.getName());
+        // pilot = new JButtonAdventurer(AdventurerType.PILOT);
+        // pilot.setName(PILOT);
+        // pilot.setActionCommand(pilot.getName());
+        // random = new JButtonAdventurer(AdventurerType.RANDOM);
+        // random.setName(RANDOM);
+        // random.setActionCommand(random.getName());
         
-        add(diver);
-        add(engineer);
-        add(explorer);
-        add(messenger);
-        add(navigator);
-        add(pilot);
-        add(new JPanel());
-        add(random);
-        add(new JPanel());
+        annuler = new JButton("annuler");
+        
+        add(main, BorderLayout.CENTER);
+        add(annuler, BorderLayout.SOUTH);
+        
+        // main.add(diver);
+        // main.add(engineer);
+        // main.add(explorer);
+        // main.add(messenger);
+        // main.add(navigator);
+        // main.add(pilot);
+        // main.add(new JPanel());
+        // main.add(random);
+        // main.add(new JPanel());
     }
     
     
     private void listener() {
         Listeners heroListerners = new Listeners();
         
-        diver.addActionListener(heroListerners);
-        engineer.addActionListener(heroListerners);
-        explorer.addActionListener(heroListerners);
-        messenger.addActionListener(heroListerners);
-        navigator.addActionListener(heroListerners);
-        pilot.addActionListener(heroListerners);
-        random.addActionListener(heroListerners);
+        for (JButtonAdventurer btn : adventurers.values()) {
+            btn.addActionListener(heroListerners);
+        }
+        
+        // diver.addActionListener(heroListerners);
+        // engineer.addActionListener(heroListerners);
+        // explorer.addActionListener(heroListerners);
+        // messenger.addActionListener(heroListerners);
+        // navigator.addActionListener(heroListerners);
+        // pilot.addActionListener(heroListerners);
+        // random.addActionListener(heroListerners);
+        
+        annuler.addActionListener(new ActionListener() {
+            
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Parameters.printLog("annuler", LogType.INFO);
+                ((CardLayout) getParent().getLayout()).show(getParent(), "picture");
+            }
+        });
         
     }
     
     
-    // les fonctions
-    
-    public void addAdventurer(AdventurerType adventurer, Boolean bool) {
-        if (bool) {
-            switch (adventurer) {
-            case DIVER:
-                diver.setVisible(true);
-                break;
-            case ENGINEER:
-                engineer.setVisible(true);
-                break;
-            case EXPLORER:
-                explorer.setVisible(true);
-                break;
-            case NAVIGATOR:
-                navigator.setVisible(true);
-                break;
-            case PILOT:
-                pilot.setVisible(true);
-                break;
-            case MESSENGER:
-                messenger.setVisible(true);
-                break;
-            }
-        } else {
-            switch (adventurer) {
-            case DIVER:
-                diver.setVisible(false);
-                break;
-            case ENGINEER:
-                engineer.setVisible(false);
-                break;
-            case EXPLORER:
-                explorer.setVisible(false);
-                break;
-            case NAVIGATOR:
-                navigator.setVisible(false);
-                break;
-            case PILOT:
-                pilot.setVisible(false);
-                break;
-            case MESSENGER:
-                messenger.setVisible(false);
-                break;
-            }
-        }
+    public void setEnabled(boolean enabled, AdventurerType type) {
+        adventurers.get(type).setEnabled(enabled);
     }
     
     private class Listeners extends Observable implements ActionListener {

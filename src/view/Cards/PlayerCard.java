@@ -59,4 +59,14 @@ public class PlayerCard extends JPanel {
             e.printStackTrace();
         }
     }
+    
+    
+    /**
+     * @param cardPlace
+     * the cardPlace to set
+     */
+    public PlayerCard setCardPlace(int cardPlace) {
+        this.cardPlace = cardPlace;
+        return this;
+    }
 }

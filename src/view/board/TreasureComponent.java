@@ -25,6 +25,14 @@ public class TreasureComponent extends JPanel {
     boolean      logo;
     
     
+    /**
+     * @author nihil
+     *
+     * @param type
+     * of the treasure
+     * @param logo
+     * if true take the logo instead of the treasure img
+     */
     public TreasureComponent(TreasureType type, boolean logo) {
         this.type = type;
         this.logo = logo;

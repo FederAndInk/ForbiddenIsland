@@ -243,6 +243,7 @@ public class GameView extends JFrame {
         mainPane.add(north, BorderLayout.NORTH);
         mainPane.add(south, BorderLayout.SOUTH);
         boolean left;
+        boolean top;
         JPanel pane;
         String contraint;
         for (AdventurerType adv : advs) {
@@ -251,26 +252,30 @@ public class GameView extends JFrame {
             case 0:
                 pane = north;
                 left = true;
+                top = true;
                 contraint = BorderLayout.WEST;
                 break;
             case 1:
                 pane = north;
                 left = false;
+                top = true;
                 contraint = BorderLayout.EAST;
                 break;
             case 2:
                 pane = south;
                 left = true;
+                top = false;
                 contraint = BorderLayout.WEST;
                 break;
             
             default:
                 pane = south;
                 left = false;
+                top = false;
                 contraint = BorderLayout.EAST;
                 break;
             }// end switch
-            inventories.put(adv, new playerInventory(adv, left));
+            inventories.put(adv, new playerInventory(adv, left, top));
             pane.add(inventories.get(adv), contraint);
         }
     }// end initInventory

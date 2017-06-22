@@ -28,8 +28,9 @@ public class JPanelFin extends JPanel {
     private Boolean win;
     
     
-    public JPanelFin() {
+    public JPanelFin(util.exception.ExceptionType exceptionType) {
         initComponent();
+        setExceptionType(exceptionType);
         initListener();
     }
     

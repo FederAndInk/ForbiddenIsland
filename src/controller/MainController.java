@@ -15,8 +15,6 @@ import model.player.Player;
 import util.BoardType;
 import util.LogType;
 import util.Parameters;
-import util.exception.EndGameException;
-import util.exception.ExceptionType;
 import util.message.InGameMessage;
 import util.message.MainAction;
 import util.message.MainMessage;
@@ -169,12 +167,7 @@ public class MainController implements Observer, Serializable {
                 
                 break;
             case ABANDON:
-                try {
-                    throw new util.exception.EndGameException(ExceptionType.END_GAME);
-                } catch (EndGameException e) {
-                    e.printStackTrace();
-                    System.exit(0);
-                }
+            
             case GET_HELP:
                 
                 break;
@@ -241,5 +234,10 @@ public class MainController implements Observer, Serializable {
     
     public String getCurrentPlayer() {
         return currentPlayer;
+    }
+    
+    
+    public void finjeu() {
+        ((CardLayout) view.getCard().getLayout()).show(view.getCard(), "fin");
     }
 }

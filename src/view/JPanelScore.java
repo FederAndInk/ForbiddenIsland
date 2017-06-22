@@ -14,8 +14,9 @@ import util.Parameters;
 
 
 public class JPanelScore extends JPanel {
-    private JButton annuler;
-    private JPanel  annulerPanel;
+    private JButton              annuler;
+    private JPanel               annulerPanel;
+    private JPanelWorkInProgress workInProgress;
     
     
     public JPanelScore() {
@@ -27,9 +28,11 @@ public class JPanelScore extends JPanel {
     public void initComponent() {
         annuler = new JButton("retour");
         annulerPanel = new JPanel();
+        workInProgress = new JPanelWorkInProgress();
         
         setLayout(new BorderLayout());
         
+        add(workInProgress);
         this.add(annulerPanel, BorderLayout.SOUTH);
         annulerPanel.add(annuler);
     }

@@ -36,11 +36,11 @@ public class GameView extends JFrame {
     private static final String NEW_GAME     = "newGame";
     private static final String QUIT         = "quit";
     
-    private JPanel     mainPane;
-    private BoardPanel gamePane;
-    private JPanel     eastPane;
-    private JPanel     westPane;
-    private JPanel     actionCommands;
+    private JLayeredPane mainPane;
+    private BoardPanel   gamePane;
+    private JPanel       eastPane;
+    private JPanel       westPane;
+    private JPanel       actionCommands;
     
     private JMenuBar  bar;
     private JMenu     option;
@@ -90,8 +90,8 @@ public class GameView extends JFrame {
      *
      */
     private void initComponents() {
-        mainPane = new JPanel(new BorderLayout());
-        
+        mainPane = new JLayeredPane();
+        mainPane.setLayout(new BorderLayout());
         eastPane = new JPanel(new BorderLayout());
         westPane = new JPanel(new BorderLayout());
         actionCommands = new JPanel(new GridLayout(4, 1));

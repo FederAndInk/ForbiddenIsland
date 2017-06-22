@@ -30,6 +30,7 @@ public class CardsComponant extends JPanel {
     private CardType type;
     private boolean  empty;
     private MlTile   mlTile;
+    private File     img;
     
     
     /**
@@ -58,6 +59,16 @@ public class CardsComponant extends JPanel {
     
     
     /**
+     * @see javax.swing.JComponent#setEnabled(boolean)
+     */
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        img = new File(isEnabled() ? type.getBackSelect() : type.getBack());
+    }
+    
+    
+    /**
      * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
      */
     @Override
@@ -65,7 +76,7 @@ public class CardsComponant extends JPanel {
         super.paintComponent(g);
         if (!empty) {
             try {
-                BufferedImage bi = ImageIO.read(new File(isEnabled() ? type.getBackSelect() : type.getBack()));
+                BufferedImage bi = ImageIO.read(img);
                 g.drawImage(bi, 0, 0, (int) getSize().getWidth(), (int) getSize().getHeight(), this);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -121,7 +132,11 @@ public class CardsComponant extends JPanel {
          */
         @Override
         public void mouseEntered(MouseEvent e) {
-            setCursor(new Cursor(Cursor.HAND_CURSOR));
+            if (isEnabled()) {
+                setCursor(new Cursor(Cursor.HAND_CURSOR));
+                img = new File(type.getBackHover());
+                repaint();
+            } // end if
         }
         
         
@@ -131,7 +146,8 @@ public class CardsComponant extends JPanel {
         @Override
         public void mouseExited(MouseEvent e) {
             setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-            
+            img = new File(type.getBackSelect());
+            repaint();
         }
         
     }

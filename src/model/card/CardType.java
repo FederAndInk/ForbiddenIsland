@@ -57,7 +57,17 @@ public enum CardType {
     
     
     /**
-     * @return the activable
+     * @author nihil
+     *
+     * @return
+     */
+    public String getBackHover() {
+        return Parameters.CARDS + (subType.equals(SUB_FLOOD) ? "Flood_" : "") + "Card_BackSelectHover@2x.png";
+    }
+    
+    
+    /**
+     * @return true if the card is activable
      */
     public boolean isActivable() {
         return activable;

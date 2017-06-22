@@ -7,7 +7,8 @@ import model.game.TreasureType;
 
 public class TreasureCard extends Card {
     private TreasureType treasureType;
-
+    
+    
     /**
      * @author nihil
      *
@@ -23,11 +24,13 @@ public class TreasureCard extends Card {
         return treasureType;
     }
     
+    
     @Override
     public String toString() {
         // TODO Auto-generated method stub
         return super.toString() + " " + treasureType;
     }
+    
     
     /**
      *

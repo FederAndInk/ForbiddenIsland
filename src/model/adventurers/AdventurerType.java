@@ -17,25 +17,30 @@ import util.Parameters;
  *
  */
 public enum AdventurerType {
-    DIVER("Diver", Site.IRON_GATE),
-    ENGINEER("Engineer", Site.BRONZE_GATE),
-    EXPLORER("Explorer", Site.COPPER_GATE),
-    MESSENGER("Messenger", Site.SILVER_GATE),
-    NAVIGATOR("Navigator", Site.GOLD_GATE),
-    PILOT("Pilot", Site.FOOLS_LANDING),
-    RANDOM("Random", null);
+    DIVER("Diver", Site.IRON_GATE, "Peut se deplacer à travers une case coulée ou plus pour une action"),
+    ENGINEER("Engineer", Site.BRONZE_GATE, "Peut assecher deux cases pour une action"),
+    EXPLORER("Explorer", Site.COPPER_GATE, "Peut assecher et se deplacer en diagonal pour une action"),
+    MESSENGER("Messenger", Site.SILVER_GATE, "Peut donner une carte à n'importe qui sur la carte pour une action"),
+    NAVIGATOR(
+            "Navigator",
+            Site.GOLD_GATE,
+            "Peut deplacer un autre joueur d'une ou deux case adjacente pour une action"),
+    PILOT("Pilot", Site.FOOLS_LANDING, "Peut voler vers n'importe où une fois par tour pour une action"),
+    RANDOM("Random", null, "Random");
     
     public final String className;
     private Site        spawn;
+    private String      description;
     
     
     /**
      * @author nihil
      *
      */
-    private AdventurerType(String className, Site spawn) {
+    private AdventurerType(String className, Site spawn, String description) {
         this.className = className;
         this.spawn = spawn;
+        this.description = description;
     }
     
     
@@ -69,11 +74,25 @@ public enum AdventurerType {
     
     
     /**
+     * @return the description
+     */
+    public String getDescription() {
+        return "<html>" + description + "</html>";
+    }// end name
+    
+    
+    /**
      * @author nihil
      *
      */
     public String getPath() {
         return Parameters.LOGO + getClassName() + "_Adventurer_Icon@2x.png";
+    }
+    
+    
+    // réccupérer le logo du joueur en train de jouer
+    public String getPathSelect() {
+        return Parameters.LOGO + getClassName() + "_Adventurer_IconSelect@2x.png";
     }
     
     
@@ -88,6 +107,11 @@ public enum AdventurerType {
     
     public String getIconDisable() {
         return Parameters.LOGO + "RoleTable_Icon_" + getClassName() + "_Disabled@2x.png";
+    }
+    
+    
+    public String getIconSelect() {
+        return Parameters.ADVENTURER + "Player_Card_" + getClassName() + "_IconSelect@2x.png";
     }
     
     

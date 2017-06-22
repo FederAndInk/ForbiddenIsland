@@ -26,7 +26,7 @@ import util.message.InGameMessage;
  * @author nihil
  *
  */
-public class CardsComponant extends JPanel {
+public class CardsComponent extends JPanel {
     private CardType type;
     private boolean  empty;
     private MlTile   mlTile;
@@ -38,7 +38,7 @@ public class CardsComponant extends JPanel {
      *
      * @param type
      */
-    public CardsComponant(CardType type) {
+    public CardsComponent(CardType type) {
         super();
         this.type = type;
         empty = false;

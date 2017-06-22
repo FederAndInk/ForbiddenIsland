@@ -5,9 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.util.ArrayList;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.*;
 
 import javax.swing.*;
 
@@ -17,18 +15,19 @@ import model.game.Coords;
 import model.game.Island;
 import model.game.Site;
 import model.game.TileState;
-import util.BoardType;
 import util.LogType;
 import util.Parameters;
 import util.message.InGameAction;
 import util.message.InGameMessage;
 import util.message.MainAction;
 import util.message.MainMessage;
-import view.Cards.DeckComponant;
+import view.Cards.DeckComponent;
+import view.player.PlayerInfo;
+import view.player.playerInventory;
 
 
 
-public class GameView extends JFrame {
+public class GameView extends JLayeredPane {
     private static final String END_TURN     = "endTurn";
     private static final String MOVE         = "move";
     private static final String SHORE_UP     = "shore";
@@ -36,35 +35,26 @@ public class GameView extends JFrame {
     private static final String NEW_GAME     = "newGame";
     private static final String QUIT         = "quit";
     
-    private JLayeredPane mainPane;
-    private BoardPanel   gamePane;
-    private JPanel       eastPane;
-    private JPanel       westPane;
-    private JPanel       actionCommands;
+    private BoardPanel gamePane;
+    private JPanel     eastPane;
+    private JPanel     westPane;
+    private JPanel     actionCommands;
     
-    private JMenuBar  bar;
-    private JMenu     option;
-    private JMenuItem newGame;
-    
-    private JMenu                gameOpt;
-    private JMenu                board;
-    private JRadioButtonMenuItem defaultB;
-    private JRadioButtonMenuItem hardTestB;
-    private ButtonGroup          grpBoard;
-    private JMenu                playerSelect;
-    private JRadioButtonMenuItem randomP;
-    private ButtonGroup          grpPlayer;
-    private JMenuItem            quit;
-    
-    private JTextPane     messages;
-    private JLabel        infoPlayerC;
-    private PawnComponant currentP;
-    private JPanel        info;
+    // player info
+    private JPanel                                   paneDroit;
+    private ArrayList<PlayerInfo>                    pawns;
+    private HashMap<AdventurerType, playerInventory> inventories;
     
     // Decks
-    private DeckComponant treasureDeck;
-    private DeckComponant floodDeck;
+    private DeckComponent treasureDeck;
+    private DeckComponent floodDeck;
     private JPanel        decksPane;
+    
+    private WaterRise floodCursor;
+    
+    // Inventory
+    private JPanel north;
+    private JPanel south;
     
     private JButton endTurnBtn;
     private JButton moveBtn;
@@ -76,11 +66,12 @@ public class GameView extends JFrame {
     
     public GameView() {
         super();
-        
+        pawns = new ArrayList<>();
+        inventories = new HashMap<>();
         initComponents();
         initDecks();
+        
         initListeners();
-        setScreen();
         
     }
     
@@ -90,107 +81,137 @@ public class GameView extends JFrame {
      *
      */
     private void initComponents() {
-        mainPane = new JLayeredPane();
-        mainPane.setLayout(new BorderLayout());
+        setLayout(new BorderLayout());
         eastPane = new JPanel(new BorderLayout());
         westPane = new JPanel(new BorderLayout());
         actionCommands = new JPanel(new GridLayout(4, 1));
         
-        bar = new JMenuBar();
-        option = new JMenu("Options");
-        newGame = new JMenuItem("Nouvelle Partie");
-        
-        gameOpt = new JMenu("Option de nouvelle partie");
-        board = new JMenu("Choix du Plateau");
-        defaultB = new JRadioButtonMenuItem("Defaut");
-        hardTestB = new JRadioButtonMenuItem("Test hard");
-        grpBoard = new ButtonGroup();
-        playerSelect = new JMenu("Selection des Aventuriers");
-        randomP = new JRadioButtonMenuItem("Aleatoire");
-        grpPlayer = new ButtonGroup();
-        
-        quit = new JMenuItem("Quitter");
+        paneDroit = new JPanel();
+        GridBagLayout layout = new GridBagLayout();
+        paneDroit.setLayout(layout);
+        layout.rowHeights = new int[2];
+        double[] weight = { 0.15, 0.85 };
+        layout.rowWeights = weight;
         
         endTurnBtn = new JButton("Fin de tour");
         moveBtn = new JButton("Se déplacer");
         shoreUpBtn = new JButton("Assécher un endroit");
         useCapacityBtn = new JButton("Utiliser sa capacité");
         
-        messages = new JTextPane();
-        infoPlayerC = new JLabel("Joueur ");
-        info = new JPanel(new GridLayout(2, 1));
-        currentP = new PawnComponant(AdventurerType.DIVER);
+        floodCursor = new WaterRise(2);
         
-        setJMenuBar(bar);
-        bar.add(option);
-        option.add(newGame);
-        option.add(gameOpt);
-        gameOpt.add(board);
-        board.add(defaultB);
-        board.add(hardTestB);
-        grpBoard.add(defaultB);
-        grpBoard.add(hardTestB);
-        defaultB.setSelected(true);
-        gameOpt.add(playerSelect);
-        playerSelect.add(randomP);
-        grpPlayer.add(randomP);
-        randomP.setSelected(true);
-        option.add(quit);
+        add(eastPane, BorderLayout.EAST);
         
-        newGame.setActionCommand(NEW_GAME);
-        quit.setActionCommand(QUIT);
-        
-        setJMenuBar(bar);
-        bar.add(option);
-        option.add(newGame);
-        option.add(gameOpt);
-        gameOpt.add(board);
-        board.add(defaultB);
-        board.add(hardTestB);
-        grpBoard.add(defaultB);
-        grpBoard.add(hardTestB);
-        defaultB.setSelected(true);
-        gameOpt.add(playerSelect);
-        playerSelect.add(randomP);
-        grpPlayer.add(randomP);
-        randomP.setSelected(true);
-        option.add(quit);
-        
-        newGame.setActionCommand(NEW_GAME);
-        quit.setActionCommand(QUIT);
-        
-        getContentPane().add(mainPane);
-        mainPane.add(eastPane, BorderLayout.EAST);
-        mainPane.add(messages, BorderLayout.NORTH);
-        mainPane.add(westPane, BorderLayout.WEST);
-        eastPane.add(actionCommands, BorderLayout.NORTH);
+        add(westPane, BorderLayout.WEST);
         
         endTurnBtn.setActionCommand(END_TURN);
         moveBtn.setActionCommand(MOVE);
         shoreUpBtn.setActionCommand(SHORE_UP);
         useCapacityBtn.setActionCommand(USE_CAPACITY);
         
-        getRootPane().setDefaultButton(endTurnBtn);
-        
+        eastPane.add(paneDroit, BorderLayout.CENTER);
+        GridBagConstraints constraints = new GridBagConstraints();
+        paneDroit.add(actionCommands, constraints);
+        constraints.gridy = 1;
+        constraints.fill = GridBagConstraints.BOTH;
+        paneDroit.add(floodCursor, constraints);
         actionCommands.add(endTurnBtn);
         actionCommands.add(moveBtn);
         actionCommands.add(shoreUpBtn);
         actionCommands.add(useCapacityBtn);
         
-        westPane.add(info, BorderLayout.NORTH);
-        messages.setEditable(false);
-        info.add(infoPlayerC);
-        info.add(currentP);
-        
     }
+    
+    
+    public void initPlayerState(ArrayList<AdventurerType> advs) {
+        boolean left;
+        JPanel pane;
+        String contraint;
+        for (AdventurerType adventurerType : advs) {
+            
+            switch (pawns.size()) {
+            case 0:
+                pane = westPane;
+                left = true;
+                contraint = BorderLayout.NORTH;
+                break;
+            case 1:
+                pane = eastPane;
+                left = false;
+                contraint = BorderLayout.NORTH;
+                break;
+            case 2:
+                pane = westPane;
+                left = true;
+                contraint = BorderLayout.SOUTH;
+                break;
+            
+            default:
+                pane = eastPane;
+                left = false;
+                contraint = BorderLayout.SOUTH;
+                break;
+            }// end switch
+            pawns.add(new PlayerInfo(adventurerType, left));
+            pane.add(pawns.get(pawns.size() - 1), contraint);
+            
+        } // end for
+        
+        initInventory(advs);
+    }
+    
+    
+    // Inventory
+    public void initInventory(ArrayList<AdventurerType> advs) {
+        north = new JPanel(new BorderLayout());
+        south = new JPanel(new BorderLayout());
+        add(north, BorderLayout.NORTH);
+        add(south, BorderLayout.SOUTH);
+        boolean left;
+        boolean top;
+        JPanel pane;
+        String contraint;
+        for (AdventurerType adv : advs) {
+            
+            switch (inventories.size()) {
+            case 0:
+                pane = north;
+                left = true;
+                top = true;
+                contraint = BorderLayout.WEST;
+                break;
+            case 1:
+                pane = north;
+                left = false;
+                top = true;
+                contraint = BorderLayout.EAST;
+                break;
+            case 2:
+                pane = south;
+                left = true;
+                top = false;
+                contraint = BorderLayout.WEST;
+                break;
+            
+            default:
+                pane = south;
+                left = false;
+                top = false;
+                contraint = BorderLayout.EAST;
+                break;
+            }// end switch
+            inventories.put(adv, new playerInventory(adv, left, top));
+            pane.add(inventories.get(adv), contraint);
+        }
+    }// end initInventory
     
     
     /***
      * @author nihil
      */
     private void initDecks() {
-        treasureDeck = new DeckComponant(CardType.TREASURE_CARD);
-        floodDeck = new DeckComponant(CardType.FLOOD_CARD);
+        treasureDeck = new DeckComponent(CardType.TREASURE_CARD);
+        floodDeck = new DeckComponent(CardType.FLOOD_CARD);
         decksPane = new JPanel(new GridLayout(2, 1));
         
         westPane.add(decksPane, BorderLayout.CENTER);
@@ -202,9 +223,23 @@ public class GameView extends JFrame {
     /**
      * @author nihil
      *
+     * @param adv
+     * @return the icone of the adventurer or null if not found
+     */
+    public PlayerInfo getIcon(AdventurerType adv) {
+        Iterator<PlayerInfo> it = pawns.iterator();
+        PlayerInfo p = null;
+        while (it.hasNext() && (p = it.next()).getPawn() != adv) {
+        } // end while
+        return p == null ? null : p.getPawn() == adv ? p : null;
+    }// end initIcon
+    
+    
+    /**
+     * @author nihil
+     *
      */
     public void setCPlayer(String str, int act) {
-        infoPlayerC.setText("Joueur " + str + " Reste " + act + " actions");
     }
     
     
@@ -213,9 +248,13 @@ public class GameView extends JFrame {
      * the currentP to set
      */
     public void setCurrentP(AdventurerType currentP) {
-        info.remove(this.currentP);
-        this.currentP = new PawnComponant(currentP);
-        info.add(this.currentP);
+        for (PlayerInfo pInfo : pawns) {
+            if (pInfo.getPawn().equals(currentP)) {
+                pInfo.setEnabled(true);
+            } else {
+                pInfo.setEnabled(false);
+            } // end if
+        } // end for
     }
     
     
@@ -224,32 +263,16 @@ public class GameView extends JFrame {
      *
      */
     public void notifyPlayers(String msg) {
-        messages.setText(messages.getText() + "\n" + msg);
-        Runnable test = () -> {
-            try {
-                String txt = messages.getText();
-                Thread.sleep(3000);
-                messages.setText(messages.getText().replaceFirst(txt, ""));
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        };// end Runnable
-        
-        Thread t = new Thread(test);
-        t.start();
+        // FIXME to notify
     }
     
     
     /**
      * @author nihil
-     *
+     * pawn = new ;
      */
     private void initListeners() {
         setListObs(new ListenerAction());
-        
-        addWindowListener(listObs);
-        newGame.addActionListener(listObs);
-        quit.addActionListener(listObs);
         
         endTurnBtn.addActionListener(listObs);
         moveBtn.addActionListener(listObs);
@@ -259,6 +282,9 @@ public class GameView extends JFrame {
     
     
     /**
+     * .getSize() * 0.8)));
+     * if (left) {
+     * 
      * @author nihil
      *
      */
@@ -282,27 +308,6 @@ public class GameView extends JFrame {
         endTurnBtn.setEnabled(act.contains(InGameAction.END_TURN));
         treasureDeck.setEnabled(act.contains(InGameAction.DRAW_TREASURE));
         floodDeck.setEnabled(act.contains(InGameAction.DRAW_FLOOD));
-    }
-    
-    
-    /**
-     * @author nihil
-     *
-     */
-    public void setScreen() {
-        setSize(Parameters.appSize);
-        if (Parameters.fullscreen) {
-            setUndecorated(true);
-            setExtendedState(MAXIMIZED_BOTH);
-            GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().setFullScreenWindow(this);
-        } else {
-            setUndecorated(false);
-            GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().setFullScreenWindow(null);
-        } // end if
-        
-        // FIXME to remove
-        messages.setPreferredSize(
-                new Dimension((int) (getSize().getWidth() * 0.10), (int) (getSize().getHeight() * 0.08)));
     }
     
     
@@ -372,9 +377,9 @@ public class GameView extends JFrame {
      *
      */
     public void setBoard(ArrayList<Site> board, Observer observer) {
-        gamePane = new BoardPanel(this);
+        gamePane = new BoardPanel();
         gamePane.initGrid(board, observer);
-        mainPane.add(gamePane, BorderLayout.CENTER);
+        add(gamePane, BorderLayout.CENTER);
         revalidate();
         repaint();
         doLayout();
@@ -389,18 +394,6 @@ public class GameView extends JFrame {
         this.listObs = listObs;
     }
     
-    
-    /**
-     * @return the grpBoard
-     */
-    public BoardType getBoard() {
-        if (hardTestB.isSelected()) {
-            return BoardType.HARD_TEST;
-        } else {
-            return BoardType.DEFAULT;
-        } // end if
-    }
-    
     public class ListenerAction extends Observable implements ActionListener, WindowListener {
         
         /**
@@ -408,26 +401,6 @@ public class GameView extends JFrame {
          */
         @Override
         public void actionPerformed(ActionEvent e) {
-            // Menu
-            switch (e.getActionCommand()) {
-            case QUIT:
-                setChanged();
-                notifyObservers(new MainMessage(MainAction.QUIT));
-                clearChanged();
-                break;
-            case NEW_GAME:
-                mainPane.remove(gamePane);
-                setChanged();
-                notifyObservers(new MainMessage(MainAction.CREATE_GAME, getBoard()));
-                clearChanged();
-                setChanged();
-                notifyObservers(new MainMessage(MainAction.BEGIN_GAME, getBoard()));
-                clearChanged();
-                break;
-            default:
-                break;
-            }// end switch
-            
             // InTurn
             switch (e.getActionCommand()) {
             case END_TURN:
@@ -516,6 +489,24 @@ public class GameView extends JFrame {
         public void windowDeactivated(WindowEvent e) {
         }
         
+    }
+    
+    
+    /**
+     * @author nihil
+     * @return
+     *
+     */
+    public playerInventory getPInventory(AdventurerType adv) {
+        return inventories.get(adv);
+    }
+    
+    
+    /**
+     * @return the floodCursor
+     */
+    public WaterRise getFloodCursor() {
+        return floodCursor;
     }
     
     

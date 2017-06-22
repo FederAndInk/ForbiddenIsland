@@ -519,7 +519,8 @@ public abstract class Adventurer {
      *
      */
     public boolean isExchangePossibleHere() {
-        return getCurrentTile().getSite().getTreasureType().equals(getCurrentTile().getSite().getTreasureType());
+        return getCurrentTile().getSite().getTreasureType() != null
+                && getCurrentTile().getSite().getTreasureType().equals(getCurrentTile().getSite().getTreasureType());
     }
     
     

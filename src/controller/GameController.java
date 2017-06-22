@@ -48,8 +48,7 @@ public class GameController implements Observer {
      */
     public GameController(MainController mainController) {
         this.mainController = mainController;
-        gameView = new GameView();
-        gameView.setVisible(false);
+        gameView = mainController.getView().getGameView();
         gameView.addObs(this);
         gameView.addObs(getMainController());
         
@@ -112,13 +111,13 @@ public class GameController implements Observer {
         FIGraphics.init(this);
         
         gameView.setBoard(getCurrentGame().getIsland().getSites(), this);
+        gameView.initPlayerState(getCurrentGame().getPawns());
         
         setSpawns();
         
         refreshBoard();
         defaultAction();
-        gameView.setVisible(true);
-        
+        mainController.getView().switchToGame();
     }
     
     

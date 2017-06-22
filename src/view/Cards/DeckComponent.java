@@ -16,20 +16,20 @@ import model.card.CardType;
  * @author nihil
  *
  */
-public class DeckComponant extends JPanel {
+public class DeckComponent extends JPanel {
     private CardType         type;
-    private DiscardComponant discard;
-    private CardsComponant   cards;
+    private DiscardComponent discard;
+    private CardsComponent   cards;
     
     
     /**
      * @author nihil
      *
      */
-    public DeckComponant(CardType type) {
+    public DeckComponent(CardType type) {
         this.type = type;
         setLayout(new GridLayout(2, 1));
-        initComponants();
+        initComponents();
     }
     
     
@@ -47,9 +47,9 @@ public class DeckComponant extends JPanel {
      * @author nihil
      *
      */
-    private void initComponants() {
-        discard = new DiscardComponant(type);
-        cards = new CardsComponant(type);
+    private void initComponents() {
+        discard = new DiscardComponent(type);
+        cards = new CardsComponent(type);
         
         if (type == CardType.FLOOD_CARD) {
             add(cards);

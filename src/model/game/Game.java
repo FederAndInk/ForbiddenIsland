@@ -484,4 +484,18 @@ public class Game {
         }
         return p;
     }
+    
+    
+    /**
+     * @author nihil
+     *
+     * @return
+     */
+    public ArrayList<AdventurerType> getPawns() {
+        ArrayList<AdventurerType> advs = new ArrayList<>();
+        for (Player player : players) {
+            advs.add(player.getCurrentAdventurer().getADVENTURER_TYPE());
+        } // end for
+        return advs;
+    }
 }

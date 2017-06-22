@@ -2,15 +2,10 @@ package controller;
 
 import java.awt.CardLayout;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.*;
 
 import model.adventurers.AdventurerType;
 import model.game.Game;
-import model.game.SeaLevel;
 import model.player.Player;
 import util.BoardType;
 import util.LogType;
@@ -95,28 +90,22 @@ public class MainController implements Observer, Serializable {
                 
                 break;
             case CREATE_GAME:
+                BoardType bType;
                 if (m.getContent() instanceof BoardType) {
-                    BoardType bType = (BoardType) m.getContent();
-                    createGame(bType);
-                    for (String p : view.getMainMenu().getjeu().getPlayerMap().keySet()) {
-                        if (getPlayer(p) == null) {
-                            addPlayer(p);
-                        }
-                        AdventurerType adv = view.getMainMenu().getjeu().getPlayerMap().get(p);
-                        gameController.getCurrentGame().addPlayer(adv.getClassFor(getPlayer(p)));
-                    }
-                    
-                    gameController.StartGame(view.getMainMenu().getjeu().getSeaLevel());
-                    // FIXME :to remove
-                    view.setVisible(false);
+                    bType = (BoardType) m.getContent();
                 } else {
-                    throw new IllegalArgumentException("no board type given");
+                    bType = BoardType.DEFAULT;
                 } // end if
-                break;
-            case BEGIN_GAME:
-                // FIXME : add view and give the sealevel
-                gameController.StartGame(SeaLevel.LEVEL2);
+                createGame(bType);
+                for (String p : view.getMainMenu().getjeu().getPlayerMap().keySet()) {
+                    if (getPlayer(p) == null) {
+                        addPlayer(p);
+                    }
+                    AdventurerType adv = view.getMainMenu().getjeu().getPlayerMap().get(p);
+                    gameController.getCurrentGame().addPlayer(adv.getClassFor(getPlayer(p)));
+                }
                 
+                gameController.StartGame(view.getMainMenu().getjeu().getSeaLevel());
                 break;
             case LOAD_GAME:
                 
@@ -175,8 +164,9 @@ public class MainController implements Observer, Serializable {
                 choixmap();
                 break;
             case MAP_SELECTED:
-                Parameters.printLog("MAP CHANGÉ DE " + view.getMainMenu().getjeu().getBoardType() + " à "
-                        + (BoardType) m.getContent(), LogType.INFO);
+                Parameters.printLog(
+                        "MAP CHANGÉ DE " + view.getMainMenu().getjeu().getBoardType() + " à " + m.getContent(),
+                        LogType.INFO);
                 view.getMainMenu().getjeu().setBoardType((BoardType) m.getContent());
                 break;
             case REMOVE_GAME:

@@ -153,7 +153,7 @@ public abstract class Adventurer {
             effI = i % 2;
             effJ = j % 2;
             tileTmp = island.getTile(coords.getCol() + effI, coords.getRow() + effJ);
-            if ((tileTmp != null) && (tileTmp.getState() != TileState.SINKED)) {
+            if (isReachableTmp(tileTmp)) {
                 reachable.add(tileTmp);
             }
             j--;
@@ -163,19 +163,59 @@ public abstract class Adventurer {
     }
     
     
-    protected ArrayList<Tile> getReachableTiles(int nbHit) {
-        int i = 1;
-        ArrayList<Tile> reachable = new ArrayList<>();
-        ArrayList<Tile> reachableTmp = new ArrayList<>();
-        reachable = getReachableTiles(getCurrentTile());
-        while (i <= nbHit) {
-            for (Tile tile : reachable) {
-                reachableTmp.addAll(getReachableTiles(tile));
+    protected boolean isReachableTmp(Tile tileTmp) {
+        return tileTmp != null && tileTmp.getState() != TileState.SINKED;
+    }
+    
+    
+    protected ArrayList<Tile> getReachableTiles(ArrayList<Tile> tilesToReach, ArrayList<Tile> tilesAlreadyRead,
+            int deep) {
+        ArrayList<Tile> children = new ArrayList<>();
+        for (int d = 1; d < deep; d++) {
+            for (Tile tToReach : tilesToReach) {
+                Island island = getPlayer().getCurrentGame().getIsland();
+                Coords coords = tToReach.getCoords();
+                
+                int j = 2;
+                int effI;
+                int effJ;
+                Tile tileTmp;
+                for (int i = -1; i <= 2; i += 1) {
+                    effI = i % 2;
+                    effJ = j % 2;
+                    tileTmp = island.getTile(coords.getCol() + effI, coords.getRow() + effJ);
+                    if (!tilesAlreadyRead.contains(tileTmp)) { // if the tile is not already treated
+                        if (isReachableTmp(tileTmp)) {
+                            tilesAlreadyRead.add(tileTmp);
+                            children.add(tileTmp);
+                        }
+                    }
+                    j--;
+                }
             }
-            i++;
+            tilesToReach.clear();
+            tilesToReach.addAll(children);
+            children.clear();
         }
-        reachable.addAll(reachableTmp);
-        return reachable;
+        return tilesAlreadyRead;
+    }
+    
+    
+    protected ArrayList<Tile> getReachableTiles(int nbHit) {
+        ArrayList<Tile> reachableAll = new ArrayList<>(getReachableTiles(getCurrentTile()));
+        ArrayList<Tile> reachable = new ArrayList<>(getReachableTiles(getCurrentTile()));
+        
+        getReachableTiles(reachable, reachableAll, nbHit);
+        
+        Tile tile;
+        for (int j = 0; j < reachableAll.size(); j++) {
+            tile = reachableAll.get(j);
+            if (tile.getState() == TileState.SINKED || getCurrentTile().equals(tile)) {
+                reachableAll.remove(j);
+                j--;
+            }
+        }
+        return reachableAll;
         
     }
     

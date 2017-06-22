@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import model.game.Tile;
 import model.player.Player;
+import util.exception.ActionException;
 import util.exception.InadequateUseOfCapacityException;
 import util.exception.MoveException;
 import util.exception.NavigatorCannotMoveHimselfException;
@@ -26,27 +27,38 @@ public class Navigator extends Adventurer {
     
     // FIXME to decrease action and verify action
     @Override
-    public void useCapacity(Tile destTile, Object applied) throws NavigatorCannotMoveHimselfException, MoveException {
+    public void useCapacity(Tile destTile, Object applied)
+            throws NavigatorCannotMoveHimselfException, MoveException, ActionException {
         if (applied instanceof Player) {
             Player player = (Player) applied;
             ArrayList<Tile> reachable = new ArrayList<>();
             switch (player.getCurrentAdventurer().getADVENTURER_TYPE()) {
             case DIVER:
-                reachable = getReachableTiles(2);
-                if (reachable.contains(destTile)) {
-                    player.getCurrentAdventurer().setCurrentTile(destTile);
+                reachable = player.getCurrentAdventurer().getReachableTiles(2);
+                if (getActionPoints() >= 1) {
+                    if (reachable.contains(destTile)) {
+                        player.getCurrentAdventurer().setCurrentTile(destTile);
+                        setActionPoints(getActionPoints() - 1);
+                    } else {
+                        throw new MoveException(destTile);
+                    }
                 } else {
-                    throw new MoveException(destTile);
+                    throw new ActionException(getActionPoints());
                 }
                 break;
             case NAVIGATOR:
                 throw new NavigatorCannotMoveHimselfException(player.getCurrentAdventurer().getADVENTURER_TYPE());
             default:
                 reachable = player.getCurrentAdventurer().getReachableTiles(2);
-                if (reachable.contains(destTile)) {
-                    player.getCurrentAdventurer().setCurrentTile(destTile);
+                if (getActionPoints() >= 1) {
+                    if (reachable.contains(destTile)) {
+                        player.getCurrentAdventurer().setCurrentTile(destTile);
+                        setActionPoints(getActionPoints() - 1);
+                    } else {
+                        throw new MoveException(destTile);
+                    }
                 } else {
-                    throw new MoveException(destTile);
+                    throw new ActionException(getActionPoints());
                 }
                 break;
             }

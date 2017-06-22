@@ -72,79 +72,8 @@ public class Diver extends Adventurer {
     
     
     @Override
-    public ArrayList<Tile> getReachableTiles(Tile tile) {
-        ArrayList<Tile> reachable = new ArrayList<>();
-        Coords coords = tile.getCoords();
-        
-        Island island = getPlayer().getCurrentGame().getIsland();
-        Tile tileTmp;
-        // we will apply a sweet function to get through -1,0,1,0 and meanwhile 0,1,0,-1 (uses of modulo is awesome)
-        int j = 2;
-        int effI;
-        int effJ;
-        for (int i = -1; i <= 2; i += 1) {
-            effI = i % 2;
-            effJ = j % 2;
-            tileTmp = island.getTile(coords.getCol() + effI, coords.getRow() + effJ);
-            if ((tileTmp != null)) {
-                reachable.add(tileTmp);
-                
-            }
-            j--;
-        } // end for
-        return reachable;
-    }
-    
-    
-    private ArrayList<Tile> getReachableTiles(ArrayList<Tile> tilesToReach, ArrayList<Tile> tilesAlreadyRead,
-            int deep) {
-        ArrayList<Tile> children = new ArrayList<>();
-        for (int d = 1; d < deep; d++) {
-            for (Tile tToReach : tilesToReach) {
-                Island island = getPlayer().getCurrentGame().getIsland();
-                Coords coords = tToReach.getCoords();
-                
-                int j = 2;
-                int effI;
-                int effJ;
-                Tile tileTmp;
-                for (int i = -1; i <= 2; i += 1) {
-                    effI = i % 2;
-                    effJ = j % 2;
-                    tileTmp = island.getTile(coords.getCol() + effI, coords.getRow() + effJ);
-                    if (!tilesAlreadyRead.contains(tileTmp)) { // if the tile is not already treated
-                        if (tileTmp != null) {
-                            tilesAlreadyRead.add(tileTmp);
-                            children.add(tileTmp);
-                        }
-                    }
-                    j--;
-                }
-            }
-            tilesToReach.clear();
-            tilesToReach.addAll(children);
-            children.clear();
-        }
-        return tilesAlreadyRead;
-    }
-    
-    
-    @Override
-    public ArrayList<Tile> getReachableTiles(int nbHit) {
-        ArrayList<Tile> reachableAll = new ArrayList<>(getReachableTiles(getCurrentTile()));
-        ArrayList<Tile> reachable = new ArrayList<>(getReachableTiles(getCurrentTile()));
-        
-        getReachableTiles(reachable, reachableAll, nbHit);
-        
-        Tile tile;
-        for (int j = 0; j < reachableAll.size(); j++) {
-            tile = reachableAll.get(j);
-            if (tile.getState().equals(TileState.SINKED) || getCurrentTile().equals(tile)) {
-                reachableAll.remove(j);
-                j--;
-            }
-        }
-        return reachableAll;
+    protected boolean isReachableTmp(Tile tileTmp) {
+        return tileTmp != null;
     }
     
     

@@ -1,11 +1,6 @@
 package model.game;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.*;
 
 import model.adventurers.Adventurer;
 import model.adventurers.AdventurerType;
@@ -15,9 +10,6 @@ import model.player.Player;
 import util.BoardType;
 import util.LogType;
 import util.Parameters;
-import util.exception.EndGameException;
-import util.exception.ExceptionType;
-import util.exception.PlayerOutOfIslandException;
 import util.exception.*;
 import util.message.InGameAction;
 
@@ -255,7 +247,7 @@ public class Game {
         if (!getTreasures().isEmpty()) {
             for (Treasure treasure : getTreasures()) {
                 if (getIsland().isTreasureAllSinked((treasure.getName()))) {
-                    throw new EndGameException();
+                    throw new EndGameException(ExceptionType.END_GAME_TREASURE);
                 }
             }
         }

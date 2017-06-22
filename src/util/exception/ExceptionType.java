@@ -19,7 +19,7 @@ public enum ExceptionType {
     END_GAME_DEATH,
     END_GAME_WATER,
     END_GAME_HELI,
-    END_GAME;
+    END_GAME,
     NOT_ENOUGH_CARD,
     WRONG_TILE_TREASURE,
     MISSING_CARD,

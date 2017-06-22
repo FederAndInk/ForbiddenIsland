@@ -9,12 +9,7 @@ import model.player.Inventory;
 import model.player.Player;
 import util.LogType;
 import util.Parameters;
-import util.exception.ActionException;
-import util.exception.EndGameException;
-import util.exception.ExceptionType;
-import util.exception.InadequateUseOfCapacityException;
-import util.exception.MoveException;
-import util.exception.TileException;
+import util.exception.*;
 import util.message.InGameAction;
 
 

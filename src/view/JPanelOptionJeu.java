@@ -464,4 +464,78 @@ public class JPanelOptionJeu extends JPanel {
     public SeaLevel getSeaLevel() {
         return seaLevel;
     }
+    
+    
+    public void changeButtonColor(String j) {
+        switch (j) {
+        case "J1":
+            changeButtonColor(getPlayer(j), hero1);
+            break;
+        case "J2":
+            changeButtonColor(getPlayer(j), hero2);
+            break;
+        case "J3":
+            changeButtonColor(getPlayer(j), hero3);
+            break;
+        case "J4":
+            changeButtonColor(getPlayer(j), hero4);
+            break;
+        default:
+            break;
+        }
+    }
+    
+    
+    private void changeButtonColor(AdventurerType adv, JButton button) {
+        switch (adv) {
+        case DIVER:
+            button.setBackground(Color.black);
+            button.setForeground(Color.WHITE);
+            break;
+        case ENGINEER:
+            button.setBackground(Color.red);
+            button.setForeground(Color.BLACK);
+            break;
+        case EXPLORER:
+            button.setBackground(Color.green);
+            button.setForeground(Color.BLACK);
+            
+            break;
+        case MESSENGER:
+            button.setBackground(Color.white);
+            button.setForeground(Color.BLACK);
+            
+            break;
+        case NAVIGATOR:
+            button.setBackground(Color.yellow);
+            button.setForeground(Color.BLACK);
+            
+            break;
+        case PILOT:
+            button.setBackground(Color.blue);
+            button.setForeground(Color.BLACK);
+            
+            break;
+        case RANDOM:
+            button.setBackground(Color.gray);
+            button.setForeground(Color.BLACK);
+            
+            break;
+        default:
+            break;
+        }
+        
+    }
+    
+    
+    public void setBaseColor() {
+        hero1.setBackground(null);
+        hero1.setForeground(Color.BLACK);
+        hero2.setBackground(null);
+        hero2.setForeground(Color.BLACK);
+        hero3.setBackground(null);
+        hero3.setForeground(Color.BLACK);
+        hero4.setBackground(null);
+        hero4.setForeground(Color.BLACK);
+    }
 }

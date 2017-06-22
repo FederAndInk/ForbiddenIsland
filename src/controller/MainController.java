@@ -134,6 +134,7 @@ public class MainController implements Observer, Serializable {
                     choixchamp();
                 } else {
                     Parameters.printLog("les roles sont au hasard", LogType.INFO);
+                    view.getMainMenu().getjeu().setBaseColor();
                     for (int i = 1; i <= 4; i++) {
                         view.getMainMenu().getjeu().setAdventurer("J" + i, AdventurerType.RANDOM);
                     }
@@ -154,6 +155,7 @@ public class MainController implements Observer, Serializable {
                                 adv);
                     }
                 }
+                view.getMainMenu().getjeu().changeButtonColor(currentPlayer);
                 break;
             case SELECT_MAP:
                 choixmap();

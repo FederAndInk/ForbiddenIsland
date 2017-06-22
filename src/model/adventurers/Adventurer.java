@@ -12,7 +12,12 @@ import model.player.Inventory;
 import model.player.Player;
 import util.LogType;
 import util.Parameters;
-import util.exception.*;
+import util.exception.ActionException;
+import util.exception.EndGameException;
+import util.exception.ExceptionType;
+import util.exception.InadequateUseOfCapacityException;
+import util.exception.MoveException;
+import util.exception.TileException;
 import util.message.InGameAction;
 
 
@@ -182,7 +187,7 @@ public abstract class Adventurer {
             setActionPoints(0);
         } // end if
         if (getReachableTiles().isEmpty()) {
-            throw new EndGameException();
+            throw new EndGameException(ExceptionType.END_GAME_DEATH);
         } // end if
         return getReachableTiles();
     }
@@ -369,7 +374,8 @@ public abstract class Adventurer {
     public AdventurerType getADVENTURER_TYPE() {
         return ADVENTURER_TYPE;
     }
-  
+    
+    
     public void giveCard(TreasureCard card, Player player) {
         if (card.getTreasureType().equals(getCurrentTile().getSite().geTreasureType())) {
             if (player.getCurrentAdventurer().getCurrentTile().equals(getCurrentTile())) {

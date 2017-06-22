@@ -15,6 +15,8 @@ import model.player.Player;
 import util.BoardType;
 import util.LogType;
 import util.Parameters;
+import util.exception.EndGameException;
+import util.exception.ExceptionType;
 import util.message.InGameMessage;
 import util.message.MainAction;
 import util.message.MainMessage;
@@ -166,6 +168,13 @@ public class MainController implements Observer, Serializable {
             case REMOVE_GAME:
                 
                 break;
+            case ABANDON:
+                try {
+                    throw new util.exception.EndGameException(ExceptionType.END_GAME);
+                } catch (EndGameException e) {
+                    e.printStackTrace();
+                    System.exit(0);
+                }
             case GET_HELP:
                 
                 break;

@@ -8,6 +8,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import controller.MainController;
+import util.exception.ExceptionType;
 
 
 
@@ -22,6 +23,7 @@ public class MainView extends JFrame {
     private MainController   controller;
     private JPanelChoixMap   choixMap;
     private JPanelFin        fin;
+    private ExceptionType    exceptionType;
     
     private JPanel card;
     
@@ -35,7 +37,8 @@ public class MainView extends JFrame {
         main = new JPanel(new CardLayout());
         tutoPanel = new JPanelTuto();
         choixMap = new JPanelChoixMap();
-        fin = new JPanelFin();
+        exceptionType = ExceptionType.END_GAME;
+        fin = new JPanelFin(exceptionType);
         getContentPane().add(main);
         
         card.setLayout(new CardLayout());
@@ -90,5 +93,10 @@ public class MainView extends JFrame {
     
     public JPanelMenu getMainMenu() {
         return mainMenu;
+    }
+    
+    
+    public void setExceptionType(ExceptionType exceptionType) {
+        this.exceptionType = exceptionType;
     }
 }

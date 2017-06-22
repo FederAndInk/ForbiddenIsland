@@ -108,6 +108,10 @@ public class JPanelFin extends JPanel {
             why.setText("");
             panelFin.setWin(true);
             break;
+        case END_GAME:
+            why.setText("on ne sait pas pourquoi");
+            panelFin.setWin(false);
+            break;
         default:
             break;
         }

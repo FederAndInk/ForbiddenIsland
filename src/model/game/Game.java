@@ -1,6 +1,11 @@
 package model.game;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 import model.adventurers.Adventurer;
 import model.adventurers.AdventurerType;
@@ -9,6 +14,7 @@ import util.BoardType;
 import util.LogType;
 import util.Parameters;
 import util.exception.EndGameException;
+import util.exception.ExceptionType;
 import util.exception.PlayerOutOfIslandException;
 import util.message.InGameAction;
 
@@ -187,7 +193,7 @@ public class Game {
     public void increaseSeaLevel() throws EndGameException {
         seaLevel = seaLevel.next();
         if (seaLevel.isLast()) {
-            throw new EndGameException();
+            throw new EndGameException(ExceptionType.END_GAME_WATER);
         }
     }
     

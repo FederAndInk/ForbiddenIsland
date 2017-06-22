@@ -1,22 +1,33 @@
 package controller;
 
+import java.awt.CardLayout;
+import java.io.Serializable;
 import java.util.*;
 
+import model.adventurers.AdventurerType;
 import model.game.Game;
 import model.player.Player;
+import util.BoardType;
 import util.LogType;
 import util.Parameters;
 import util.message.InGameMessage;
 import util.message.MainAction;
 import util.message.MainMessage;
+import view.MainView;
 
 
 
-public class MainController implements Observer {
+/**
+ * @author nihil
+ *
+ */
+public class MainController implements Observer, Serializable {
     
     private HashMap<String, Player> players;
     private ArrayList<Game>         savedGames;
     private GameController          gameController;
+    private String                  currentPlayer;
+    private MainView                view;
     
     
     /**
@@ -24,18 +35,21 @@ public class MainController implements Observer {
      *
      */
     public MainController() {
+        view = new MainView();
         players = new HashMap<>();
         savedGames = new ArrayList<>();
         gameController = new GameController(this);
+        view.AddObs(this);
+        view.setVisible(true);
     }
     
     
-    public void createGame() {
+    public void createGame(BoardType bType) {
         // TODO : complete with IHM
         if (gameController.getCurrentGame() != null) {
             // FIXME : do something to prevent erasement
         } // end if
-        gameController.setCurrentGame(new Game());
+        gameController.setCurrentGame(new Game(bType));
     }
     
     
@@ -58,11 +72,10 @@ public class MainController implements Observer {
     
     
     public boolean addPlayer(String pName) {
-        // FIXME : get data from the UI or the UI send the player directly ?
         if (!getPlayers().containsKey(pName)) {
             players.put(pName, new Player(pName));
         } // end if
-          // gameController.getCurrentGame().addPlayer(players.get(pName), AdventurerType.PILOT.getClassFor(null));
+          // TODO : something to return
         return true;
     }// end addPlayer
     
@@ -73,22 +86,26 @@ public class MainController implements Observer {
             MainMessage m = ((MainMessage) arg1);
             
             switch ((MainAction) m.getType()) {
-            case ADD_PLAYER:
-                if (m.getContent() instanceof Player) {
-                    addPlayer((String) m.getContent());
-                } else {
-                    throw new IllegalArgumentException("In order to create a player, a player name must be given");
-                } // end if
-                break;
             case ADD_PLAYER_TO_GAME:
                 
                 break;
             case CREATE_GAME:
-                createGame();
-                break;
-            case BEGIN_GAME:
-                gameController.StartGame();
+                BoardType bType;
+                if (m.getContent() instanceof BoardType) {
+                    bType = (BoardType) m.getContent();
+                } else {
+                    bType = BoardType.DEFAULT;
+                } // end if
+                createGame(bType);
+                for (String p : view.getMainMenu().getjeu().getPlayerMap().keySet()) {
+                    if (getPlayer(p) == null) {
+                        addPlayer(p);
+                    }
+                    AdventurerType adv = view.getMainMenu().getjeu().getPlayerMap().get(p);
+                    gameController.getCurrentGame().addPlayer(adv.getClassFor(getPlayer(p)));
+                }
                 
+                gameController.StartGame(view.getMainMenu().getjeu().getSeaLevel());
                 break;
             case LOAD_GAME:
                 
@@ -96,9 +113,65 @@ public class MainController implements Observer {
             case SAVE_GAME:
                 
                 break;
+            case SELECT_PLAYER:
+                Parameters.printLog(m.getContent(), LogType.INFO);
+                if (m.getContent() != "random") {
+                    Parameters.printLog("message select Player reçu", LogType.INFO);
+                    setCurrentPlayer(((String) m.getContent()));
+                    // view.getSelectHero().setEnabled(false, null);
+                    Parameters.printLog(getCurrentPlayer(), LogType.INFO);
+                    choixchamp();
+                } else {
+                    Parameters.printLog("les roles sont au hasard", LogType.INFO);
+                    view.getMainMenu().getjeu().setBaseColor();
+                    for (int i = 1; i <= 4; i++) {
+                        view.getMainMenu().getjeu().setAdventurer("J" + i, AdventurerType.RANDOM);
+                    }
+                    for (AdventurerType adv : AdventurerType.values()) {
+                        if (adv != AdventurerType.RANDOM) {
+                            view.getSelectHero()
+                                    .setEnabled(!view.getMainMenu().getjeu().getPlayerMap().containsValue(adv), adv);
+                        }
+                    }
+                }
+                break;
+            case SELECT_ADVENTURER:
+                if (m.getContent() == null) {
+                    view.getMainMenu().getjeu().setBaseColor();
+                    for (AdventurerType adv : AdventurerType.values()) {
+                        if (adv != AdventurerType.RANDOM) {
+                            view.getSelectHero()
+                                    .setEnabled(!view.getMainMenu().getjeu().getPlayerMap().containsValue(adv), adv);
+                        }
+                    }
+                } else {
+                    view.getMainMenu().getjeu().setAdventurer(currentPlayer, (AdventurerType) m.getContent());
+                    // Parameters.printLog(view.getMainMenu().getjeu().getPlayer(currentPlayer), LogType.INFO);
+                    for (AdventurerType adv : AdventurerType.values()) {
+                        if (adv != AdventurerType.RANDOM) {
+                            view.getSelectHero()
+                                    .setEnabled(!view.getMainMenu().getjeu().getPlayerMap().containsValue(adv), adv);
+                        }
+                    }
+                }
+                for (String player : view.getMainMenu().getjeu().getPlayerMap().keySet()) {
+                    view.getMainMenu().getjeu().changeButtonColor(player);
+                }
+                break;
+            case SELECT_MAP:
+                choixmap();
+                break;
+            case MAP_SELECTED:
+                Parameters.printLog(
+                        "MAP CHANGÉ DE " + view.getMainMenu().getjeu().getBoardType() + " à " + m.getContent(),
+                        LogType.INFO);
+                view.getMainMenu().getjeu().setBoardType((BoardType) m.getContent());
+                break;
             case REMOVE_GAME:
                 
                 break;
+            case ABANDON:
+            
             case GET_HELP:
                 
                 break;
@@ -109,7 +182,8 @@ public class MainController implements Observer {
                 
                 break;
             case QUIT:
-                
+                // FIXME do something on close (save)
+                System.exit(0);
                 break;
             default:
                 if (arg1 instanceof InGameMessage) {
@@ -133,4 +207,41 @@ public class MainController implements Observer {
         return players;
     }
     
+    
+    public MainView getView() {
+        return view;
+    }
+    
+    
+    /**
+     * @return the gameController
+     */
+    public GameController getGameController() {
+        return gameController;
+    }
+    
+    
+    public void choixchamp() {
+        ((CardLayout) view.getCard().getLayout()).show(view.getCard(), "heroSelection");
+    }
+    
+    
+    public void choixmap() {
+        ((CardLayout) view.getCard().getLayout()).show(view.getCard(), "choixMap");
+    }
+    
+    
+    public void setCurrentPlayer(String currentPlayer) {
+        this.currentPlayer = currentPlayer;
+    }
+    
+    
+    public String getCurrentPlayer() {
+        return currentPlayer;
+    }
+    
+    
+    public void finjeu() {
+        ((CardLayout) view.getCard().getLayout()).show(view.getCard(), "fin");
+    }
 }

@@ -6,7 +6,7 @@ manifest.mf
 .classpath
 .directory
 bin/
-
+src/test.java
 src/tests
 src/Test.java
 src/tests
@@ -35,3 +35,4 @@ src/tests
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+/bin1/

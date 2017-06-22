@@ -18,6 +18,24 @@ public class MainMessage extends Message {
     
     
     /**
+     * @author nihil
+     *
+     * @param quit
+     */
+    public MainMessage(MainAction type) {
+        super(null);
+        this.type = type;
+    }
+    
+    
+    @Override
+    public Object getContent() {
+        // TODO Auto-generated method stub
+        return super.getContent();
+    }
+    
+    
+    /**
      * @see util.message.Message#getType()
      */
     @Override

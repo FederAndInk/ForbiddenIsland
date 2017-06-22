@@ -10,17 +10,15 @@ import java.util.Stack;
 
 import javax.swing.JLayeredPane;
 
-import model.adventurers.Adventurer;
-import model.card.CardType;
-import model.game.Coords;
-import model.game.Game;
-import model.game.Island;
-import model.game.Tile;
+import model.adventurers.*;
+import model.card.*;
+import model.game.*;
 import model.player.Player;
+import util.FIGraphics;
 import util.LogType;
 import util.Parameters;
-import util.exception.InadequateUseOfCapacity;
-import util.exception.MoveException;
+import util.Temporary;
+import util.exception.*;
 import util.message.InGameAction;
 import util.message.InGameMessage;
 import util.message.MainMessage;
@@ -48,9 +46,22 @@ public class GameController implements Observer {
      */
     public GameController(MainController mainController) {
         this.mainController = mainController;
-        gameView = new GameView();
-        gameView.getListObs().addObserver(this);
+        gameView = mainController.getView().getGameView();
+        gameView.addObs(this);
+        gameView.addObs(getMainController());
+        
         playersChain = new Stack<>();
+    }
+    
+    
+    /**
+     * @author nihil
+     * @param player
+     *
+     */
+    private void chainPlayer(Player player) {
+        playersChain.push(getCurrentGame().getCurrentPlayer());
+        getCurrentGame().setCurrentPlayer(player);
     }
     
     
@@ -58,23 +69,54 @@ public class GameController implements Observer {
      * @author nihil
      *
      */
-    public void StartGame() {
-        getCurrentGame().initGame();
-        playersChain.clear();
-        playersChain.push(getCurrentGame().getCurrentPlayer());
+    private void chainPlayers(ArrayList<Player> players) {
+        for (Player player : players) {
+            chainPlayer(player);
+        } // end for
+    }
+    
+    
+    /**
+     * @author nihil
+     * @param player
+     *
+     */
+    private void unChainPlayer() {
+        getCurrentGame().setCurrentPlayer(playersChain.pop());
+    }
+    
+    
+    @Temporary
+    private void tmpGameStart() {
+        Player p1 = new Player("p1");
+        Player p2 = new Player("p2");
+        Player p3 = new Player("p3");
+        Player p4 = new Player("p4");
+        getCurrentGame().addPlayer(new Diver(p1));
+        getCurrentGame().addPlayer(new Explorer(p2));
+        getCurrentGame().addPlayer(new Navigator(p3));
+        getCurrentGame().addPlayer(new Engineer(p4));
+    }// end tmpGameStart
+    
+    
+    /**
+     * @author nihil
+     *
+     */
+    public void StartGame(SeaLevel seaLevel) {
+        // tmpGameStart();
+        getCurrentGame().initGame(seaLevel);
+        FIGraphics.init(this);
         
         gameView.setBoard(getCurrentGame().getIsland().getSites(), this);
+        gameView.initPlayerState(getCurrentGame().getPawns());
+        gameView.getFloodCursor().moveCursor(seaLevel);
         
         setSpawns();
         
         refreshBoard();
-        setMoveAction();
-        gameView.setCurrentP(getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getADVENTURER_TYPE());
-        gameView.setActions(getCurrentGame().getPossibleActions());
-        gameView.setCPlayer(getCurrentGame().getCurrentPlayer().getName(),
-                getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getActionPoints());
-        gameView.setVisible(true);
-        
+        defaultAction();
+        mainController.getView().switchToGame();
     }
     
     
@@ -97,25 +139,53 @@ public class GameController implements Observer {
      *
      * @param coords
      */
-    private void movePawn(Coords coords) {
-        
-        // TODO : do something if the move can't be applied (exception)
-        // TODO : get the tile from the UI
+    private void movePawn(Tile tile) {
         try {
             Game g = getCurrentGame();
             Adventurer adv = g.getCurrentPlayer().getCurrentAdventurer();
             Tile cTile = adv.getCurrentTile();
             
-            Tile t = g.getIsland().getTile(coords);
-            adv.move(t);
-            Parameters.printLog("Move to " + t, LogType.INFO);
+            adv.move(tile);
+            Parameters.printLog("Move to " + tile, LogType.INFO);
             
             // to update the view
-            gameView.movePawn(adv.getADVENTURER_TYPE(), cTile.getCoords(), coords);
-            setMoveAction();
+            gameView.movePawn(adv.getADVENTURER_TYPE(), cTile.getCoords(), tile.getCoords());
         } catch (MoveException e) {
             e.printStackTrace();
+        } catch (ActionException e) {
+            e.printStackTrace();
+        } finally {
+            defaultAction();
         }
+        
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     */
+    private void swimPawn(Tile tile) {
+        Game g = getCurrentGame();
+        Adventurer adv = g.getCurrentPlayer().getCurrentAdventurer();
+        Tile cTile = adv.getCurrentTile();
+        
+        try {
+            adv.swim(tile);
+            Parameters.printLog("Move to " + tile, LogType.INFO);
+            // to update the view
+            gameView.movePawn(adv.getADVENTURER_TYPE(), cTile.getCoords(), tile.getCoords());
+        } catch (MoveException | ActionException e) {
+            e.printStackTrace();
+        } catch (EndGameException e) {
+            mainController.getView().switchToEnd(e.getEndType());
+        } finally {
+            unChainPlayer();
+            defaultAction();
+        }
+        if (!playersChain.isEmpty()) {
+            setSwim();
+        } // end if
         
     }
     
@@ -129,12 +199,17 @@ public class GameController implements Observer {
         Game g = getCurrentGame();
         Adventurer adv = g.getCurrentPlayer().getCurrentAdventurer();
         
-        adv.shoreUp(tile);
-        Parameters.printLog("Shore Up " + tile, LogType.INFO);
-        
-        // to update the view
-        gameView.shoreUp(tile.getCoords());
-        setMoveAction();
+        try {
+            adv.shoreUp(tile);
+            Parameters.printLog("Shore Up " + tile, LogType.INFO);
+            
+            // to update the view
+            gameView.shoreUp(tile.getCoords());
+        } catch (TileException | ActionException e) {
+            e.printStackTrace();
+        } finally {
+            defaultAction();
+        }
     }
     
     
@@ -146,15 +221,121 @@ public class GameController implements Observer {
     private void useCapacity(Tile tile) {
         Adventurer adv = getCurrentGame().getCurrentPlayer().getCurrentAdventurer();
         Tile cTile = adv.getCurrentTile();
+        ArrayList<Player> pSelects = getCurrentGame().getSelectedPlayers();
         
         try {
-            adv.useCapacity(tile);
-        } catch (InadequateUseOfCapacity e) {
+            Player pSelect = pSelects.isEmpty() ? adv.getPlayer() : pSelects.get(0);
+            adv.useCapacity(tile, pSelect);
+            gameView.movePawn(pSelect.getCurrentAdventurer().getADVENTURER_TYPE(), cTile.getCoords(), tile.getCoords());
+        } catch (InadequateUseOfCapacityException | MoveException | ActionException e) {
             e.printStackTrace();
+        } catch (NavigatorCannotMoveHimselfException e) {
+            e.printStackTrace();
+        } finally {
+            defaultAction();
         }
-        gameView.movePawn(adv.getADVENTURER_TYPE(), cTile.getCoords(), tile.getCoords());
-        setMoveAction();
     }
+    
+    
+    /**
+     * @author nihil
+     *
+     * @param coords
+     */
+    private void useCardSB(SandBag sandBag, Tile tile) {
+        try {
+            sandBag.applyAction(tile, null);
+            Parameters.printLog("Shore Up " + tile, LogType.INFO);
+            
+            gameView.shoreUp(tile.getCoords());
+        } catch (TileException e) {
+            e.printStackTrace();
+        } finally {
+            defaultAction();
+        }
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     * @param helicopter
+     * @param tile
+     */
+    private void useCardHC(Helicopter helicopter, Tile tile, ArrayList<Player> players) {
+        try {
+            Coords current = players.get(0).getCurrentAdventurer().getCurrentTile().getCoords();
+            helicopter.applyAction(tile, players);
+            Parameters.printLog("Use helicopter " + tile, LogType.INFO);
+            
+            for (Player player : players) {
+                Adventurer adv = player.getCurrentAdventurer();
+                gameView.movePawn(adv.getADVENTURER_TYPE(), current, adv.getCurrentTile().getCoords());
+            } // end for
+        } catch (IllegalAccessException | MoveException | TileException e) {
+            e.printStackTrace();
+        } catch (EndGameException e) {
+            mainController.getView().switchToEnd(e.getEndType());
+        } finally {
+            getCurrentGame().deselectPlayers();
+            defaultAction();
+        }
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     */
+    private void getTreasure() {
+        try {
+            // SEENOW : Treasure
+            getCurrentGame().addTreasureToPlayer(null);
+            Parameters.printLog("Get treasure", LogType.INFO);
+        } catch (ActionException e) {
+            e.printStackTrace();
+        } catch (NotEnoughCardsException e) {
+            e.printStackTrace();
+        } catch (WrongTileTreasureException e) {
+            e.printStackTrace();
+        } finally {
+            defaultAction();
+        }
+    }
+    
+    
+    /**
+     * For debug
+     * 
+     * @author nihil
+     *
+     */
+    private void changeTileState(Tile tile, TileState state) {
+        TilePanel tileG = (TilePanel) gameView.getTileG(tile.getCoords());
+        Parameters.printLog("Change state of " + tile.getSite() + " to " + state, LogType.INFO);
+        tileG.setState(state);
+        try {
+            currentGame.setTileState(tile, state);
+        } catch (PlayerOutOfIslandException e) {
+            chainPlayers(getCurrentGame().getPlayersOnTile(tile));
+            setSwim();
+        } catch (EndGameException ex) {
+            mainController.getView().switchToEnd(ex.getEndType());
+        }
+        defaultAction();
+    }
+    
+    
+    private void setSwim() {
+        Player p = getCurrentGame().getCurrentPlayer();
+        Parameters.printLog("set swim for " + p.getCurrentAdventurer(), LogType.INFO);
+        getCurrentGame().setCurrentAction(InGameAction.SWIM);
+        try {
+            refreshBoard(p.getCurrentAdventurer().getSwimmableTiles(), InGameAction.SWIM);
+        } catch (EndGameException e) {
+            mainController.getView().switchToEnd(e.getEndType());
+        }
+    }// end swim
     
     
     /**
@@ -179,19 +360,26 @@ public class GameController implements Observer {
      * @author nihil
      *
      */
-    private void refreshBoard(ArrayList<Tile> selectedTiles) {
+    private void refreshBoard(ArrayList<Tile> selectedTiles, InGameAction action) {
         reInitBoard();
         for (Tile tile : selectedTiles) {
-            gameView.setEnabled(true, tile.getCoords());
+            gameView.setEnabled(true, tile.getCoords(), action);
         } // end for
     }
     
     
     /**
+     * set all tiles disable
+     * 
      * @author nihil
      *
      */
     private void reInitBoard() {
+        setActivePawns(false);
+        for (Player player : getCurrentGame().getSelectedPlayers()) {
+            Adventurer adv = player.getCurrentAdventurer();
+            gameView.setSelectPawn(true, adv.getADVENTURER_TYPE(), adv.getCurrentTile().getCoords());
+        } // end for
         for (int i = 0; i < Island.GRID_SIZE.getRow(); i++) {
             for (int j = 0; j < Island.GRID_SIZE.getCol(); j++) {
                 JLayeredPane tile = gameView.getTileG(new Coords(j, i));
@@ -211,14 +399,26 @@ public class GameController implements Observer {
      *
      */
     private void setMoveAction() {
+        resetActions();
         if (getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getActionPoints() > 0) {
             gameView.notifyPlayers("Cliquer sur une partie de l'ile en vert pour vous y rendre");
             getCurrentGame().setCurrentAction(InGameAction.MOVE);
             Parameters.printLog("get Move", LogType.INFO);
-            refreshBoard(getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getReachableTiles());
+            refreshBoard(getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getReachableTiles(),
+                    InGameAction.MOVE);
         } else {
-            verifyEndTurn();
+            defaultAction();
         } // end if
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     */
+    private void resetActions() {
+        getCurrentGame().deselectPlayers();
+        reInitBoard();
     }
     
     
@@ -229,7 +429,9 @@ public class GameController implements Observer {
      *
      */
     private void setCapacityActionT() {
+        resetActions();
         if (getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getActionPoints() > 0) {
+            
             gameView.notifyPlayers("Cliquer sur une partie de l'ile en vert pour vous y rendre");
             getCurrentGame().setCurrentAction(InGameAction.USE_CAPACITY);
             Parameters.printLog("get Capacity", LogType.INFO);
@@ -237,12 +439,12 @@ public class GameController implements Observer {
             ArrayList<Object> objs;
             ArrayList<Tile> tiles = new ArrayList<>();
             try {
-                objs = getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getPotentialUse();
+                objs = getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getPotentialUse(null);
                 for (int i = 0; i < objs.size(); i++) {
                     tiles.add(i, (Tile) objs.get(i));
                 } // end for
-                refreshBoard(tiles);
-            } catch (InadequateUseOfCapacity e) {
+                refreshBoard(tiles, InGameAction.USE_CAPACITY);
+            } catch (InadequateUseOfCapacityException e) {
                 e.printStackTrace();
             }
         } else {
@@ -251,14 +453,59 @@ public class GameController implements Observer {
     }
     
     
+    /***
+     * @author nihil
+     * for the {@link Navigator} special action
+     */
+    private void setCapacityActionPT() {
+        if (getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getActionPoints() > 0) {
+            ArrayList<Player> pSelects = getCurrentGame().getSelectedPlayers();
+            reInitBoard();
+            if (pSelects.isEmpty()) {
+                gameView.notifyPlayers("Cliquer sur un joueur à déplacer");
+                getCurrentGame().setCurrentAction(InGameAction.USE_CAPACITY);
+                Parameters.printLog("get Capacity Navigator", LogType.INFO);
+                
+                for (Player player : getCurrentGame().getPlayers()) {
+                    Adventurer adv = player.getCurrentAdventurer();
+                    if (!adv.getADVENTURER_TYPE().equals(AdventurerType.NAVIGATOR)) {
+                        setActivePawn(true, adv);
+                    } // end if
+                } // end for
+            } else if (pSelects.size() == 1) {
+                setActivePawns(false);
+                setActivePawn(true, pSelects.get(0).getCurrentAdventurer());
+                gameView.notifyPlayers("Cliquer sur un endroit où déplacer le joueur");
+                getCurrentGame().setCurrentAction(InGameAction.USE_CAPACITY);
+                Parameters.printLog("get Capacity Navigator", LogType.INFO);
+                
+                try {
+                    ArrayList<Object> objs;
+                    ArrayList<Tile> tiles = new ArrayList<>();
+                    objs = getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getPotentialUse(pSelects.get(0));
+                    for (int i = 0; i < objs.size(); i++) {
+                        tiles.add(i, (Tile) objs.get(i));
+                    } // end for
+                    refreshBoard(tiles, InGameAction.USE_CAPACITY);
+                } catch (InadequateUseOfCapacityException e) {
+                    e.printStackTrace();
+                }
+            } // end if
+        } else {
+            verifyEndTurn();
+        } // end if
+    }
+    
+    
+    /**
+     * call when the turn is up
+     * 
+     * @author nihil
+     *
+     */
     private void endTurn() {
-        playersChain.clear();
         getCurrentGame().endTurn();
-        playersChain.push(getCurrentGame().getCurrentPlayer());
-        setMoveAction();
-        gameView.setCPlayer(getCurrentGame().getCurrentPlayer().getName(),
-                getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getActionPoints());
-        gameView.setCurrentP(getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getADVENTURER_TYPE());
+        defaultAction();
     }// end endTurn
     
     
@@ -266,16 +513,152 @@ public class GameController implements Observer {
      * @author nihil
      *
      */
+    private void setUseSandBag(SandBag sandBag) {
+        resetActions();
+        // FIXME : change by player inventory card
+        ArrayList<Tile> tiles = sandBag.getTilesDest(getCurrentGame().getIsland());
+        if (tiles.isEmpty()) {
+            gameView.notifyPlayers("Aucune partie de l'ile à assécher");
+            defaultAction();
+        } else {
+            getCurrentGame().setCurrentAction(InGameAction.USE_CARD_SAND_BAG);
+            gameView.notifyPlayers("Cliquer sur une partie de l'ile en beige pour l'assécher");
+            Parameters.printLog("get Shore Up tiles", LogType.INFO);
+            refreshBoard(tiles, InGameAction.SHORE_UP_TILE);
+        } // end if
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     * @param helicopter
+     */
+    private void setUseHelicopter(Helicopter helicopter) {
+        ArrayList<Tile> tiles = helicopter.getTilesDest(getCurrentGame().getIsland());
+        // to remove the current tile
+        tiles.remove(getCurrentGame().getSelectedPlayers().get(0).getCurrentAdventurer().getCurrentTile());
+        if (tiles.isEmpty()) {
+            gameView.notifyPlayers("Impossible :/");
+            defaultAction();
+        } else {
+            getCurrentGame().setCurrentAction(InGameAction.USE_CARD_HELICOPTER);
+            gameView.notifyPlayers("Cliquer sur une partie de l'ile pour vous y rendre");
+            Parameters.printLog("get Helicopter tiles", LogType.INFO);
+            refreshBoard(tiles, InGameAction.USE_CARD_HELICOPTER);
+        } // end if
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     */
     private void setShoreUpAction() {
+        resetActions();
         ArrayList<Tile> tiles = getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getShoreUpTiles();
         if (tiles.isEmpty()) {
             gameView.notifyPlayers("Aucune partie de l'ile proche de vous à assécher");
-            setMoveAction();
+            defaultAction();
         } else {
             getCurrentGame().setCurrentAction(InGameAction.SHORE_UP_TILE);
+            gameView.notifyPlayers("Cliquer sur une partie de l'ile en beige pour l'assécher");
             Parameters.printLog("get Shore Up tiles", LogType.INFO);
-            refreshBoard(tiles);
+            refreshBoard(tiles, InGameAction.SHORE_UP_TILE);
         } // end if
+    }
+    
+    
+    /**
+     * set smart action (the most probable action)
+     * 
+     * @author nihil
+     *
+     */
+    private void defaultAction() {
+        ArrayList<InGameAction> acts = getCurrentGame().getPossibleActions();
+        resetActions();
+        
+        if (acts.contains(InGameAction.GET_TREASURE)) {
+            // TODO : setGetTreasure
+        } else if (acts.contains(InGameAction.MOVE)) {
+            setMoveAction();
+        } else if (acts.contains(InGameAction.SHORE_UP_TILE)) {
+            setShoreUpAction();
+        }
+        turnGestion();
+    }
+    
+    
+    /**
+     * to set the view correctly after an action
+     * 
+     * @author nihil
+     *
+     */
+    private void turnGestion() {
+        verifyEndTurn();
+        Player pl = getCurrentGame().getCurrentPlayer();
+        gameView.setCurrentP(pl.getCurrentAdventurer().getADVENTURER_TYPE(), pl.getName(),
+                pl.getCurrentAdventurer().getActionPoints());
+        ArrayList<InGameAction> acts = getCurrentGame().getPossibleActions();
+        InGameAction act = getCurrentGame().getCurrentAction();
+        gameView.setActions(acts);
+    }// end
+     // turnGestion
+    
+    
+    /**
+     * change the state of a player (select or deselect)
+     * 
+     * @author nihil
+     * @param player
+     */
+    private void togglePawnSelection(AdventurerType advT) {
+        reInitBoard();
+        Player p = getCurrentGame().getPlayer(advT);
+        getCurrentGame().toggleSelectionPlayer(p);
+        setActivePawns(true);
+        for (Player player : getCurrentGame().getSelectedPlayers()) {
+            gameView.setSelectPawn(true, player.getCurrentAdventurer().getADVENTURER_TYPE(),
+                    player.getCurrentAdventurer().getCurrentTile().getCoords());
+        } // end for
+    }
+    
+    
+    private void setActivePawns(boolean active) {
+        if (getCurrentGame().getSelectedPlayers().isEmpty()) {
+            selectAllPawns(active);
+        } else {
+            selectNearPawns(active);
+        } // end if
+    }// end activePlayers
+    
+    
+    private void setActivePawn(boolean active, Adventurer adv) {
+        gameView.setActivePawn(active, adv.getADVENTURER_TYPE(), adv.getCurrentTile().getCoords());
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     * @param active
+     */
+    private void selectNearPawns(boolean active) {
+        Tile tile = getCurrentGame().getSelectedPlayers().get(0).getCurrentAdventurer().getCurrentTile();
+        for (Player player : getCurrentGame().getPlayersOnTile(tile)) {
+            Adventurer adv = player.getCurrentAdventurer();
+            gameView.setActivePawn(active, adv.getADVENTURER_TYPE(), adv.getCurrentTile().getCoords());
+        } // end for
+    }
+    
+    
+    private void selectAllPawns(boolean active) {
+        for (Player player : getCurrentGame().getPlayers()) {
+            Adventurer adv = player.getCurrentAdventurer();
+            gameView.setActivePawn(active, adv.getADVENTURER_TYPE(), adv.getCurrentTile().getCoords());
+        } // end for
     }
     
     
@@ -288,24 +671,71 @@ public class GameController implements Observer {
         Adventurer adv = getCurrentGame().getCurrentPlayer().getCurrentAdventurer();
         
         if (object instanceof Coords) {
-            Coords coords = (Coords) object;
+            Tile tile = getCurrentGame().getIsland().getTile((Coords) object);
             
             switch (getCurrentGame().getCurrentAction()) {
             case MOVE:
-                movePawn(coords);
-                
+                movePawn(tile);
+                break;
+            case SWIM:
+                swimPawn(tile);
                 break;
             case SHORE_UP_TILE:
-                shoreUp(getCurrentGame().getIsland().getTile(coords));
+                shoreUp(tile);
                 break;
             case USE_CAPACITY:
-                useCapacity(getCurrentGame().getIsland().getTile(coords));
+                useCapacity(tile);
+                break;
+            case USE_CARD_SAND_BAG:
+                if (Parameters.debugAction) {
+                    useCardSB(new SandBag(), tile);
+                } else {
+                    // FIXME : act with player inventory
+                } // end if
+                break;
+            case USE_CARD_HELICOPTER:
+                if (Parameters.debugAction) {
+                    useCardHC(new Helicopter(), tile, getCurrentGame().getSelectedPlayers());
+                } else {
+                    // FIXME : act with player inventory
+                } // end if
                 break;
             default:
+                throw new UnsupportedOperationException();
+            }// end switch
+        } // end if
+        if (object instanceof AdventurerType) {
+            AdventurerType advGet = (AdventurerType) object;
+            switch (getCurrentGame().getCurrentAction()) {
+            case USE_CARD_HELICOPTER:
+                togglePawnSelection(advGet);
                 break;
+            case USE_CAPACITY:
+                setActivePawns(false);
+                getCurrentGame().toggleSelectionPlayer(getCurrentGame().getPlayer(advGet));
+                setCapacityActionPT();
+                break;
+            case GIVE_CARD:
+                try {
+                    adv.giveCard(getCurrentGame().getPlayer(advGet));
+                } catch (CardException e) {
+                    e.printStackTrace();
+                } catch (GiveCardException e) {
+                    e.printStackTrace();
+                } catch (MissingCardException e) {
+                    e.printStackTrace();
+                } finally {
+                    defaultAction();
+                }
+                break;
+            default:
+                throw new UnsupportedOperationException();
             }// end switch
         } // end if
         
+        if (Parameters.debugAction) {
+            Parameters.debugAction = false;
+        } // end if
     }
     
     
@@ -321,30 +751,80 @@ public class GameController implements Observer {
             case SELECT_TILE:
                 doAction(m.getContent());
                 break;
+            case SELECT_PAWN:
+                if (m.getContent() instanceof AdventurerType) {
+                    doAction(m.getContent());
+                } else {
+                    throw new IllegalArgumentException("not an adventurerType");
+                } // end if
+                break;
             case MOVE:
                 setMoveAction();
                 
                 break;
             case GET_TREASURE:
-                
+                getTreasure();
                 break;
             case GIVE_CARD:
-                
+                selectNearPawns(true);
+                getCurrentGame().setCurrentAction(InGameAction.GIVE_CARD);
                 break;
             case SHORE_UP_TILE:
                 setShoreUpAction();
                 break;
             case USE_CAPACITY:
-                setCapacityActionT();
+                if (getCurrentGame().getCurrentPlayer().getCurrentAdventurer() instanceof Navigator) {
+                    setCapacityActionPT();
+                } else {
+                    setCapacityActionT();
+                } // end if
                 break;
             case USE_CARD:
-                
+                if (m.getContent().equals(CardType.SANDBAG_CARD)) {
+                    if (Parameters.debugAction) {
+                        setUseSandBag(new SandBag());
+                    } else {
+                        // TODO : act with inventory
+                    } // end if
+                } else if (m.getContent().equals(CardType.HELICOPTER_CARD)) {
+                    if (Parameters.debugAction) {
+                        setUseHelicopter(new Helicopter());
+                    } else {
+                        // TODO : act with inventory
+                    } // end if
+                }
+                break;
+            case USE_CARD_HELICOPTER:
+                reInitBoard();
+                getCurrentGame().setCurrentAction(InGameAction.USE_CARD_HELICOPTER);
+                setActivePawns(true);
                 break;
             case INTERRUPT:
                 
                 break;
-            case SELECT_PAWN:
+            case CHANGE_STATE_OF_TILE:
+                Coords coords = (Coords) m.getContent();
+                Tile tile = getCurrentGame().getIsland().getTile(coords);
+                changeTileState(tile, tile.getState().next());
+                break;
+            case DISCARD:
                 
+                break;
+            case DRAW:
+                try {
+                    Card card = getCurrentGame().drawEndTurnCard((InGameAction) m.getContent());
+                    if (card instanceof WatersRise) {
+                        gameView.getFloodCursor().moveCursor(getCurrentGame().getSeaLevel());
+                    } // end if
+                } catch (IllegalAccessException | MoveException | TileException | CardException e1) {
+                    e1.printStackTrace();
+                } catch (EndGameException e) {
+                    mainController.getView().switchToEnd(e.getEndType());
+                    
+                } catch (PlayerOutOfIslandException e) {
+                    chainPlayers(getCurrentGame().getPlayersOnTile(e.getTile()));
+                    setSwim();
+                }
                 break;
             case END_TURN:
                 endTurn();
@@ -354,20 +834,13 @@ public class GameController implements Observer {
                 break;
             }// end switch
             
+            turnGestion();
         } else if (arg1 instanceof MainMessage) {
             Parameters.printLog("Main action Message", LogType.INFO);
         } else {
             throw new IllegalArgumentException("The class " + arg0.getClass().getName() + " was going to send "
                     + arg1.getClass() + " Object, but a " + InGameMessage.class.getName() + " is expected");
         } // end if
-        gameView.setCPlayer(getCurrentGame().getCurrentPlayer().getName(),
-                getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getActionPoints());
-        if (verifyEndTurn()) {
-            
-        } else {
-            gameView.setActions(getCurrentGame().getPossibleActions());
-        } // end if
-        
     }
     
     
@@ -379,7 +852,8 @@ public class GameController implements Observer {
      *
      */
     private boolean verifyEndTurn() {
-        if (getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getPossibleActions().isEmpty()) {
+        ArrayList<InGameAction> acts = getCurrentGame().getPossibleActions();
+        if (acts.size() == 1 && acts.contains(InGameAction.END_TURN)) {
             gameView.setEndTurn(true);
             gameView.notifyPlayers("C'est la fin du tour pour " + getCurrentGame().getCurrentPlayer().getName());
             reInitBoard();

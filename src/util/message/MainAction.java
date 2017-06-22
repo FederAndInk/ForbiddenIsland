@@ -1,5 +1,9 @@
 package util.message;
 
+import model.adventurers.AdventurerType;
+
+
+
 /**
  * @give nothing else for all of them
  *
@@ -7,6 +11,19 @@ package util.message;
  */
 public enum MainAction {
     CREATE_GAME,
+    /**
+     * @give an {@link AdventurerType} to select an adventurer
+     */
+    SELECT_ADVENTURER,
+    /**
+     * @give the player wich select an adventurer
+     */
+    SELECT_PLAYER,
+    SELECT_MAP,
+    /**
+     * @give type map selected
+     */
+    MAP_SELECTED,
     /**
      * use for basic UI
      */
@@ -25,5 +42,6 @@ public enum MainAction {
     SAVE_GAME,
     LOAD_GAME,
     REMOVE_GAME,
+    ABANDON,
     QUIT;
 }

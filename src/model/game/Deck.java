@@ -7,7 +7,6 @@ import java.util.Stack;
 import org.w3c.dom.events.EventException;
 
 import model.card.Card;
-import model.player.Player;
 
 
 
@@ -17,16 +16,16 @@ public abstract class Deck {
     private Stack<Card>     deck;
     
     
-    public Deck() {
+    public Deck(Island island) {
         discard = new ArrayList<>();
         deck = new Stack<>();
         
-        initDeck();
+        initDeck(island);
         Collections.shuffle(deck);
     }
     
     
-    public abstract void initDeck();
+    public abstract void initDeck(Island island);
     
     
     /**
@@ -38,7 +37,7 @@ public abstract class Deck {
     private void deckGestion() throws EventException {
         if (deck.isEmpty()) {
             // TODO: send message to controller
-            deck.addAll(discard);
+            shuffleDeck();
         } // end if
         if (deck.isEmpty() && discard.isEmpty()) {
             throw new EventException((short) 0, "Not enough card in both discard and deck");
@@ -46,7 +45,13 @@ public abstract class Deck {
     }// end deckGestion
     
     
-    public Card draw(Player p) {
+    public void shuffleDeck() {
+        deck.addAll(discard);
+        Collections.shuffle(deck);
+    }
+    
+    
+    public Card draw() {
         Card c = deck.pop();
         deckGestion();
         return c;

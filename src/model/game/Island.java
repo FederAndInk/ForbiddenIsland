@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 
+import model.adventurers.Adventurer;
+import model.player.Player;
 import util.BoardGeneration;
 import util.BoardType;
 
@@ -58,6 +60,43 @@ public class Island {
     }
     
     
+    public Tile[] tileTreasure(TreasureType treasure) {
+        Tile[] tiles = new Tile[2];
+        int i = 0;
+        for (Tile[] tiles1 : getGrid()) {
+            for (Tile tile : tiles1) {
+                if (tile != null && tile.getSite().getTreasureType() == treasure) {
+                    tiles[i] = tile;
+                    i++;
+                }
+            }
+        }
+        return tiles;
+    }
+    
+    
+    public boolean isTreasureAllSinked(TreasureType treasure) {
+        Tile[] tiles = tileTreasure(treasure);
+        int nbSinked = 0;
+        for (Tile tile : tiles) {
+            if (!tile.notSinked()) {
+                nbSinked = nbSinked + 1;
+            }
+        }
+        if (nbSinked == 2) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    
+    public boolean isHeliportSinked() {
+        Tile tile = getTile(Site.FOOLS_LANDING);
+        return tile.getState() == TileState.SINKED;
+    }
+    
+    
     /**
      * @return the grid
      */
@@ -90,6 +129,23 @@ public class Island {
     /**
      * @author nihil
      *
+     */
+    public ArrayList<Player> getNearPlayer(Game game) {
+        ArrayList<Player> ps = new ArrayList<>();
+        for (Player player : game.getPlayers()) {
+            Adventurer adv = player.getCurrentAdventurer();
+            if (player != game.getCurrentPlayer()
+                    && adv.getCurrentTile().equals(game.getCurrentPlayer().getCurrentAdventurer().getCurrentTile())) {
+                ps.add(player);
+            } // end if
+        } // end for
+        return ps;
+    }
+    
+    
+    /**
+     * @author nihil
+     *
      * @param col
      * @param row
      * @return
@@ -100,6 +156,38 @@ public class Island {
         } catch (Exception e) {
             return null;
         } // end try
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     * @return
+     */
+    public ArrayList<Tile> getTileNot(TileState state) {
+        ArrayList<Tile> tiles = new ArrayList<>();
+        
+        for (Tile[] ts : grid) {
+            for (Tile tile : ts) {
+                if (tile != null && !tile.getState().equals(state)) {
+                    tiles.add(tile);
+                } // end if
+            } // end for
+        } // end for
+        return tiles;
+    }
+    
+    
+    public ArrayList<Tile> getTiles(TileState state) {
+        ArrayList<Tile> tiles = new ArrayList<>();
+        for (Tile[] ts : grid) {
+            for (Tile tile : ts) {
+                if (tile != null && tile.getState().equals(state)) {
+                    tiles.add(tile);
+                }
+            }
+        }
+        return tiles;
     }
     
 }

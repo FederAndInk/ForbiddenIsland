@@ -1,5 +1,13 @@
 package model.game;
 
+import util.BoardGeneration;
+import util.LogType;
+import util.Parameters;
+import util.exception.EndGameException;
+import util.exception.ExceptionType;
+
+
+
 public class Tile {
     
     private Coords    coords;
@@ -10,12 +18,15 @@ public class Tile {
     public Tile(Coords coords, Site site) {
         setCoords(coords);
         setSite(site);
-        setState(TileState.DRIED);
+        try {
+            setState(TileState.DRIED);
+        } catch (EndGameException ex) {
+        }
     }
     
     
     public void shoreUp() {
-        // TODO - implement Tile.shoreUp
+        // FIXME - implement Tile.shoreUp
         throw new UnsupportedOperationException();
     }
     
@@ -69,11 +80,18 @@ public class Tile {
     
     
     /**
+     * Used only by {@link BoardGeneration} and {@link Game#setTileState(Tile, TileState)}
+     * 
      * @param state
      * the state to set
+     * @throws util.exception.EndGameException
      */
-    public void setState(TileState state) {
+    public void setState(TileState state) throws EndGameException {
+        Parameters.printLog("The tile " + site + " change in " + state, LogType.INFO);
         this.state = state;
+        if (getSite() == Site.FOOLS_LANDING && this.state == TileState.SINKED) {
+            throw new EndGameException(ExceptionType.END_GAME_HELI);
+        }
     }
     
     
@@ -83,6 +101,16 @@ public class Tile {
     @Override
     public String toString() {
         return getCoords().toString() + " : " + getState() + " : " + getSite();
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     * @return
+     */
+    public boolean notSinked() {
+        return !getState().equals(TileState.SINKED);
     }
     
 }

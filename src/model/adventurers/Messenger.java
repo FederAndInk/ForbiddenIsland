@@ -25,10 +25,26 @@ public class Messenger extends Adventurer {
      */
     @Override
     public ArrayList<InGameAction> getPossibleActions() {
-        ArrayList<InGameAction> list = super.getPossibleActions();
-        if (getActionPoints() > 0) {
-            list.add(InGameAction.USE_CAPACITY);
-        } // end if
-        return list;
+        ArrayList<InGameAction> actions = super.getPossibleActions();
+        actions.add(InGameAction.GIVE_CARD);
+        return actions;
+    }
+    
+    
+    /**
+     * @return true
+     */
+    @Override
+    public boolean reachableExchangePlayer(Player player) {
+        return true;
+    }
+    
+    
+    /**
+     * @see model.adventurers.Adventurer#isExchangePossibleHere(model.game.TreasureType)
+     */
+    @Override
+    public boolean isExchangePossibleHere() {
+        return true;
     }
 }

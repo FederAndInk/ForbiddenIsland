@@ -4,24 +4,29 @@
 package view.board;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Observable;
+import java.util.Observer;
 
 import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
 import javax.swing.JLayeredPane;
-import javax.swing.border.Border;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 
 import model.adventurers.AdventurerType;
+import model.card.CardType;
 import model.game.Coords;
 import model.game.Site;
 import model.game.TileState;
+import util.FIGraphics;
 import util.LogType;
 import util.Parameters;
 import util.message.InGameAction;
@@ -35,17 +40,30 @@ import util.message.InGameMessage;
  */
 public class TilePanel extends JLayeredPane {
     private TileState    state;
+    private InGameAction action;
     private final Site   site;
     private final Coords pos;
     
+    // players
     private PlayerPanel playerPanel;
     private TextTile    text;
     
-    private mlTile listenerObs;
+    // observers
+    private MlTile listenerObs;
+    private AlTile aListenerObs;
     
-    private static final Border ACTIVE_BORDER_HOVER = BorderFactory.createLineBorder(Color.GREEN, 5, true);
-    private static final Border ACTIVE_BORDER_EXIT  = BorderFactory.createLineBorder(new Color(10, 194, 10), 4, true);
-    private static final Border INACTIVE_BORDER     = BorderFactory.createLineBorder(Color.GRAY, 3, true);
+    // Debug (context menu)
+    private JPopupMenu          debug;
+    private JMenuItem           changeStateTile;
+    private static final String DEBUG_FLOOD = "changeState";
+    // Debug card actions
+    private JMenuItem           sandBag;
+    private static final String DEBUG_SAND_BAG    = "sandBag";
+    private JMenuItem           heli;
+    private JMenuItem           heli2;
+    private static final String DEBUG_HELICOPTER  = "helicopter";
+    private static final String DEBUG_HELICOPTER2 = "helicopter2";
+    private JPanel              tPane;
     
     
     /**
@@ -76,6 +94,32 @@ public class TilePanel extends JLayeredPane {
         setState(TileState.DRIED);
         add(text, BorderLayout.SOUTH);
         add(playerPanel, BorderLayout.CENTER);
+        if (site.getTreasureType() != null) {
+            TreasureComponent treasure = new TreasureComponent(site.getTreasureType(), true);
+            tPane = new JPanel(new BorderLayout());
+            tPane.add(treasure, BorderLayout.NORTH);
+            tPane.setOpaque(false);
+            add(tPane, BorderLayout.EAST);
+        } // end if
+        
+        if (Parameters.debug) {
+            debug = new JPopupMenu();
+            changeStateTile = new JMenuItem("Change Tile State");
+            sandBag = new JMenuItem("Use SandBag");
+            heli = new JMenuItem("select helicopter Pawn");
+            heli2 = new JMenuItem("select helicopter location");
+            
+            changeStateTile.setActionCommand(DEBUG_FLOOD);
+            sandBag.setActionCommand(DEBUG_SAND_BAG);
+            heli.setActionCommand(DEBUG_HELICOPTER);
+            heli2.setActionCommand(DEBUG_HELICOPTER2);
+            
+            setComponentPopupMenu(debug);
+            debug.add(changeStateTile);
+            debug.add(sandBag);
+            debug.add(heli);
+            debug.add(heli2);
+        } // end if
     }
     
     
@@ -120,14 +164,26 @@ public class TilePanel extends JLayeredPane {
     private void paintBackground(Graphics g) {
         try {
             BufferedImage bi = ImageIO.read(new File(site.getFile(state)));
-            if (site.isDoubleLigned()) {
-                Parameters.printLog("Draw double ligned image", LogType.GRAPHICS);
-                g.drawImage(bi, 0, 0, (int) getSize().getWidth(), (int) (getSize().getHeight() * 0.85), this);
-            } else if (state.equals(TileState.SINKED)) {
-                text.setVisible(false);
+            if (state.equals(TileState.SINKED)) {
+                remove(text);
+                if (site.getTreasureType() != null) {
+                    remove(tPane);
+                } // end if
                 g.drawImage(bi, 0, 0, (int) getSize().getWidth(), (int) (getSize().getHeight()), this);
             } else {
-                g.drawImage(bi, 0, 0, (int) getSize().getWidth(), (int) getSize().getHeight(), this);
+                if (getIndexOf(text) == -1) {
+                    add(text, BorderLayout.SOUTH);
+                }
+                if (getIndexOf(tPane) == -1 && site.getTreasureType() != null) {
+                    add(tPane, BorderLayout.EAST);
+                }
+                
+                if (site.isDoubleLigned()) {
+                    Parameters.printLog("Draw double ligned image", LogType.GRAPHICS);
+                    g.drawImage(bi, 0, 0, (int) getSize().getWidth(), (int) (getSize().getHeight() * 0.85), this);
+                } else {
+                    g.drawImage(bi, 0, 0, (int) getSize().getWidth(), (int) getSize().getHeight(), this);
+                }
             } // end if
         } catch (IOException e1) {
             e1.printStackTrace();
@@ -140,8 +196,17 @@ public class TilePanel extends JLayeredPane {
      *
      */
     private void initListeners() {
-        listenerObs = new mlTile();
+        listenerObs = new MlTile();
+        
         addMouseListener(listenerObs);
+        
+        if (Parameters.debug) {
+            aListenerObs = new AlTile();
+            changeStateTile.addActionListener(aListenerObs);
+            heli.addActionListener(aListenerObs);
+            heli2.addActionListener(aListenerObs);
+            sandBag.addActionListener(aListenerObs);
+        } // end if
     }
     
     
@@ -149,15 +214,52 @@ public class TilePanel extends JLayeredPane {
      * enable or not the tile (if the player can go there) </br>
      * and set the correct border color (gray or green)
      * 
+     * @param b
+     * 
+     * @param action
+     * the action that causes the button's activation
+     * 
+     * @see javax.swing.AbstractButton#setEnabled(boolean)
+     */
+    public void setEnabled(boolean b, InGameAction action) {
+        setAction(action);
+        if (b) {
+            switch (action) {
+            case SHORE_UP_TILE:
+                setBorder(FIGraphics.ACTIVE_BORDER_SHORE_EXIT);
+                
+                break;
+            case SWIM:
+                setBorder(FIGraphics.ACTIVE_BORDER_SWIM_EXIT);
+                
+                break;
+            default:
+                setBorder(FIGraphics.ACTIVE_BORDER_EXIT);
+                break;
+            }// end
+        } else {
+            setBorder(FIGraphics.INACTIVE_BORDER);
+        } // end if
+        super.setEnabled(b);
+    }
+    
+    
+    /**
+     * enable or not the tile (if the player can go there) </br>
+     * and set the correct border color (gray or green)
+     * 
+     * @param b
+     * 
      * @see javax.swing.AbstractButton#setEnabled(boolean)
      */
     @Override
     public void setEnabled(boolean b) {
         super.setEnabled(b);
         if (b) {
-            setBorder(ACTIVE_BORDER_EXIT);
+            setAction(InGameAction.MOVE);
+            setBorder(FIGraphics.ACTIVE_BORDER_EXIT);
         } else {
-            setBorder(INACTIVE_BORDER);
+            setBorder(FIGraphics.INACTIVE_BORDER);
         } // end if
     }
     
@@ -177,20 +279,54 @@ public class TilePanel extends JLayeredPane {
     public void setState(TileState state) {
         this.state = state;
         text.setState(state);
-        if (state.equals(TileState.SINKED)) {
-            remove(text);
-        }
         repaint();
     }
     
     // the inner class for an event listener
-    protected class mlTile extends Observable implements MouseListener {
+    protected class AlTile extends Observable implements ActionListener {
+        
+        /**
+         * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+         */
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Parameters.debugAction = true;
+            switch (e.getActionCommand()) {
+            case DEBUG_FLOOD:
+                setChanged();
+                notifyObservers(new InGameMessage(InGameAction.CHANGE_STATE_OF_TILE, getPos()));
+                clearChanged();
+                break;
+            case DEBUG_SAND_BAG:
+                setChanged();
+                notifyObservers(new InGameMessage(InGameAction.USE_CARD, CardType.SANDBAG_CARD));
+                clearChanged();
+                break;
+            case DEBUG_HELICOPTER:
+                setChanged();
+                notifyObservers(new InGameMessage(InGameAction.USE_CARD_HELICOPTER));
+                clearChanged();
+                break;
+            case DEBUG_HELICOPTER2:
+                setChanged();
+                notifyObservers(new InGameMessage(InGameAction.USE_CARD, CardType.HELICOPTER_CARD));
+                clearChanged();
+                break;
+            default:
+                break;
+            }// end switch
+        }
+        
+    }
+    
+    // the inner class for an event listener
+    protected class MlTile extends Observable implements MouseListener {
         
         /**
          * @author nihil
          *
          */
-        public mlTile() {
+        public MlTile() {
             super();
         }
         
@@ -208,7 +344,19 @@ public class TilePanel extends JLayeredPane {
         @Override
         public void mouseExited(MouseEvent e) {
             if (isEnabled()) {
-                setBorder(ACTIVE_BORDER_EXIT);
+                switch (getAction()) {
+                case SHORE_UP_TILE:
+                    setBorder(FIGraphics.ACTIVE_BORDER_SHORE_EXIT);
+                    
+                    break;
+                case SWIM:
+                    setBorder(FIGraphics.ACTIVE_BORDER_SWIM_EXIT);
+                    
+                    break;
+                default:
+                    setBorder(FIGraphics.ACTIVE_BORDER_EXIT);
+                    break;
+                }// end switch
             } // end if
         }
         
@@ -216,7 +364,17 @@ public class TilePanel extends JLayeredPane {
         @Override
         public void mouseEntered(MouseEvent e) {
             if (isEnabled()) {
-                setBorder(ACTIVE_BORDER_HOVER);
+                switch (getAction()) {
+                case SHORE_UP_TILE:
+                    setBorder(FIGraphics.ACTIVE_BORDER_SHORE_HOVER);
+                    break;
+                case SWIM:
+                    setBorder(FIGraphics.ACTIVE_BORDER_SWIM_HOVER);
+                    break;
+                default:
+                    setBorder(FIGraphics.ACTIVE_BORDER_HOVER);
+                    break;
+                }// end switch
             } // end if
         }
         
@@ -233,18 +391,48 @@ public class TilePanel extends JLayeredPane {
     
     
     /**
-     * @return the listenerObs
-     * in order to add observers
-     */
-    protected mlTile getListenerObs() {
-        return listenerObs;
-    }
-    
-    
-    /**
      * @return the pos
      */
     public Coords getPos() {
         return pos;
+    }
+    
+    
+    /**
+     * @return the action
+     */
+    public InGameAction getAction() {
+        return action;
+    }
+    
+    
+    /**
+     * @param action
+     * the action to set
+     */
+    public void setAction(InGameAction action) {
+        this.action = action;
+    }
+    
+    
+    /**
+     * @return the playerPanel
+     */
+    public PlayerPanel getPlayerPanel() {
+        return playerPanel;
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     * @param observer
+     */
+    public void addObs(Observer observer) {
+        if (Parameters.debug) {
+            aListenerObs.addObserver(observer);
+        } // end if
+        listenerObs.addObserver(observer);
+        playerPanel.addObs(observer);
     }
 }

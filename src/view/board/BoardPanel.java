@@ -7,7 +7,6 @@ import java.awt.event.ComponentListener;
 import java.util.ArrayList;
 import java.util.Observer;
 
-import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.SpringLayout;
@@ -28,7 +27,6 @@ import util.Parameters;
  *
  */
 public class BoardPanel extends JPanel {
-    private JFrame       parentFrame;
     private SpringLayout layout;
     private JPanel       gridPane;
     /**
@@ -37,13 +35,12 @@ public class BoardPanel extends JPanel {
     private double       boardSize;
     
     
-    public BoardPanel(JFrame parentFrame) {
+    public BoardPanel() {
         super();
-        layout = new SpringLayout();
         gridPane = new JPanel(new GridLayout(6, 6, 3, 3));
-        setParentFrame(parentFrame);
+        layout = new SpringLayout();
         setLayout(layout);
-        setBoardSize(0.9);
+        setBoardSize(0.75);
         
         initListeners();
     }
@@ -81,7 +78,7 @@ public class BoardPanel extends JPanel {
             
             panel = f == null ? new JLayeredPane() : new TilePanel(f, new Coords(j, i));
             if (panel instanceof TilePanel) {
-                ((TilePanel) panel).getListenerObs().addObserver(observer);
+                ((TilePanel) panel).addObs(observer);
             } // end if
             gridPane.add(panel);
             j++;
@@ -90,6 +87,8 @@ public class BoardPanel extends JPanel {
                 i++;
             } // end if
         } // end for
+        repaint();
+        doLayout();
     }
     
     
@@ -112,11 +111,10 @@ public class BoardPanel extends JPanel {
             
             @Override
             public void componentResized(ComponentEvent e) {
-                Parameters.printLog("Componant " + getThis().getClass().getName() + " is resizing", LogType.GRAPHICS);
+                Parameters.printLog("Component " + getThis().getClass().getName() + " is resizing", LogType.GRAPHICS);
                 
                 // for the length of grid side (with multiplier to not take the entire space)
-                int gridBord = (int) (getBoardSize()
-                        * Integer.min(getParentFrame().getHeight(), getParentFrame().getWidth()));
+                int gridBord = (int) (getBoardSize() * Integer.min(getParent().getHeight(), getParent().getWidth()));
                 // to center the grid
                 int x = (int) ((getSize().getWidth() - gridBord) / 2);
                 int y = (int) ((getSize().getHeight() - gridBord) / 2);
@@ -132,27 +130,13 @@ public class BoardPanel extends JPanel {
             
             @Override
             public void componentHidden(ComponentEvent arg0) {
-                // TODO Auto-generated method stub
-                
             }
             
             
             @Override
             public void componentMoved(ComponentEvent arg0) {
-                // TODO Auto-generated method stub
-                
             }
         });
-    }
-    
-    
-    JFrame getParentFrame() {
-        return parentFrame;
-    }
-    
-    
-    void setParentFrame(JFrame parentFrame) {
-        this.parentFrame = parentFrame;
     }
     
     

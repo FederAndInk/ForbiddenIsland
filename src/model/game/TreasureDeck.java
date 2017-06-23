@@ -1,9 +1,6 @@
 package model.game;
 
-import model.card.Helicopter;
-import model.card.SandBag;
-import model.card.TreasureCard;
-import model.card.WatersRise;
+import model.card.*;
 
 
 
@@ -27,11 +24,13 @@ public class TreasureDeck extends Deck {
         for (int i = 0; i < NB_SANDBAGS_CARD; i++) {
             addCardToDeck(new SandBag());
         }
-        for (TreasureType treasure : TreasureType.values()) {
+        CardType tType = CardType.EARTH_STONE_CARD;
+        while (tType.ordinal() < CardType.FLOOD_CARD.ordinal()) {
             for (int i = 0; i < NB_TREASURE_CARD; i++) {
-                addCardToDeck(new TreasureCard(treasure));
+                addCardToDeck(new TreasureCard(tType));
             }
-        }
+            tType = tType.next();
+        } // end while
         for (int i = 0; i < NB_WATERS_RISE; i++) {
             addCardToDeck(new WatersRise());
         }

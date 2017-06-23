@@ -22,6 +22,7 @@ import util.exception.*;
 import util.message.InGameAction;
 import util.message.InGameMessage;
 import util.message.MainMessage;
+import view.Cards.PlayerCard;
 import view.board.GameView;
 import view.board.TilePanel;
 
@@ -33,7 +34,7 @@ import view.board.TilePanel;
  */
 public class GameController implements Observer {
     private MainController mainController;
-    private CardType       cardPlayed;
+    private PlayerCard     cardSelected;
     private Stack<Player>  playersChain;
     private Game           currentGame;
     private GameView       gameView;
@@ -47,8 +48,6 @@ public class GameController implements Observer {
     public GameController(MainController mainController) {
         this.mainController = mainController;
         gameView = mainController.getView().getGameView();
-        gameView.addObs(this);
-        gameView.addObs(getMainController());
         
         playersChain = new Stack<>();
     }
@@ -110,6 +109,9 @@ public class GameController implements Observer {
         
         gameView.setBoard(getCurrentGame().getIsland().getSites(), this);
         gameView.initPlayerState(getCurrentGame().getPawns());
+        gameView.addObs(this);
+        gameView.addObs(getMainController());
+        
         gameView.getFloodCursor().moveCursor(seaLevel);
         
         setSpawns();
@@ -339,6 +341,8 @@ public class GameController implements Observer {
     
     
     /**
+     * to refresh the tile states
+     * 
      * @author nihil
      *
      */
@@ -591,6 +595,46 @@ public class GameController implements Observer {
     
     
     /**
+     * @author nihil
+     * @param helicopter
+     *
+     */
+    private void discardCard(Card card) {
+        gameView.getPInventory(getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getADVENTURER_TYPE())
+                .removeCard(cardSelected.getCardPlace());
+        getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getInventory().removeCard(card);
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     */
+    private void drawCard() {
+        try {
+            Card card = getCurrentGame().drawEndTurnCard(getCurrentGame().getCurrentAction());
+            Parameters.printLog("Draw " + card.getType(), LogType.INFO);
+            if (card instanceof WatersRise) {
+                gameView.getFloodCursor().moveCursor(getCurrentGame().getSeaLevel());
+            } else if (card instanceof FloodCard) {
+                refreshBoard();
+            } else {
+                gameView.getPInventory(getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getADVENTURER_TYPE())
+                        .addCard(card.getType());
+            } // end if
+        } catch (IllegalAccessException | MoveException | TileException | CardException e1) {
+            e1.printStackTrace();
+        } catch (EndGameException e) {
+            mainController.getView().switchToEnd(e.getEndType());
+            
+        } catch (PlayerOutOfIslandException e) {
+            chainPlayers(getCurrentGame().getPlayersOnTile(e.getTile()));
+            setSwim();
+        }
+    }
+    
+    
+    /**
      * to set the view correctly after an action
      * 
      * @author nihil
@@ -697,14 +741,15 @@ public class GameController implements Observer {
                 if (Parameters.debugAction) {
                     useCardHC(new Helicopter(), tile, getCurrentGame().getSelectedPlayers());
                 } else {
-                    // FIXME : act with player inventory
+                    useCardHC((Helicopter) adv.getInventory().getCard(CardType.HELICOPTER_CARD), tile,
+                            getCurrentGame().getSelectedPlayers());
+                    discardCard(adv.getInventory().getCard(CardType.HELICOPTER_CARD));
                 } // end if
                 break;
             default:
                 throw new UnsupportedOperationException();
             }// end switch
-        } // end if
-        if (object instanceof AdventurerType) {
+        } else if (object instanceof AdventurerType) {
             AdventurerType advGet = (AdventurerType) object;
             switch (getCurrentGame().getCurrentAction()) {
             case USE_CARD_HELICOPTER:
@@ -731,7 +776,24 @@ public class GameController implements Observer {
             default:
                 throw new UnsupportedOperationException();
             }// end switch
-        } // end if
+        } else if (object instanceof Integer) {
+            int i = (int) object;
+            PlayerCard pCard = gameView.getPInventory(adv.getADVENTURER_TYPE()).getCard(i);
+            CardType type = pCard.getCard();
+            switch (getCurrentGame().getCurrentAction()) {
+            case USE_CARD:
+                getCurrentGame().setCurrentAction(type.getType());
+                cardSelected = pCard;
+                if (type.getType().equals(CardType.SANDBAG_CARD)) {
+                    setUseSandBag((SandBag) adv.getInventory().getCard(type));
+                } else if (pCard.getCard().getType().equals(CardType.HELICOPTER_CARD)) {
+                    setUseHelicopter((Helicopter) adv.getInventory().getCard(type));
+                }
+                
+                break;
+            default:
+            }
+        }
         
         if (Parameters.debugAction) {
             Parameters.debugAction = false;
@@ -757,6 +819,9 @@ public class GameController implements Observer {
                 } else {
                     throw new IllegalArgumentException("not an adventurerType");
                 } // end if
+                break;
+            case SELECT_CARD:
+                doAction(m.getContent());
                 break;
             case MOVE:
                 setMoveAction();
@@ -811,20 +876,7 @@ public class GameController implements Observer {
                 
                 break;
             case DRAW:
-                try {
-                    Card card = getCurrentGame().drawEndTurnCard((InGameAction) m.getContent());
-                    if (card instanceof WatersRise) {
-                        gameView.getFloodCursor().moveCursor(getCurrentGame().getSeaLevel());
-                    } // end if
-                } catch (IllegalAccessException | MoveException | TileException | CardException e1) {
-                    e1.printStackTrace();
-                } catch (EndGameException e) {
-                    mainController.getView().switchToEnd(e.getEndType());
-                    
-                } catch (PlayerOutOfIslandException e) {
-                    chainPlayers(getCurrentGame().getPlayersOnTile(e.getTile()));
-                    setSwim();
-                }
+                drawCard();
                 break;
             case END_TURN:
                 endTurn();

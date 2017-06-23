@@ -15,7 +15,9 @@ public class FloodDeck extends Deck {
     public void initDeck(Island island) {
         for (Tile[] i : island.getGrid()) {
             for (Tile tile : i) {
-                addCardToDeck(new FloodCard(tile));
+                if (tile != null) {
+                    addCardToDeck(new FloodCard(tile));
+                } // end if
             }
         }
     }

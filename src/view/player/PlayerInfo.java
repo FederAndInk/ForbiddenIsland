@@ -21,7 +21,7 @@ public class PlayerInfo extends JPanel {
     private AdventurerType pawn;
     
     
-    public PlayerInfo(AdventurerType pawn, boolean left) {
+    public PlayerInfo(AdventurerType pawn, boolean left, boolean top) {
         this.pawn = pawn;
         
         setLayout(new GridLayout(1, 2));
@@ -35,7 +35,11 @@ public class PlayerInfo extends JPanel {
             add(descr);
             add(icone);
         } // end if
-        setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        if (top) {
+            setBorder(BorderFactory.createMatteBorder(0, 2, 2, 2, Color.BLACK));
+        } else {
+            setBorder(BorderFactory.createMatteBorder(2, 2, 0, 2, Color.BLACK));
+        } // end if
     }
     
     

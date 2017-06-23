@@ -5,6 +5,7 @@ package model.card;
 
 import model.game.TreasureType;
 import util.Parameters;
+import util.message.InGameAction;
 
 
 
@@ -114,9 +115,42 @@ public enum CardType {
     
     
     /**
+     * @return the treasureType
+     */
+    public TreasureType getTreasureType() {
+        return treasureType;
+    }
+    
+    
+    /**
      * @return the canAddToInventory
      */
     public boolean isCanAddToInventory() {
         return canAddToInventory;
+    }
+    
+    
+    public CardType next() {
+        return values()[(ordinal() + 1) % values().length];
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     * @return
+     */
+    public InGameAction getType() {
+        if (ordinal() < FLOOD_CARD.ordinal()) {
+            return InGameAction.GET_TREASURE;
+        } else if (this == FLOOD_CARD) {
+            return InGameAction.USE_CARD;
+        } else if (this == CardType.SANDBAG_CARD) {
+            return InGameAction.USE_CARD_SAND_BAG;
+        } else if (this == HELICOPTER_CARD) {
+            return InGameAction.USE_CARD_HELICOPTER;
+        } else {
+            return InGameAction.USE_CARD;
+        }
     }
 }

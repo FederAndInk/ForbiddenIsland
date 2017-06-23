@@ -46,6 +46,7 @@ public enum InGameAction {
     DRAW,
     DRAW_FLOOD,
     DRAW_TREASURE,
+    SELECT_CARD,
     /**
      * @give the {@link Player#name} who want to do the interruption
      * 

@@ -95,6 +95,14 @@ public class CardsComponent extends JPanel {
     
     // the inner class for an event listener
     protected class MlTile extends Observable implements MouseListener {
+        /**
+         * @author nihil
+         *
+         */
+        public MlTile() {
+            super();
+        }
+        
         
         /**
          * @see java.awt.event.MouseListener#mouseClicked(java.awt.event.MouseEvent)
@@ -103,9 +111,9 @@ public class CardsComponent extends JPanel {
         public void mouseClicked(MouseEvent e) {
             setChanged();
             if (type.equals(CardType.TREASURE_CARD)) {
-                notifyObservers(new InGameMessage(InGameAction.DRAW_TREASURE));
+                notifyObservers(new InGameMessage(InGameAction.DRAW));
             } else {
-                notifyObservers(new InGameMessage(InGameAction.DRAW_FLOOD));
+                notifyObservers(new InGameMessage(InGameAction.DRAW));
             } // end if
             clearChanged();
         }
@@ -145,9 +153,11 @@ public class CardsComponent extends JPanel {
          */
         @Override
         public void mouseExited(MouseEvent e) {
-            setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-            img = new File(type.getBackSelect());
-            repaint();
+            if (isEnabled()) {
+                setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+                img = new File(type.getBackSelect());
+                repaint();
+            }
         }
         
     }

@@ -23,7 +23,7 @@ import util.message.MainAction;
 import util.message.MainMessage;
 import view.Cards.DeckComponent;
 import view.player.PlayerInfo;
-import view.player.playerInventory;
+import view.player.PlayerInventory;
 
 
 
@@ -43,7 +43,7 @@ public class GameView extends JLayeredPane {
     // player info
     private JPanel                                   paneDroit;
     private ArrayList<PlayerInfo>                    pawns;
-    private HashMap<AdventurerType, playerInventory> inventories;
+    private HashMap<AdventurerType, PlayerInventory> inventories;
     
     // Decks
     private DeckComponent treasureDeck;
@@ -142,6 +142,7 @@ public class GameView extends JLayeredPane {
     
     public void initPlayerState(ArrayList<AdventurerType> advs) {
         boolean left;
+        boolean top;
         JPanel pane;
         String contraint;
         for (AdventurerType adventurerType : advs) {
@@ -150,26 +151,30 @@ public class GameView extends JLayeredPane {
             case 0:
                 pane = westPane;
                 left = true;
+                top = true;
                 contraint = BorderLayout.NORTH;
                 break;
             case 1:
                 pane = eastPane;
                 left = false;
+                top = true;
                 contraint = BorderLayout.NORTH;
                 break;
             case 2:
                 pane = westPane;
                 left = true;
+                top = false;
                 contraint = BorderLayout.SOUTH;
                 break;
             
             default:
                 pane = eastPane;
                 left = false;
+                top = false;
                 contraint = BorderLayout.SOUTH;
                 break;
             }// end switch
-            pawns.add(new PlayerInfo(adventurerType, left));
+            pawns.add(new PlayerInfo(adventurerType, left, top));
             pane.add(pawns.get(pawns.size() - 1), contraint);
             
         } // end for
@@ -217,7 +222,7 @@ public class GameView extends JLayeredPane {
                 contraint = BorderLayout.EAST;
                 break;
             }// end switch
-            inventories.put(adv, new playerInventory(adv, left, top));
+            inventories.put(adv, new PlayerInventory(adv, left, top));
             pane.add(inventories.get(adv), contraint);
         }
     }// end initInventory
@@ -509,7 +514,7 @@ public class GameView extends JLayeredPane {
      * @return
      *
      */
-    public playerInventory getPInventory(AdventurerType adv) {
+    public PlayerInventory getPInventory(AdventurerType adv) {
         return inventories.get(adv);
     }
     
@@ -531,5 +536,8 @@ public class GameView extends JLayeredPane {
         listObs.addObserver(observer);
         treasureDeck.addObs(observer);
         floodDeck.addObs(observer);
+        for (PlayerInventory pInv : inventories.values()) {
+            pInv.addObs(observer);
+        } // end for
     }
 }

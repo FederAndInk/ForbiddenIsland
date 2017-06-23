@@ -361,28 +361,28 @@ public class JPanelOptionJeu extends JPanel {
             switch (e.getActionCommand()) {
             case AJ1:
                 Parameters.printLog("JOUEUR 1", LogType.INFO);
-                playerMap.put("J1", null);
+                playerMap.put("J1", AdventurerType.RANDOM);
                 Parameters.printLog(playerMap.size(), LogType.INFO);
                 
                 notifyObservers(new MainMessage(MainAction.SELECT_PLAYER, "J1"));
                 break;
             case AJ2:
                 Parameters.printLog("JOUEUR 2", LogType.INFO);
-                playerMap.put("J2", null);
+                playerMap.put("J2", AdventurerType.RANDOM);
                 Parameters.printLog(playerMap.size(), LogType.INFO);
                 
                 notifyObservers(new MainMessage(MainAction.SELECT_PLAYER, "J2"));
                 break;
             case AJ3:
                 Parameters.printLog("JOUEUR 3", LogType.INFO);
-                playerMap.put("J3", null);
+                playerMap.put("J3", AdventurerType.RANDOM);
                 Parameters.printLog(playerMap.size(), LogType.INFO);
                 
                 notifyObservers(new MainMessage(MainAction.SELECT_PLAYER, "J3"));
                 break;
             case AJ4:
                 Parameters.printLog("JOUEUR 4", LogType.INFO);
-                playerMap.put("J4", null);
+                playerMap.put("J4", AdventurerType.RANDOM);
                 Parameters.printLog(playerMap.size(), LogType.INFO);
                 
                 notifyObservers(new MainMessage(MainAction.SELECT_PLAYER, "J4"));

@@ -631,6 +631,27 @@ public class GameController implements Observer {
     
     /**
      * @author nihil
+     * @param ctype
+     *
+     */
+    private void discardCard(CardType ctype) {
+        if (cardSelected.getCard().getTreasureType() != null) {
+            try {
+                discardCard(getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getInventory()
+                        .getCard(ctype.getTreasureType()));
+            } catch (MissingCardException e) {
+                e.printStackTrace();
+            }
+        } else {
+            discardCard(getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getInventory().getCard(ctype));
+        } // end if
+        gameView.doLayout();
+        defaultAction();
+    }
+    
+    
+    /**
+     * @author nihil
      *
      */
     private void drawCard() {
@@ -822,37 +843,36 @@ public class GameController implements Observer {
                 setCapacityActionPT();
                 break;
             case GIVE_CARD:
-                getCurrentGame().toggleSelectionPlayer(adv.getPlayer());
                 reInitBoard();
+                selectAllPawns(false);
+                getCurrentGame().toggleSelectionPlayer(getCurrentGame().getPlayer(advGet));
                 selectCard(CardType.TREASURE_CARD, true);
                 break;
             
             default:
                 throw new UnsupportedOperationException();
             }// end switch
-        } else if (object instanceof Integer) {
-            int i = (int) object;
+        } else if (object instanceof PlayerCard) {
             reInitBoard();
-            PlayerCard pCard = gameView.getPInventory(adv.getADVENTURER_TYPE()).getCard(i);
-            CardType type = pCard.getCard();
+            cardSelected = (PlayerCard) object;
+            CardType ctype = cardSelected.getCard();
             switch (getCurrentGame().getCurrentAction()) {
             case USE_CARD:
-                getCurrentGame().setCurrentAction(type.getType());
-                cardSelected = pCard;
-                if (type.getType().equals(CardType.SANDBAG_CARD)) {
-                    setUseSandBag((SandBag) adv.getInventory().getCard(type));
-                } else if (pCard.getCard().getType().equals(CardType.HELICOPTER_CARD)) {
-                    setUseHelicopter((Helicopter) adv.getInventory().getCard(type));
+                getCurrentGame().setCurrentAction(ctype.getType());
+                if (ctype.getType().equals(CardType.SANDBAG_CARD)) {
+                    setUseSandBag((SandBag) adv.getInventory().getCard(ctype));
+                } else if (cardSelected.getCard().getType().equals(CardType.HELICOPTER_CARD)) {
+                    setUseHelicopter((Helicopter) adv.getInventory().getCard(ctype));
                 }
                 
                 break;
             case GIVE_CARD:
                 try {
                     Parameters.printLog("Give card ", LogType.INFO);
-                    discardCard(adv.giveCard(getCurrentGame().getSelectedPlayers().get(0), cardSelected.getCard()));
+                    discardCard(adv.giveCard(getCurrentGame().getSelectedPlayers().get(0), ctype));
                     gameView.getPInventory(
                             getCurrentGame().getSelectedPlayers().get(0).getCurrentAdventurer().getADVENTURER_TYPE())
-                            .addCard(type);
+                            .addCard(ctype);
                 } catch (CardException e) {
                     e.printStackTrace();
                 } catch (GiveCardException e) {
@@ -862,6 +882,9 @@ public class GameController implements Observer {
                 } finally {
                     defaultAction();
                 }
+                break;
+            case DISCARD:
+                discardCard(ctype);
                 break;
             default:
             }
@@ -910,7 +933,6 @@ public class GameController implements Observer {
                 } else {
                     getCurrentGame().toggleSelectionPlayer(getCurrentGame().getCurrentPlayer());
                     selectNearPawns(true);
-                    getCurrentGame().setCurrentAction(InGameAction.GIVE_CARD);
                 } // end if
                 setActivePawn(false, getCurrentGame().getCurrentPlayer().getCurrentAdventurer());
                 getCurrentGame().setCurrentAction(InGameAction.GIVE_CARD);
@@ -950,7 +972,8 @@ public class GameController implements Observer {
                 changeTileState(tile, tile.getState().next());
                 break;
             case DISCARD:
-                
+                selectAllCards(true);
+                getCurrentGame().setCurrentAction(InGameAction.DISCARD);
                 break;
             case DRAW:
                 if (!getCurrentGame().getCurrentAction().equals(InGameAction.END_TURN)) {

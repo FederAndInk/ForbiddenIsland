@@ -38,10 +38,10 @@ public class PlayerCard extends JPanel {
     public PlayerCard(CardType cardType, int cardPlace, Observer obs) {
         this.card = cardType;
         this.cardPlace = cardPlace;
-        setEnabled(false);
         
         initListener();
         addObs(obs);
+        setEnabled(false);
     }// end addCard
     
     
@@ -74,7 +74,7 @@ public class PlayerCard extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         try {
-            Parameters.printLog("load file : " + card.getPathCard(), LogType.INFO);
+            Parameters.printLog("load file : " + card.getPathCard(), LogType.ACCESS);
             BufferedImage bi = ImageIO.read(new File((card.getPathCard())));
             g.drawImage(bi, 0, 0, (int) (getSize().getWidth()), (int) getSize().getHeight(), this);
         } catch (IOException e) {
@@ -121,6 +121,16 @@ public class PlayerCard extends JPanel {
     
     
     /**
+     * @author nihil
+     * @return
+     *
+     */
+    private PlayerCard getThis() {
+        return this;
+    }
+    
+    
+    /**
      * @return the card
      */
     public CardType getCard() {
@@ -136,7 +146,7 @@ public class PlayerCard extends JPanel {
         public void mouseClicked(MouseEvent e) {
             if (isEnabled()) {
                 setChanged();
-                notifyObservers(new InGameMessage(InGameAction.SELECT_CARD, cardPlace));
+                notifyObservers(new InGameMessage(InGameAction.SELECT_CARD, getThis()));
                 clearChanged();
             } // end if
         }

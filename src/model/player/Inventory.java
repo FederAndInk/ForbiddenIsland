@@ -117,6 +117,7 @@ public class Inventory {
      * @throws MissingCardException
      */
     public Card getCard(TreasureType treasureType) throws MissingCardException {
+        Parameters.printLog("Wants " + treasureType, LogType.INFO);
         for (Card i : cards) {
             if (i.getType().equals(CardType.TREASURE_CARD)
                     && ((TreasureCard) i).getTreasureType().equals(treasureType)) {

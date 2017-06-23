@@ -2,6 +2,7 @@ package model.adventurers;
 
 import java.util.ArrayList;
 
+import model.card.CardType;
 import model.player.Player;
 import util.message.InGameAction;
 
@@ -26,7 +27,9 @@ public class Messenger extends Adventurer {
     @Override
     public ArrayList<InGameAction> getPossibleActions() {
         ArrayList<InGameAction> actions = super.getPossibleActions();
-        actions.add(InGameAction.GIVE_CARD);
+        if (getInventory().getCard(CardType.TREASURE_CARD) != null) {
+            actions.add(InGameAction.GIVE_CARD);
+        } // end if
         return actions;
     }
     

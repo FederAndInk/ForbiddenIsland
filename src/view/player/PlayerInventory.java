@@ -10,6 +10,7 @@ import java.util.Observer;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
+import controller.GameController;
 import model.adventurers.AdventurerType;
 import model.card.CardType;
 import model.game.TreasureType;
@@ -102,7 +103,7 @@ public class PlayerInventory extends JPanel {
     
     public void addCard(CardType cardType) {
         if (left) {
-            cards.add(new PlayerCard(cardType, cards.size(), obs));
+            cards.add(new PlayerCard(cardType, cards.size() + 1, obs));
             gLCC.gridx = cards.size();
             add(cards.get(cards.size() - 1), gLCC);
         } else {
@@ -144,7 +145,7 @@ public class PlayerInventory extends JPanel {
      */
     public void removeCard(int cardPlace) {
         if (left) {
-            remove(cards.remove(cardPlace));
+            remove(cards.remove(cardPlace - 1));
             for (int i = cardPlace; i < cards.size(); i++) {
                 remove(cards.get(i));
                 gLCC.gridx = i + 1;
@@ -166,7 +167,7 @@ public class PlayerInventory extends JPanel {
      *
      */
     public PlayerCard getCard(int i) {
-        return cards.get(left ? i - 1 : 4 - 1);
+        return cards.get(left ? i - 1 : 4 - i);
     }
     
     
@@ -190,7 +191,9 @@ public class PlayerInventory extends JPanel {
      *
      */
     public void addObs(Observer obs) {
-        this.obs = obs;
+        if (obs instanceof GameController) {
+            this.obs = obs;
+        } // end if
     }
     
 }

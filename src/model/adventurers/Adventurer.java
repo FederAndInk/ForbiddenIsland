@@ -486,7 +486,7 @@ public abstract class Adventurer {
     
     
     public Card giveCard(Player player, CardType type) throws CardException, GiveCardException, MissingCardException {
-        TreasureCard card = (TreasureCard) getInventory().getCard(getCurrentTile().getSite().getTreasureType());
+        TreasureCard card = (TreasureCard) getInventory().getCard(type.getTreasureType());
         if (isExchangePossibleHere()) {
             if (reachableExchangePlayer(player)) {
                 if (getInventory().removeCard(card)) {

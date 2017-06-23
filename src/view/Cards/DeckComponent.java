@@ -9,6 +9,7 @@ import java.util.Observer;
 import javax.swing.JPanel;
 
 import model.card.CardType;
+import model.game.Site;
 
 
 
@@ -30,6 +31,41 @@ public class DeckComponent extends JPanel {
         this.type = type;
         setLayout(new GridLayout(2, 1));
         initComponents();
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     */
+    public void draw() {
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     */
+    public void discard(CardType type) {
+        discard.addCard(type);
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     */
+    public void discard(CardType type, Site site) {
+        discard.addCard(type, site);
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     */
+    public void shuffle() {
+        discard.empty();
     }
     
     

@@ -109,13 +109,15 @@ public class CardsComponent extends JPanel {
          */
         @Override
         public void mouseClicked(MouseEvent e) {
-            setChanged();
-            if (type.equals(CardType.TREASURE_CARD)) {
-                notifyObservers(new InGameMessage(InGameAction.DRAW));
-            } else {
-                notifyObservers(new InGameMessage(InGameAction.DRAW));
+            if (isEnabled()) {
+                setChanged();
+                if (type.equals(CardType.TREASURE_CARD)) {
+                    notifyObservers(new InGameMessage(InGameAction.DRAW));
+                } else {
+                    notifyObservers(new InGameMessage(InGameAction.DRAW));
+                } // end if
+                clearChanged();
             } // end if
-            clearChanged();
         }
         
         

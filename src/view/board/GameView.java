@@ -8,6 +8,8 @@ import java.awt.event.WindowListener;
 import java.util.*;
 
 import javax.swing.*;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
 
 import model.adventurers.AdventurerType;
 import model.card.CardType;
@@ -34,6 +36,11 @@ public class GameView extends JLayeredPane {
     private static final String USE_CAPACITY = "cap";
     private static final String NEW_GAME     = "newGame";
     private static final String QUIT         = "quit";
+    private static final String DISCARD      = "discard";
+    private static final String INVOKE       = "invoke";
+    private static final String GIVE         = "give";
+    private static final String USE_CARD     = "useCard";
+    private static final String PAUSE        = "pause";
     
     private BoardPanel gamePane;
     private JPanel     eastPane;
@@ -56,6 +63,7 @@ public class GameView extends JLayeredPane {
     private JPanel north;
     private JPanel south;
     
+    // actions
     private JButton endTurnBtn;
     private JButton moveBtn;
     private JButton shoreUpBtn;
@@ -64,6 +72,11 @@ public class GameView extends JLayeredPane {
     private JButton invoque;
     private JButton giveCard;
     private JButton useCard;
+    private JButton pause;
+    // message
+    private JTextPane msg;
+    private JPanel    msgs;
+    private JLabel    action;
     
     private ListenerAction listObs;
     
@@ -88,6 +101,8 @@ public class GameView extends JLayeredPane {
         setLayout(new BorderLayout());
         eastPane = new JPanel(new BorderLayout());
         westPane = new JPanel(new BorderLayout());
+        north = new JPanel(new BorderLayout());
+        south = new JPanel(new BorderLayout());
         actionCommands = new JPanel(new GridLayout(8, 1));
         
         paneDroit = new JPanel();
@@ -105,17 +120,36 @@ public class GameView extends JLayeredPane {
         invoque = new JButton("Invoquer un trésor");
         giveCard = new JButton("Donner une carte");
         useCard = new JButton("Utiliser une carte");
+        pause = new JButton("Pause");
+        
+        msg = new JTextPane();
+        action = new JLabel("", SwingConstants.CENTER);
+        msgs = new JPanel(new GridLayout(2, 1));
+        msg.setEditable(false);
+        SimpleAttributeSet attribs = new SimpleAttributeSet();
+        StyleConstants.setAlignment(attribs, StyleConstants.ALIGN_CENTER);
+        msg.setParagraphAttributes(attribs, true);
         
         floodCursor = new WaterRise();
         
         add(eastPane, BorderLayout.EAST);
-        
         add(westPane, BorderLayout.WEST);
+        add(north, BorderLayout.NORTH);
+        add(south, BorderLayout.SOUTH);
+        
+        south.add(pause, BorderLayout.CENTER);
+        north.add(msgs, BorderLayout.CENTER);
+        msgs.add(action);
+        msgs.add(msg);
         
         endTurnBtn.setActionCommand(END_TURN);
         moveBtn.setActionCommand(MOVE);
         shoreUpBtn.setActionCommand(SHORE_UP);
         useCapacityBtn.setActionCommand(USE_CAPACITY);
+        discardCard.setActionCommand(DISCARD);
+        invoque.setActionCommand(INVOKE);
+        giveCard.setActionCommand(GIVE);
+        useCard.setActionCommand(USE_CARD);
         
         eastPane.add(paneDroit, BorderLayout.CENTER);
         GridBagConstraints constraints = new GridBagConstraints();
@@ -185,10 +219,6 @@ public class GameView extends JLayeredPane {
     
     // Inventory
     public void initInventory(ArrayList<AdventurerType> advs) {
-        north = new JPanel(new BorderLayout());
-        south = new JPanel(new BorderLayout());
-        add(north, BorderLayout.NORTH);
-        add(south, BorderLayout.SOUTH);
         boolean left;
         boolean top;
         JPanel pane;
@@ -264,7 +294,6 @@ public class GameView extends JLayeredPane {
      * @param actions
      */
     public void setCurrentP(AdventurerType currentP, String name, int actions) {
-        
         for (PlayerInfo pInfo : pawns) {
             if (pInfo.getPawn().equals(currentP)) {
                 pInfo.setEnabled(true);
@@ -272,6 +301,7 @@ public class GameView extends JLayeredPane {
                 pInfo.setEnabled(false);
             } // end if
         } // end for
+        action.setText("C'est à " + name + " il reste " + actions + " actions");
     }
     
     
@@ -280,7 +310,23 @@ public class GameView extends JLayeredPane {
      *
      */
     public void notifyPlayers(String msg) {
-        // FIXME to notify
+        this.msg.setText(msg);
+    }
+    
+    
+    /**
+     * @return the treasureDeck
+     */
+    public DeckComponent getTreasureDeck() {
+        return treasureDeck;
+    }
+    
+    
+    /**
+     * @return the floodDeck
+     */
+    public DeckComponent getFloodDeck() {
+        return floodDeck;
     }
     
     
@@ -295,6 +341,10 @@ public class GameView extends JLayeredPane {
         moveBtn.addActionListener(listObs);
         shoreUpBtn.addActionListener(listObs);
         useCapacityBtn.addActionListener(listObs);
+        discardCard.addActionListener(listObs);
+        invoque.addActionListener(listObs);
+        giveCard.addActionListener(listObs);
+        useCard.addActionListener(listObs);
     }
     
     
@@ -311,6 +361,10 @@ public class GameView extends JLayeredPane {
         moveBtn.setEnabled(!b);
         shoreUpBtn.setEnabled(!b);
         useCapacityBtn.setEnabled(!b);
+        discardCard.setEnabled(!b);
+        invoque.setEnabled(!b);
+        giveCard.setEnabled(!b);
+        useCard.setEnabled(!b);
     }
     
     
@@ -325,6 +379,10 @@ public class GameView extends JLayeredPane {
         endTurnBtn.setEnabled(act.contains(InGameAction.END_TURN));
         treasureDeck.setEnabled(act.contains(InGameAction.DRAW_TREASURE));
         floodDeck.setEnabled(act.contains(InGameAction.DRAW_FLOOD));
+        discardCard.setEnabled(act.contains(InGameAction.DISCARD));
+        invoque.setEnabled(act.contains(InGameAction.GET_TREASURE));
+        giveCard.setEnabled(act.contains(InGameAction.GIVE_CARD));
+        useCard.setEnabled(act.contains(InGameAction.USE_CARD));
     }
     
     
@@ -440,7 +498,29 @@ public class GameView extends JLayeredPane {
                 notifyObservers(new InGameMessage(InGameAction.USE_CAPACITY));
                 clearChanged();
                 break;
-            
+            case DISCARD:
+                setChanged();
+                notifyObservers(new InGameMessage(InGameAction.DISCARD));
+                clearChanged();
+                break;
+            case GIVE:
+                setChanged();
+                notifyObservers(new InGameMessage(InGameAction.GIVE_CARD));
+                clearChanged();
+                break;
+            case INVOKE:
+                setChanged();
+                notifyObservers(new InGameMessage(InGameAction.GET_TREASURE));
+                clearChanged();
+                break;
+            case USE_CARD:
+                setChanged();
+                notifyObservers(new InGameMessage(InGameAction.USE_CARD));
+                clearChanged();
+                break;
+            case PAUSE:
+                
+                break;
             default:
                 break;
             }// end switch

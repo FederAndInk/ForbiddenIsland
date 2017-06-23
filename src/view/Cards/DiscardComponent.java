@@ -24,18 +24,18 @@ import model.game.Site;
  */
 public class DiscardComponent extends JPanel {
     private CardType type;
-    private Site     lastCard;
+    private Site     lastCardSite;
     private boolean  empty;
     private JLabel   desc;
     
     
     /**
      * @author nihil
-     *
      * @param type
      */
     public DiscardComponent(CardType type) {
         super();
+        desc = new JLabel();
         this.type = type;
         empty = true;
         init();
@@ -61,7 +61,8 @@ public class DiscardComponent extends JPanel {
         super.paintComponent(g);
         if (!empty) {
             try {
-                BufferedImage bi = ImageIO.read(new File(lastCard.getCard()));
+                BufferedImage bi = ImageIO
+                        .read(new File(lastCardSite != null ? lastCardSite.getCard() : type.getPathCard()));
                 g.drawImage(bi, 0, 0, (int) getSize().getWidth(), (int) getSize().getHeight(), this);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -74,8 +75,21 @@ public class DiscardComponent extends JPanel {
      * @author nihil
      *
      */
-    public void addCard(Site type) {
-        lastCard = type;
+    public void addCard(CardType card, Site site) {
+        lastCardSite = site;
+        this.type = card;
+        setEmpty(false);
+        repaint();
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     */
+    public void addCard(CardType card) {
+        this.type = card;
+        lastCardSite = null;
         setEmpty(false);
         repaint();
     }

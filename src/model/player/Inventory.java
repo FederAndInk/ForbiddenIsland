@@ -127,6 +127,14 @@ public class Inventory {
     }
     
     
+    /**
+     * @return the cards
+     */
+    public ArrayList<Card> getCards() {
+        return cards;
+    }
+    
+    
     public Card getCard(CardType cardType) {
         for (Card card : cards) {
             if (card.getType().equals(cardType)) {

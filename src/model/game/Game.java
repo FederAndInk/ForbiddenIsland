@@ -44,7 +44,7 @@ public class Game {
         players = new LinkedList<>();
         treasures = new ArrayList<>();
         SelectedPlayers = new ArrayList<>();
-        cardsDrawn = 0;
+        cardsDrawn = 1;
     }
     
     
@@ -199,7 +199,8 @@ public class Game {
             break;
         default:
             list.addAll(currentPlayer.getCurrentAdventurer().getPossibleActions());
-            if (!list.contains(InGameAction.GIVE_CARD) && !getIsland().getNearPlayer(this).isEmpty()
+            if (getCurrentPlayer().getCurrentAdventurer().getActionPoints() > 0
+                    && !list.contains(InGameAction.GIVE_CARD) && !getIsland().getNearPlayer(this).isEmpty()
                     && currentPlayer.getCurrentAdventurer().isExchangePossibleHere()) {
                 list.add(InGameAction.GIVE_CARD);
             } // end if
@@ -215,7 +216,7 @@ public class Game {
      */
     public void endTurn() {
         if (currentAction == InGameAction.END_TURN) {
-            cardsDrawn = 0;
+            cardsDrawn = 1;
             getCurrentPlayer().getCurrentAdventurer().endTurn();
             
             int indLastP = getPlayers().indexOf(getCurrentPlayer());
@@ -281,15 +282,6 @@ public class Game {
     public Card drawEndTurnCard(InGameAction type) throws EndGameException, IllegalAccessException, MoveException,
             TileException, CardException, PlayerOutOfIslandException {
         Card card;
-        // For actions
-        if (cardsDrawn < getNbCards(InGameAction.DRAW_TREASURE)) {
-            setCurrentAction(InGameAction.DRAW_TREASURE);
-        } else if (cardsDrawn < getNbCards(InGameAction.DRAW_FLOOD)) {
-            setCurrentAction(InGameAction.DRAW_FLOOD);
-        } else {
-            setCurrentAction(InGameAction.END_TURN);
-        } // end if
-        cardsDrawn++;
         
         // Draw
         if (type.equals(InGameAction.DRAW_TREASURE)) {
@@ -304,10 +296,27 @@ public class Game {
             card.applyAction(null, this);
             verifyTreasure();
         } else {
-            throw new IllegalArgumentException("not a valid deck");
+            throw new IllegalArgumentException("not a valid deck : " + type);
         }
         Parameters.printLog("Draw card " + card, LogType.INFO);
         return card;
+    }
+    
+    
+    /**
+     * @author nihil
+     *
+     */
+    public void setDrawCard() {
+        // For actions
+        if (cardsDrawn < getNbCards(InGameAction.DRAW_TREASURE)) {
+            setCurrentAction(InGameAction.DRAW_TREASURE);
+        } else if (cardsDrawn < getNbCards(InGameAction.DRAW_FLOOD)) {
+            setCurrentAction(InGameAction.DRAW_FLOOD);
+        } else {
+            setCurrentAction(InGameAction.END_TURN);
+        } // end if
+        cardsDrawn++;
     }
     
     

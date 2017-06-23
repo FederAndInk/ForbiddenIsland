@@ -75,7 +75,7 @@ public class PlayerCard extends JPanel {
     protected void paintComponent(Graphics g) {
         try {
             Parameters.printLog("load file : " + card.getPathCard(), LogType.INFO);
-            BufferedImage bi = ImageIO.read(new File(card.getPathCard()));
+            BufferedImage bi = ImageIO.read(new File((card.getPathCard())));
             g.drawImage(bi, 0, 0, (int) (getSize().getWidth()), (int) getSize().getHeight(), this);
         } catch (IOException e) {
             e.printStackTrace();
@@ -134,7 +134,11 @@ public class PlayerCard extends JPanel {
          */
         @Override
         public void mouseClicked(MouseEvent e) {
-            notifyObservers(new InGameMessage(InGameAction.SELECT_CARD, cardPlace));
+            if (isEnabled()) {
+                setChanged();
+                notifyObservers(new InGameMessage(InGameAction.SELECT_CARD, cardPlace));
+                clearChanged();
+            } // end if
         }
         
         

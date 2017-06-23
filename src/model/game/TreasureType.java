@@ -33,6 +33,16 @@ public enum TreasureType {
     }
     
     
+    /**
+     * @author nihil
+     *
+     * @return name of the card's file
+     */
+    public String getPathCard() {
+        return Parameters.CARDS + "Card_" + label.replaceAll(" ", "_") + "@2x.png";
+    }
+    
+    
     public String getLogo() {
         return Parameters.LOGO + "Treasure_Icon_" + label.replace(" ", "_") + "@2x.png";
     }// end getLogo

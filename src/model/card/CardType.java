@@ -22,7 +22,7 @@ public enum CardType {
     FLOOD_CARD("flood", getSubFlood(), true, false, null),
     HELICOPTER_CARD("Helicopter", getSubTreasures(), true, true, null),
     SANDBAG_CARD("Sand_Bag", getSubTreasures(), true, true, null),
-    WATERSRISE_CARD("Waters_Rise", getSubTreasures(), false, false, null);
+    WATERSRISE_CARD("Waters_Rise", getSubTreasures(), true, false, null);
     /**
      * @category Treasures
      */

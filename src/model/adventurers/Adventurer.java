@@ -3,6 +3,7 @@ package model.adventurers;
 import java.util.ArrayList;
 
 import model.card.Card;
+import model.card.CardType;
 import model.card.TreasureCard;
 import model.game.*;
 import model.player.Inventory;
@@ -484,7 +485,7 @@ public abstract class Adventurer {
     }
     
     
-    public void giveCard(Player player) throws CardException, GiveCardException, MissingCardException {
+    public Card giveCard(Player player, CardType type) throws CardException, GiveCardException, MissingCardException {
         TreasureCard card = (TreasureCard) getInventory().getCard(getCurrentTile().getSite().getTreasureType());
         if (isExchangePossibleHere()) {
             if (reachableExchangePlayer(player)) {
@@ -505,6 +506,7 @@ public abstract class Adventurer {
             Parameters.printLog("le type de carte ne correspond pas", LogType.ERROR);
             throw new GiveCardException(card.getTreasureType(), this);
         }
+        return card;
     }
     
     

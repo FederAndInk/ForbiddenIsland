@@ -6,6 +6,8 @@ import model.game.TreasureType;
 
 
 public class TreasureCard extends Card {
+    private CardType treasureType;
+    
     
     /**
      * @author nihil
@@ -13,7 +15,8 @@ public class TreasureCard extends Card {
      * @param type
      */
     public TreasureCard(CardType treasureType) {
-        super(treasureType);
+        super(CardType.TREASURE_CARD);
+        this.treasureType = treasureType;
     }
     
     
@@ -32,9 +35,18 @@ public class TreasureCard extends Card {
     /**
      * @author nihil
      *
+     */
+    public CardType getTreasureCard() {
+        return treasureType;
+    }
+    
+    
+    /**
+     * @author nihil
+     *
      * @return
      */
     public TreasureType getTreasureType() {
-        return getType().getTreasureType();
+        return treasureType.getTreasureType();
     }
 }

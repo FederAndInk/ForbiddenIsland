@@ -198,7 +198,12 @@ public class Game {
             list.add(InGameAction.END_TURN);
             break;
         default:
+            if (getCurrentPlayer().getCurrentAdventurer().getInventory().isOverloaded()) {
+                return list;
+            } // end if
+            
             list.addAll(currentPlayer.getCurrentAdventurer().getPossibleActions());
+            
             if (getCurrentPlayer().getCurrentAdventurer().getActionPoints() > 0
                     && !list.contains(InGameAction.GIVE_CARD) && !getIsland().getNearPlayer(this).isEmpty()
                     && currentPlayer.getCurrentAdventurer().isExchangePossibleHere()) {

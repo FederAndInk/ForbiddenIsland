@@ -60,8 +60,13 @@ public class Inventory {
     }
     
     
+    public boolean isOverloaded() {
+        return (cards.size() >= MAX_CARD + 1);
+    }
+    
+    
     public void addCard(Card card) throws CardException {
-        if (!(getAdventurer().getPlayer().getCurrentAdventurer().getInventory().isFull())) {
+        if (!(getAdventurer().getPlayer().getCurrentAdventurer().getInventory().isOverloaded())) {
             cards.add(card);
         } else {
             Parameters.printLog("l'inventaire est plein", LogType.INFO);

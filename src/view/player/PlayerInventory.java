@@ -80,14 +80,14 @@ public class PlayerInventory extends JPanel {
     private void initLayout() {
         GridBagLayout lT = new GridBagLayout();
         if (left) {
-            double[] nb = { 0.25, 0.2, 0.2, 0.2, 0.2, 0.2 };
+            double[] nb = { 0.25, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2 };
             lT.columnWeights = nb;
         } else {
-            double[] nb = { 0.2, 0.2, 0.2, 0.2, 0.2, 0.25 };
+            double[] nb = { 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.25 };
             lT.columnWeights = nb;
         } // end if
           // to set the number of columns
-        int[] nb2 = new int[6];
+        int[] nb2 = new int[7];
         lT.columnWidths = nb2;
         gLCC = new GridBagConstraints();
         
@@ -107,8 +107,8 @@ public class PlayerInventory extends JPanel {
             gLCC.gridx = cards.size();
             add(cards.get(cards.size() - 1), gLCC);
         } else {
-            cards.add(new PlayerCard(cardType, 4 - cards.size(), obs));
-            gLCC.gridx = 5 - cards.size();
+            cards.add(new PlayerCard(cardType, 5 - cards.size(), obs));
+            gLCC.gridx = 6 - cards.size();
             add(cards.get(cards.size() - 1), gLCC);
         } // end if
         doLayout();
@@ -152,11 +152,11 @@ public class PlayerInventory extends JPanel {
                 add(cards.get(i).setCardPlace(i + 1), gLCC);
             } // end for
         } else {
-            remove(cards.remove(4 - cardPlace));
-            for (int i = cardPlace; i > 4 - cards.size(); i--) {
-                remove(cards.get(4 - i));
+            remove(cards.remove(5 - cardPlace));
+            for (int i = cardPlace; i > 5 - cards.size(); i--) {
+                remove(cards.get(5 - i));
                 gLCC.gridx = i;
-                add(cards.get(4 - i).setCardPlace(cardPlace - cards.size() + 1), gLCC);
+                add(cards.get(5 - i).setCardPlace(cardPlace - cards.size() + 1), gLCC);
             } // end for
         } // end if
     }// end removeCard
@@ -167,7 +167,7 @@ public class PlayerInventory extends JPanel {
      *
      */
     public PlayerCard getCard(int i) {
-        return cards.get(left ? i - 1 : 4 - i);
+        return cards.get(left ? i - 1 : 5 - i);
     }
     
     

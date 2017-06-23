@@ -48,7 +48,6 @@ public class FloodCard extends Card {
             case DRIED:
                 appliedTile.setState(TileState.FLOODED);
                 game.getFloodDeck().discard(this);
-                game.getFloodDeck().discard(this);
                 break;
             
             case FLOODED:

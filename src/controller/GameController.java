@@ -674,9 +674,15 @@ public class GameController implements Observer {
             mainController.getView().switchToEnd(e.getEndType());
             
         } catch (PlayerOutOfIslandException e) {
+            Parameters.printLog("Adv get drown on " + e.getTile(), null);
             chainPlayers(getCurrentGame().getPlayersOnTile(e.getTile()));
             setSwim();
         }
+        if (getCurrentGame().getCurrentPlayer().getCurrentAdventurer().getInventory().isOverloaded()) {
+            selectAllCards(true);
+            getCurrentGame().setCurrentAction(InGameAction.DISCARD);
+            gameView.notifyPlayers("Vous avez trop de cartes, defaussez vous en d'une");
+        } // end if
     }
     
     

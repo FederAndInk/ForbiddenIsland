@@ -881,6 +881,7 @@ public class GameController implements Observer {
                             .addCard(ctype);
                 } catch (CardException e) {
                     e.printStackTrace();
+                    gameView.notifyPlayers("Impossible, il ny a plus de place dans l'inventaire");
                 } catch (GiveCardException e) {
                     e.printStackTrace();
                 } catch (MissingCardException e) {

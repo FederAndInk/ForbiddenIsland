@@ -48,6 +48,14 @@ public enum CardType {
     
     
     /**
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
+    
+    
+    /**
      * @author nihil
      *
      */

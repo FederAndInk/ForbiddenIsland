@@ -68,7 +68,7 @@ public class PlayerInventory extends JPanel {
         gLCT.weighty = 1;
         gLCT.fill = GridBagConstraints.BOTH;
         
-        gLCC.gridx = left ? 0 : 5;
+        gLCC.gridx = left ? 0 : 6; // 0 for left *...... inventories and 6 for right ......*
         add(treasure, gLCC);
     }
     
@@ -102,6 +102,9 @@ public class PlayerInventory extends JPanel {
     
     
     public void addCard(CardType cardType) {
+        Parameters.printLog(
+                "Add card " + cardType.getName() + " to " + (top ? "top" : "bottom") + "-" + (left ? "left" : "right"),
+                LogType.INFO);
         if (left) {
             cards.add(new PlayerCard(cardType, cards.size() + 1, obs));
             gLCC.gridx = cards.size();
@@ -111,6 +114,7 @@ public class PlayerInventory extends JPanel {
             gLCC.gridx = 6 - cards.size();
             add(cards.get(cards.size() - 1), gLCC);
         } // end if
+        Parameters.printLog("Adding card to " + gLCC.gridx, LogType.INFO);
         doLayout();
     }// end
      // addCard
@@ -159,6 +163,7 @@ public class PlayerInventory extends JPanel {
                 add(cards.get(5 - i).setCardPlace(cardPlace - cards.size() + 1), gLCC);
             } // end for
         } // end if
+        doLayout();
     }// end removeCard
     
     
